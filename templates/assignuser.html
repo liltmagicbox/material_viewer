@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="kr" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>유저 권한 추가</title>
+    <script type="text/javascript" src="./static/js/shasha.js"> </script>
+    <script type="text/javascript" src="./static/js/userfunc.js"> </script>
+  </head>
+  <body>
+
+    <div class = "loginBox" id = "loginBox">
+
+    </div>
+
+    <form action="/assignauth" method="post">
+      <span>닉네임 : </span><input type="text" name="name"><br>
+      <input type="radio" id="master" name="auth" value="master">
+      <label for="master">master</label><br>
+      <input type="radio" id="manager" name="auth" value="manager">
+      <label for="manager">manager</label><br>
+      <button type="submit" name="button">부여하기</button>
+    </form>
+
+  </body>
+  <script type="text/javascript">
+
+    loginBox =document.getElementById('loginBox')
+    makeloginbox(loginBox)
+
+    //fetchnewuserB = document.getElementById("fetchnewuserB")
+    //fetchnewuserB.addEventListener('click', fetchnewuser)
+
+  </script>
+</html>

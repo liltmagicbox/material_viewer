@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="kr" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>새로운유저의탄생</title>
+    <script type="text/javascript" src="./static/js/shasha.js"> </script>
+    <script type="text/javascript" src="./static/js/userfunc.js"> </script>
+  </head>
+  <body>
+
+    <form action="/newuser" method="post">
+      <span>닉네임 : </span><input type="text" id= "username" name="username"><br>
+      <span>주문 : </span><input type="text" id= "sha" name="sha"><br>
+      <!--span>data : </span><input type="text" name="data"><br-->
+      <button id = 'fetchnewuserB' type="button" formmethod="POST">생성</button>
+    </form>
+
+  </body>
+  <script type="text/javascript">
+
+    fetchnewuserB = document.getElementById("fetchnewuserB")
+    fetchnewuserB.addEventListener('click', fetchnewuser)
+
+
+
+  </script>
+</html>

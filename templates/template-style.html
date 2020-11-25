@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+  </head>
+  <body>
+
+
+
+    <!--link rel="preload" href="./va.txt" as="document" load and what? -->
+    <!--embed type="text" src="./va.txt" IT's for flash kinds!-->
+    <link rel="modulepreload" href="./va.js" type="script" crossorigin>
+    <link rel="modulepreload" href="./va.json" type="script" crossorigin>
+    <link rel="modulepreload" href="./imported.html" type="text/html" crossorigin>
+    <!--link rel="modulepreload" href="./va.txt" type="text" crossorigin-->
+    <p>ha</p>
+    <hr>
+    <iframe loading="eager" src="./imported.html" title="Wls"></iframe>
+    <p>up iframe</p>
+    <object data="imported.html" width="100" height="100"></object>
+    <p>up object</p>
+    <div id="nameTag">Bob</div>
+    <template id="nameTagTemplate">
+    <style>
+        .outer {
+          border: 2px solid brown;
+          background: red;
+        }
+        .name {
+          color: black;
+        }
+    </style>
+    <div class="outer">
+      <div class="name">
+        Bob
+      </div>
+    </div>
+    </template>
+
+
+  </body>
+
+  <script type="text/javascript">
+  var shadow = document.querySelector('#nameTag').createShadowRoot();
+  var template = document.querySelector('#nameTagTemplate');
+  var clone = document.importNode(template.content, true);
+  shadow.appendChild(clone);
+
+   //html = '<div>Some html content</div>'
+   html = `<div><pre>Some html conten
+     and thist</pre></div>`
+
+   parser = new DOMParser()
+   doc = parser.parseFromString(html, "text/html")
+   //dvv = doc.firstElementChild.getElementsByTagName('div')
+   dvv = doc.getElementsByTagName('div')[0]
+  document.body.appendChild(dvv)
+  </script>
+
+</html>

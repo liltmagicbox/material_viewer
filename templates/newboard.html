@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="kr" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>new board!</title>
+  </head>
+  <body>
+    <form class="newboard" action="/createboard" method="post">
+      게시판 이름: <input type="text" name="name"><br>
+      게시판 타입: <!--input type="text" name="boardtype"><br-->
+
+      <input type="radio" id="만화" name="boardtype" value="만화">
+      <label for="만화">만화</label>
+      <input type="radio" id="소설" name="boardtype" value="소설">
+      <label for="소설">소설</label><br>
+
+      캐릭터 목록: <input type="text" name="heros"><br>
+      캐릭터 색깔: <input type="text" name="heros"><br>
+      캐릭터 조합: <input type="text" name="heros"><br>
+      <button type="submit" name="button">제출</button>
+    </form>
+
+  </body>
+</html>

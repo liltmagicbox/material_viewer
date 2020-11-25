@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>file upload</title>
+    <style media="screen">
+
+#view_zone {
+border: 5px solid gold;
+display :flex;
+flex-wrap: wrap;
+align-content: flex-start;
+}
+#view_zone div {
+  width:  100px;
+  height: 100px;
+}
+#view_zone img {
+width:  100%;
+height: 100%;
+}
+#view_zone #drop_zone {
+border: 5px solid green;
+width:  90px;
+height: 90px;
+}
+#view_zone #trash_zone {
+border: 5px solid red;
+width:  90px;
+height: 90px;
+order: 999;
+}
+#view_zone .draghigh {
+  border: 5px solid red;
+  width:  90px;
+  height: 90px;
+}
+#view_zone .dragroot {
+  /*box-shadow: 0 0 0 3px #00f inset;*/
+  border: 5px solid blue;
+  width:  90px;
+  height: 90px;
+}
+#view_zone .clickroot {
+  /*box-shadow: 0 0 0 3px #00f inset;*/
+  border: 5px solid blue;
+  width:  90px;
+  height: 90px;
+}
+    </style>
+  </head>
+  <body>
+
+
+
+
+    <h1>zip파일업로드</h1>
+    <form method = "POST" action = "/zipfileup" enctype = "multipart/form-data">
+
+      <input type="radio" id="board" name="board" value="gallery">
+      <label for="board">보드명.변수입력이필요함.</label><br>
+
+      <input type="radio" id="만화" name="boardtype" value="만화">
+      <label for="만화">만화</label><br>
+      <input type="radio" id="소설" name="boardtype" value="소설">
+      <label for="소설">소설</label><br>
+
+         zip파일:<input type = "file" name = "file" accept=".zip" >
+         <button type = "submit">투고하기</button>
+    </form>
+
+    <p>제목: zip파일 안의 각각파일명 혹은 폴더명</p>
+    <p>본문 넣고 싶으면, 각 폴더 안에, 텍스트파일이 단 하나 있으면 읽힘.</p>
+
+
+    <!------------------------------------------------------------------------->
+    <hr>
+
+    <h1>그냥글쓰기</h1>
+    <div id="view_zone">
+      <div id="drop_zone" ondrop="dropHandler(event);" ondragover="dragOverHandler(event);">
+            드롭이미지
+            끌어다
+            놓으세요
+      </div>
+
+      <div id="trash_zone" onclick="trashimg(event);">
+            삭제하기
+      </div>
+    </div>
+    <input type="file" id="fileElem" multiple accept="image/*" onchange="handleFiles(event);">
+    <br>
+    <p>-----------------</p>
+
+    <form method = "POST" action = "/zipfileup" enctype = "multipart/form-data">
+        제목:<input type="text" name="titletext" ><br>
+        내용:<input type="text" name="bodytext" ><br>
+        주연 태그:<input type="text" name="herotext" ><br>
+        태그:<input type="text" name="tagtext" ><br>
+        <!--input type=file multiple name=charts accept="image/*"-->
+        <br>
+        <button id = "uploadbutton" type = "button" onclick="uploadFiles()">안보이는업로드버튼 </button>
+        <button id = "submitbutton" type = "submit">눌러서 처리하기 </button>
+    </form>
+
+
+
+  </body>
+
+  <script type="text/javascript">
+  var clicked=false
+  var filelist=[]
+
+    function dragOverHandler(ev) {
+  //console.log('File(s) in drop zone');
+  // Prevent default behavior (Prevent file from being opened)
+  ev.preventDefault();
+}
+
+function uploadtext( uploader,titletext,bodytext,herotext,tagtext ) {
+  var url = '/xmltext'
+  var xhr = new XMLHttpRequest()
+  var formData = new FormData()
+  xhr.open('POST', url, true)
+  xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest')
+
+  formData.append("uploader", uploader)
+  formData.append("titletext", titletext)
+  formData.append("bodytext", bodytext)
+  formData.append("herotext", herotext)
+  formData.append("tagtext", tagtext)
+  xhr.send(formData)
+}
+
+function uploadFiles(event) {
+  filelist.forEach(uploadFile)
+}
+
+function uploadFile(file, i) {
+  var url = '/xmliterimg'
+  var xhr = new XMLHttpRequest()
+  var formData = new FormData()
+  xhr.open('POST', url, true)
+  xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest')
+  //console.log(i) //holy! is magic of foreach?
+
+  //formData.append('upload_preset', 'ujpu6gyk') //idonno whatis it
+  formData.append('iter', i)
+  formData.append('file', file)
+
+  xhr.send(formData)
+}
+
+
+function handleFiles(event) {
+  files = event.srcElement.files//yeah i did it
+  files = [...files]
+  files.forEach(previewFile)
+}
+
+function dropHandler(event) {
+// Prevent default behavior (Prevent file from being opened)
+event.preventDefault();
+files = event.dataTransfer.files
+files = [...files]
+//files.forEach(uploadFile) //after orderswap.
+files.forEach(previewFile)
+}
+
+
+function previewFile(file,i) {
+  filelist.push(file)
+  let reader = new FileReader()
+  reader.readAsDataURL(file)
+  //imgidx = i+document.getElementsByClassName('imgrect').length
+  imgidx = document.getElementsByClassName('imgrect').length
+
+  let div = document.createElement('div')
+  div.className = "imgrect"
+  div.id = imgidx
+  //div.style.order = imgidx
+  div.addEventListener('click', imgdrag_click)
+  document.getElementById('view_zone').appendChild(div)
+  reader.onloadend = function() {
+    let img = document.createElement('img')
+    img.src = reader.result
+    img.alt = file.name
+    img.title = file.name
+    div.appendChild(img)
+  }
+}
+
+
+function trashimg(event) {
+  if (clicked == true){
+    clicked = false
+    let idxnow = document.getElementsByClassName('clickroot')[0].id
+    filelist.splice(idxnow, 1); //exctract from, numbers.
+
+    document.getElementById(idxnow).remove()//remains 1,2, 4.
+    let rectlist = document.getElementsByClassName('imgrect')
+    //[...rectlist].forEach( function(r,i){console.log(i)})//how clever!
+    Object([...rectlist]).forEach( function(r,i){ r.id=i })
+  }
+}
+
+  function imgdrag_click(event) {
+    if (clicked == false){
+      clicked = true
+      idxroot =  event.currentTarget.id
+      event.currentTarget.classList.add("clickroot")
+    }
+    else{
+      clicked = false
+      idxtarget =  event.currentTarget.id
+      document.getElementsByClassName('clickroot')[0].classList.remove('clickroot')
+      swapimg(idxroot,idxtarget)
+    }
+
+  }
+
+  function imgdrag_start(event) {
+    idxroot =  event.currentTarget.id
+    event.currentTarget.classList.add("dragroot")
+  }
+  function imgdrag_end(event) {
+    event.currentTarget.classList.remove("dragroot")
+    //console.log(idxroot)
+    //console.log(idxtarget)
+    swapimg(idxroot,idxtarget)
+  }
+  function imgdrag_enter(event) {
+    event.currentTarget.classList.add("draghigh")
+    idxtarget =  event.currentTarget.id
+  }
+  function imgdrag_leave(event) {
+    event.currentTarget.classList.remove("draghigh")
+  }
+
+  function imgdrag_drop(event) {
+    event.preventDefault();
+    console.log('aerhaerhwer')
+    console.log( event.currentTarget.id )
+  }
+
+function swapimg(idx1,idx2) {
+  let a = filelist[idx1]
+  let b = filelist[idx2]
+  filelist[idx1]=b
+  filelist[idx2]=a
+
+  //fastest! no speed loss.
+  let d1 = document.getElementById(idx1)
+  let d2 = document.getElementById(idx2)
+  let i1 = document.getElementById(idx1).firstChild
+  let i2 = document.getElementById(idx2).firstChild
+  let tempdiv = document.createElement("div")
+  //let c2 = document.getElementById(idx2).firstChild.cloneNode()
+  tempdiv.appendChild(i1)
+  tempdiv.appendChild(i2)
+  d1.appendChild(i2)
+  d2.appendChild(i1)
+  tempdiv.remove()
+
+  //v2
+  // let d1 = document.getElementById(idx1)
+  // let d2 = document.getElementById(idx2)
+  // let i1 = document.getElementById(idx1).firstChild
+  // let i2 = document.getElementById(idx2).firstChild
+  // let c1 = document.getElementById(idx1).firstChild.cloneNode()
+  // //let c2 = document.getElementById(idx2).firstChild.cloneNode()
+  // if (d1 != d2){
+  //   i1.replaceWith(i2)
+  //   d2.appendChild(c1)
+  // }
+
+  //v1
+  // let c1 = document.getElementById(idx1).firstChild.cloneNode()
+  // let c2 = document.getElementById(idx2).firstChild.cloneNode()
+  // i1.replaceWith(c2)
+  // i2.replaceWith(c1)
+
+  /*let s1 = document.getElementById(idx1).firstChild.src
+  let s2 = document.getElementById(idx2).firstChild.src
+  document.getElementById(idx1).firstChild.src = s2
+  document.getElementById(idx2).firstChild.src = s1*/ //slow
+}
+
+//https://developer.mozilla.org/en-US/docs/Web/API/Document/drag_event
+
+document.addEventListener("dragover", function(event) {
+  // prevent default to allow drop
+  event.preventDefault();
+}, false);
+
+
+
+//
+// function previewFile(file,i) {
+//   filelist.push(file)
+//   let reader = new FileReader()
+//   reader.readAsDataURL(file)
+//   reader.onloadend = function() {
+//     let div = document.createElement('div')
+//     div.className = "imgrect"
+//     div.id = i
+//     //div.setAttribute("style", "order: i".replce("i",i) )
+//     //elt.style.cssText = "color: blue; border: 1px solid black";
+//     div.style.order = i
+//
+//     div.addEventListener('click', imgdrag_click)
+//
+//     //works only pc, but click for simple.
+//     //div.addEventListener('dragstart', imgdrag_start)
+//     //div.addEventListener('dragend', imgdrag_end)
+//     //div.addEventListener('dragenter', imgdrag_enter)
+//     //div.addEventListener('dragleave', imgdrag_leave)
+//
+//     //div.addEventListener('drag', imgdrag_drop)
+//     //div.addEventListener('dragover', imgdrag_drop)//noisy
+//     //div.addEventListener('drop', imgdrag_drop) //nowwork
+//     let img = document.createElement('img')
+//     img.src = reader.result
+//     div.appendChild(img)
+//     document.getElementById('view_zone').appendChild(div)
+//   }
+//
+// }
+
+  </script>
+</html>

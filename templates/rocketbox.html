@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="kr" dir="ltr">
+  <head>
+
+    <meta charset="utf-8">
+    <title>러브라이브 번역 만화</title>
+    <meta name="description" content="러브라이브 번역 만화 및 기타 열람.">
+    <meta name="keywords" content="러브라이브,식질,만화,2차창작,번역">
+
+    <meta name="viewport" content="width=device-width">
+    <link rel="stylesheet" type="text/css" href="./static/css/flexcol.css">
+
+    <script type="text/javascript" src="./static/headdict.json"> </script>
+    <script type="text/javascript" src="./static/fluiddict.json"> </script>
+
+    <script type="text/javascript" src="./static/js/sortnolist.js"> </script>
+    <script type="text/javascript" src="./static/js/tagquery.js"> </script>
+
+    <script type="text/javascript" src="./static/js/filltagframe.js"> </script>
+    <script type="text/javascript" src="./static/js/makeimgbox.js"> </script>
+    <script type="text/javascript" src="./static/js/inittagframe.js"> </script>
+    <script type="text/javascript" src="./static/js/initimgframe.js"> </script>
+    <script type="text/javascript" src="./static/js/initsortframe.js"> </script>
+
+    <script type="text/javascript" src="./static/js/shasha.js"> </script>
+    <script type="text/javascript" src="./static/js/userfunc.js"> </script>
+
+
+
+  </head>
+
+
+  <body>
+
+    <header class ='headerBox'>
+      <button type="button" id = "menuOpenB" name="button"><img src="./static/resource/menuicon.png" alt="메뉴열기"></button>
+
+      <div class="headerTitle" >
+        <a href="/view"> <img src="./static/resource/headlogo.jpg" alt="타이틀로고"> </a>
+
+      </div>
+
+      <button type="button" id = "searchB" name="button"><img src="./static/resource/searchicon.png" alt="검색"></button>
+      <button type="button" id = "loginB" name="button"><img src="./static/resource/loginicon.png" alt="로그인"></button>
+    </header>
+
+
+    <div class="menuHolder" >
+      <div class="sideMenu" id="sideMenu">
+        <button type="button" id = "menuCloseB" class="menuCloseB" name="button">&times;</button>
+        <ul>
+          <br><br>
+          <li><a href="#" title="짧은만화">짧은만화</a></li>
+          <li><a href="#" title="연재만화">연재만화</a></li>
+          <li><a href="./?tag=comics_long/" title="장편만화">장편만화</a></li>
+          <li><a href="./?tag=ss/" title="SS번역">SS번역</a></li>
+          <li><a href="./?tag=writing/" title="럽라문학">럽라문학</a></li>
+        </ul>
+      </div>
+
+      <div class="voidScreen" id="voidScreen">
+
+      </div>
+    </div>
+
+    <div class = "loginBox" id = "loginBox">
+
+    </div>
+
+
+
+
+
+
+
+    <main>
+      <br>
+      <div class="tagFrame" id="tagFrame">
+        <div class="tagBox" id="characterTagbox">
+
+        </div>
+
+        <div class="bannerFrame" id="bannerFrame">
+          <img class = "bannerImg" src="./static/resource/banner/뮤즈.jpg" alt="배너이미지"  >
+        </div>
+        <!--div class="tagBox" id="moodTagbox">
+          <span>태그 목록 : </span>
+        </div-->
+        <br>
+        <div class="tagBox" id="userTagbox">
+        </div>
+      </div>
+
+
+
+
+      <br>
+      <hr>
+
+      <div class="sortFrame" id="sortFrame">
+        <!--span>정렬:</span-->
+
+      </div>
+
+
+      <!--div class="flexFrame" id = "flexFrame"></div-->
+        <div class="imgFrame" id = "imgFrame">
+
+
+      </div>
+
+    </main>
+
+
+
+
+    <footer id='foot'>
+      <p> 2020 lovelive gallery </p>
+    </footer>
+
+    <script type="text/javascript">
+    initTagframe()
+    initSortB()
+    initColB()
+    //initImgframe()
+    initImgcol()
+    //finally, console.log(Object.keys(datas))
+    //setTimeout(function(){}, 100)
+
+
+    searchB = document.getElementById("searchB")
+    searchB.addEventListener('click', searchPop)
+    loginB = document.getElementById("loginB")
+    loginB.addEventListener('click', loginPop)
+
+    function loginPop() {
+      loginBox= document.getElementById("loginBox")
+      if(loginBox.pop == 1){
+        loginBox.style.height = "0px"
+        loginBox.pop = 0
+      }
+      else {
+        loginBox.style.height = "200px"
+        loginBox.pop = 1
+      }
+
+    }
+
+
+    function searchPop() {
+      let sign = window.prompt("검색어를 입력해?").toUpperCase() /*, "생일" 냅두면초기화용.*/
+      if(sign == null ){sign = ""}
+
+      let keyList = Object.keys(datas)
+      let searchList =[]
+      for(var k of keyList){
+        if( datas[k]['제목'].indexOf(sign) != -1){
+          searchList.push(k)
+        }
+      }
+      document.getElementsByClassName('tagResetB')[0].click()
+      //noList = searchList
+      //noList shall be full length..
+      viewList = searchList
+      fillNewlist(viewList)// 2nd sort requires global view list!!
+      //searchListshow(searchList)
+    }
+
+
+    voidScreen = document.getElementById("voidScreen")
+    voidScreen.addEventListener('click', closeNav)
+
+    menuOpenB = document.getElementById("menuOpenB")
+    menuCloseB = document.getElementById("menuCloseB")
+    menuOpenB.addEventListener('click', openNav)
+    menuCloseB.addEventListener('click', closeNav)
+
+    function openNav() {
+  document.getElementById("sideMenu").style.width = "200px";
+  document.getElementById("voidScreen").style.width = '100%';
+}
+
+function closeNav() {
+  document.getElementById("sideMenu").style.width = "0";
+  document.getElementById("voidScreen").style.width = '0';
+}
+
+window.addEventListener('scroll', loadcheck)
+function loadcheck(){
+  //outFrame = document.getElementById('imgFrame')
+  outFrame = getImgframe()
+  a =document.getElementById('foot')
+  //console.log(a)
+  //console.log(window.scrollY+window.innerHeight >a.offsetParent.offsetHeight)
+  if(window.scrollY+window.innerHeight+500 >a.offsetParent.offsetHeight == true){
+    pagenum+=1
+    //window.removeEventListener('scroll', loadcheck)
+    fillImgcol(viewList,outFrame,pagenum)
+    //window.addEventListener('scroll', loadcheck)
+  }
+  else{
+  for(col of document.getElementsByClassName('imgCol') ){
+    lastone = col.getElementsByClassName('imgBox')[col.getElementsByClassName('imgBox').length-1]
+    if( window.scrollY+800 > lastone.offsetTop ){
+      pagenum+=1
+      //window.removeEventListener('scroll', loadcheck)
+      fillImgcol(viewList,outFrame,pagenum)
+      //window.addEventListener('scroll', loadcheck)
+      //Forced reflow while executing JavaScript took 60ms
+    }
+  }
+}
+
+  //lastone=document.getElementsByClassName('imgBox')[document.getElementsByClassName('imgBox').length-1]
+  /*if( window.scrollY > lastone.offsetTop-lastone.offsetHeight ){
+    pagenum+=1
+    fillImgcol(viewList,outFrame,pagenum)
+  }*/
+
+}
+
+//function drag(e) { e.preventDefault() };
+
+//_C.addEventListener('mousemove', drag, false);
+//_C.addEventListener('touchmove', drag, false);
+
+loginBox =document.getElementById('loginBox')
+makeloginbox(loginBox)
+
+  </script>
+  </body>
+</html>

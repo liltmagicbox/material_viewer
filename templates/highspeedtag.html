@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+
+
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font: 16px Arial;
+}
+
+/*the container must be positioned relative:*/
+.autocomplete {
+  position: relative;
+  display: inline-block;
+}
+
+input {
+  border: 1px solid transparent;
+  background-color: #f1f1f1;
+  padding: 10px;
+  font-size: 16px;
+}
+
+input[type=text] {
+  background-color: #f1f1f1;
+  width: 26em;
+}
+
+input[type=submit] {
+  background-color: DodgerBlue;
+  color: #fff;
+  cursor: pointer;
+}
+#myInput{
+  width: 50em;
+}
+
+.autocomplete-items {
+  position: absolute;
+  border: 1px solid #d4d4d4;
+  border-bottom: none;
+  border-top: none;
+  z-index: 99;
+  /*position the autocomplete items to be the same width as the container:*/
+  top: 100%;
+  left: 0;
+  right: 0;
+}
+
+.autocomplete-items div {
+  padding: 10px;
+  cursor: pointer;
+  background-color: #fff;
+  border-bottom: 1px solid #d4d4d4;
+}
+
+/*when hovering an item:*/
+.autocomplete-items div:hover {
+  background-color: #e9e9e9;
+}
+
+/*when navigating through the items using the arrow keys:*/
+.autocomplete-active {
+  background-color: DodgerBlue !important;
+  color: #ffffff;
+}
+
+
+img{
+  height: 600px;
+  max-width: 100%;
+}
+
+.imgArea{
+  display:block;
+  height: 600px;
+}
+.imgBox{
+  display:flex;
+  flex-direction: column;
+
+}
+.imgFrame{
+  display:flex;
+  flex-direction: column;
+  width: 1900px;
+}
+#tagtext {
+  background-color: white;
+  color:red;
+}
+p{
+
+}
+</style>
+
+<script type="text/javascript" src="./static/headdict.json"> </script>
+
+<script type="text/javascript" src="./static/js/sortnolist.js"> </script>
+<script type="text/javascript" src="./static/js/tagquery.js"> </script>
+
+<script type="text/javascript" src="./static/js/filltagframe.js"> </script>
+<script type="text/javascript" src="./static/js/makeimgbox.js"> </script>
+<script type="text/javascript" src="./static/js/inittagframe.js"> </script>
+<script type="text/javascript" src="./static/js/initimgframe.js"> </script>
+<script type="text/javascript" src="./static/js/initsortframe.js"> </script>
+
+
+</head>
+<body>
+
+<!--h2>고속태그입력모드</h2-->
+<p>PC사용이 권장됨, 키보드,스페이스로구분(2번 이상 띄워져도됨), 이미있는건 스페이스로 자동완성, 없는건 직접치자. 엔터로 입력확정.</p>
+<div class="imgFrame" id = "imgFrame">
+
+</div>
+
+<!--Make sure the form has the autocomplete function switched off:-->
+<form autocomplete="on" action="#">
+  <!--input id="userip" type="hidden" name="ip" notused,for no js get_ip. -->
+  <!--input id="submitimg" type="image" alt="제출"  width="50" height="50"-->
+닉네임 :
+<input id="tagNickname" type="text" name="tagNickname" maxlength="16" placeholder="닉네임을입력하자_최대16자" >
+<br>
+마법의 주문 :
+<input id="tagMagicspell" type="text" name="tagMagicspell" maxlength="80" placeholder="인증을 위한 마법의 주문_최대80자">
+  <br>
+
+  태그:
+  <div class="autocomplete" style="width:300px;">
+    <input autocomplete="off" id="myInput" type="text" name="tag" placeholder="태그를입력하자">
+  </div>
+  <br>
+
+
+  <!--input  type="submit"-->
+</form>
+<button type="button" id='subsub' name="button">하하</button>
+<input type="text" id='tagtext' placeholder="입력한태그">
+<a href="/backup">backup</a>
+<script>
+function autocomplete(inp, arr) {
+  /*the autocomplete function takes two arguments,
+  the text field element and an array of possible autocompleted values:*/
+  var currentFocus;
+  /*execute a function when someone writes in the text field:*/
+  inp.addEventListener("input", function(e) {
+      var a, b, i, val = this.value;
+      /*close any already open lists of autocompleted values*/
+      closeAllLists();
+      if (!val) { return false;}
+      currentFocus = -1;
+      /*create a DIV element that will contain the items (values):*/
+      a = document.createElement("DIV");
+      a.setAttribute("id", this.id + "autocomplete-list");
+      a.setAttribute("class", "autocomplete-items");
+      /*append the DIV element as a child of the autocomplete container:*/
+      this.parentNode.appendChild(a);
+      /*for each item in the array...*/
+      val.trimEnd();
+      var vallast = val.substring(val.lastIndexOf(' ')+1);
+      if (vallast != ""){
+
+      for (i = 0; i < arr.length; i++) {
+        /*check if the item starts with the same letters as the text field value:*/
+        if (arr[i].substr(0, vallast.length).toUpperCase() == vallast.toUpperCase()) {
+          /*create a DIV element for each matching element:*/
+          //console.log(b.innerHTML)
+          //console.log(vallast.length,arr[i])
+          b = document.createElement("DIV");
+          /*make the matching letters bold:*/
+          b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
+          b.innerHTML += arr[i].substr(val.length);
+
+          /*insert a input field that will hold the current array item's value:*/
+          b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
+          /*execute a function when someone clicks on the item value (DIV element):*/
+          b.addEventListener("click", function(e) {
+              /*insert the value for the autocomplete text field:*/
+              tempstr = inp.value;
+              tempstr.trimEnd();
+              tempstr = tempstr.substring(0, tempstr.lastIndexOf(' ') );
+              tempstr +=' '
+              tempstr += this.getElementsByTagName("input")[0].value;
+              tempstr +=' '
+              inp.value = tempstr;
+              /*close the list of autocompleted values,
+              (or any other open lists of autocompleted values:*/
+              closeAllLists();
+          });
+          a.appendChild(b);
+        }
+      }//for
+    }//if not ""
+
+  });
+  /*execute a function presses a key on the keyboard:*/
+  inp.addEventListener("keydown", function(e) {
+      var x = document.getElementById(this.id + "autocomplete-list");
+      if (x) x = x.getElementsByTagName("div");
+      if (e.keyCode == 40) {
+        /*If the arrow DOWN key is pressed,
+        increase the currentFocus variable:*/
+        currentFocus++;
+        /*and and make the current item more visible:*/
+        addActive(x);
+      } else if (e.keyCode == 38) { //up
+        /*If the arrow UP key is pressed,
+        decrease the currentFocus variable:*/
+        currentFocus--;
+        /*and and make the current item more visible:*/
+        addActive(x);
+      } else if (e.keyCode == 13) {
+        e.preventDefault();
+        bbc=document.getElementById('subsub')
+        bbc.click()
+        /*If the ENTER key is pressed, prevent the form from being submitted,*/
+        //no,i will submit!
+        //e.preventDefault();
+      //  if (currentFocus > -1) {
+          /*and simulate a click on the "active" item:*/
+        //  if (x) x[currentFocus].click();
+      //  }
+
+      } else if (e.keyCode == 32) {
+        /*space, 1st input.*/
+
+        if (currentFocus > -1) {
+          /*and simulate a click on <th></th>e "active" item:*/
+          e.preventDefault();
+          if (x) x[currentFocus].click();
+        }
+        else{
+          //if (x) x[0].click();
+          if (x) x[0].click();
+          //if (x[0]) console.log(x);
+
+        }
+      }
+      //https://kudolove.tistory.com/254
+      else if (e.keyCode == 37) {
+        idx-=1
+        console.log(idx)
+        let outFrame = document.getElementById(outFrameid)
+        let ta = document.getElementById('myInput')
+        ta.value=''
+        outFrame.innerHTML=''
+        maketagviewbox(datas,viewList[idx],outFrame)
+        //tagtext = document.getElementById('tagtext')
+        //tagtext.placeholder = '입력된태그'
+        //tagtext.placeholder = tagdone[idx]
+        myInput
+        myInput = document.getElementById('myInput')
+        tagtext.placeholder = '태그를입력하자'
+        tagtext.placeholder = tagdone[idx]
+
+      }
+      else if (e.keyCode == 39) {//right
+        idx+=1
+        console.log(idx)
+        //let outFrame = document.getElementById(outFrameid)
+        let ta = document.getElementById('myInput')
+        ta.value=''
+        outFrame.innerHTML=''
+        maketagviewbox(datas,viewList[idx],outFrame)
+        tagtext = document.getElementById('tagtext')
+        tagtext.placeholder = '입력된태그'
+        tagtext.placeholder = tagdone[idx]
+      }
+  });
+  function addActive(x) {
+    /*a function to classify an item as "active":*/
+    if (!x) return false;
+    /*start by removing the "active" class on all items:*/
+    removeActive(x);
+    if (currentFocus >= x.length) currentFocus = 0;
+    if (currentFocus < 0) currentFocus = (x.length - 1);
+    /*add class "autocomplete-active":*/
+    x[currentFocus].classList.add("autocomplete-active");
+  }
+  function removeActive(x) {
+    /*a function to remove the "active" class from all autocomplete items:*/
+    for (var i = 0; i < x.length; i++) {
+      x[i].classList.remove("autocomplete-active");
+    }
+  }
+  function closeAllLists(elmnt) {
+    /*close all autocomplete lists in the document,
+    except the one passed as an argument:*/
+    var x = document.getElementsByClassName("autocomplete-items");
+    for (var i = 0; i < x.length; i++) {
+      if (elmnt != x[i] && elmnt != inp) {
+        x[i].parentNode.removeChild(x[i]);
+      }
+    }
+  }
+  /*execute a function when someone clicks in the document:*/
+  document.addEventListener("click", function (e) {
+      closeAllLists(e.target);
+  });
+}
+
+/*An array containing all the country names in the world:*/
+var countries = ["코토리","우미","니코","노조미","에리","호노카","하나요","린","마키"];
+
+/*initiate the autocomplete function on the "myInput" element, and pass along the countries array as possible autocomplete values:*/
+autocomplete(document.getElementById("myInput"), countries);
+</script>
+
+<script type="text/javascript">
+ outFrameid = 'imgFrame'
+ viewList = Object.keys(datas)// here was first used nolist  glovally
+outFrame = document.getElementById(outFrameid)
+//outFrame.innerHTML=""
+// fillImgframe(viewList,outFrame,1)
+idx = 0
+maketagviewbox(datas,viewList[idx],outFrame)
+function maketagviewbox(datas, no, outFrame,boxColor=0,miniLoad = 0){
+  // get title, get date, get imgfilepath, create box
+  //create box , img, title, date , attach to outframe
+
+  //thumbPath = './static/resized/'+no+'/'+no+datas[no]['리사이즈'][0]
+  let thumbPath = './static/resized/'+no+'/'+datas[no]['리사이즈'][0]
+  let titleText = datas[no]['제목']
+  let dateText = datas[no]['날짜']
+  let imgNumber = datas[no]['리사이즈'].length
+
+  let box = document.createElement('div')
+  box.className = 'imgBox'
+  box.id = "imgBox_"+no
+  box.no = no
+  box.setAttribute('color', boxColor)
+
+  let title = document.createElement('h2')
+  title.className = "imgTitle"
+  title.innerText = titleText
+  box.appendChild(title)
+
+  let date = document.createElement('p')
+  date.innerText = dateText
+  date.className = "imgDate"
+  box.appendChild(date)
+
+
+
+
+
+  let imgArea = document.createElement('div')
+  imgArea.className = 'imgArea'
+  imgArea.id = "imgArea_"+no
+  box.appendChild(imgArea)
+
+  for(i of datas[no]['리사이즈']){
+    //i = "10231529_1.jpg"
+  let im = document.createElement('img')
+  im.src = './static/resized/'+no+'/'+i
+  im.height = '600px'
+  imgArea.appendChild(im)
+}
+
+  // 더보기버튼이다, 누르면 더 로드된다. 스크롤처리하느라 고심함.
+  let bodyB = document.createElement('button')
+  bodyB.type = 'button' // if want submit, change. see mdn button
+  bodyB.className = 'bodyB'
+  bodyB.innerText = '로드('+(imgNumber-1)+')'
+  //bodyB.id = "bodyB_"+no
+  bodyB.no = no
+  //bodyB.name = ""
+  //bodyB.value = ""
+  //bodyB.pressed = false
+  bodyB.addEventListener('click',eventBodyload )
+  box.appendChild(bodyB)
+
+  //다운로드버튼이다. 누르면 zip으로다운해준다. ...필요한가??일단미작성.
+  /*
+  let downB = document.createElement('button')
+  downB.type = 'button' // if want submit, change. see mdn button
+  downB.className = 'downB'
+  downB.innerText = '더 보기('+(imgNumber-1)+')'
+  //downB.id = "bodyB_"+no
+  downB.no = no
+  //downB.name = ""
+  //downB.value = ""
+  downB.pressed = false
+  downB.addEventListener('click',eventDownload )
+  box.appendChild(downB)
+  */
+
+  outFrame.appendChild(box)
+
+}
+tdict={}
+tagdone={}
+
+subsub = document.getElementById('subsub')
+subsub.addEventListener('click',sendsend )
+
+
+function sendsend(){
+
+  inlist=[]
+  ta = document.getElementById('myInput')
+  tas= ta.value.split(' ')
+  for(t of tas){if(t!=''){inlist.push(t)}}
+
+  no = viewList[idx]
+  taglist=inlist
+
+  let params = { 'no': no, 'taglist':taglist}
+  var esc = encodeURIComponent;
+  let query = Object.keys(params)
+    .map(k => esc(k) + '=' + esc(params[k]))
+    .join('&');
+  //"parameter1=value_1&parameter2=value%202&parameter3=value%263"
+
+  //http://liltbox.iptime.org:25252/fetch/bodytext/10399976
+  //let url = window.location.href.replace( window.location.pathname , '')
+  let url = 'http://liltbox.iptime.org:25252'
+  let fetchurl = url+'/fetchtag?'+query
+  console.log(fetchurl)
+  fetch(fetchurl).then( function(response){
+    tagdone[idx]= taglist.toString()
+
+
+    idx+=1
+    console.log(idx)
+    ta.value=''
+    outFrame.innerHTML=''
+    maketagviewbox(datas,viewList[idx],outFrame)
+
+
+
+
+
+  })
+
+
+
+}
+
+
+</script>
+
+</body>
+</html>
