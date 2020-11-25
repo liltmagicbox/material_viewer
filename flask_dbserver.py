@@ -7,7 +7,7 @@ import userdb
 from jsonio import *
 
 from flask import send_from_directory, send_file
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, abort
 
 app = Flask(__name__)
 
@@ -29,6 +29,9 @@ def hello_json():
     data = {'server_name' : '0.0.0.0', 'server_port' : '8080'}
     return jsonify(data)
 
+
+
+
 @app.route('/jarscan')
 def jarScan():
     global datas
@@ -36,22 +39,17 @@ def jarScan():
     datas = minidb.jarScan(datas)
     return "backup no:"+str(no)+'jarscan after:'+str(len(datas))
 
+# @app.route('/file/<path:filenameinput>', methods=['GET', 'POST'])
+# def download(filenameinput):
+#     # 디렉터리에선 폴더명이다. upload 로 s안붙이니 안나왔음;
+#     #파일네임을 입력을 받은걸, 어떻게든 넘기는구조같다.
+#     #디렉터리에서 파일을 보내는 함수라는것은 알겠어..
+#     return send_from_directory(directory='uploads', filename=filenameinput)
 
 
 
 
-
-
-
-
-
-@app.route('/file/<path:filenameinput>', methods=['GET', 'POST'])
-def download(filenameinput):
-    # 디렉터리에선 폴더명이다. upload 로 s안붙이니 안나왔음;
-    #파일네임을 입력을 받은걸, 어떻게든 넘기는구조같다.
-    #디렉터리에서 파일을 보내는 함수라는것은 알겠어..
-    return send_from_directory(directory='uploads', filename=filenameinput)
-
+#used /static/js/---.js or so.
 @app.route('/static/<path:filenameinput>', methods=['GET', 'POST'])
 def staticFile(filenameinput):
     # 디렉터리에선 폴더명이다. upload 로 s안붙이니 안나왔음;
@@ -64,52 +62,8 @@ def staticFile(filenameinput):
 
 
 
-#------------------------fetch
-from tidyname import tidyName
 
-@app.route("/xmltext", methods=['POST'])
-def xmltext():
-    #uploader = request.form['username']
-    token = request.form['token']
-    username = getname(token)
-
-    titletext = request.form['titletext']
-    bodytext = request.form['bodytext']
-    herotext = request.form['herotext']
-    tagtext = request.form['tagtext']
-
-    sname = tidyName(titletext)
-    unzipdir = join(jar_dir,sname)
-    makedirs(unzipdir, exist_ok=True)
-
-    txtname = join(unzipdir,"body.txt")
-    with open ( txtname, 'w', encoding = "utf-8") as f:
-        f.write(bodytext)
-    return "txtwrite done"
-
-@app.route("/xmliterimg", methods=['POST'])
-def xmliterimg():
-    f = request.files['file']
-    #print(f)
-    iter = request.form['iter']
-    #print(iter)
-    #uploader = request.form['username']
-    token = request.form['token']
-    titletext = request.form['titletext']
-
-    #unzipdir = join(jar_dir,"temp")
-    sname = tidyName(titletext)
-    unzipdir = join(jar_dir,sname)
-    makedirs(unzipdir, exist_ok=True)
-
-    ext = splitext(f.filename)[1]
-    sname =  iter+ext
-    #sname = secure_filename(f.filename)
-
-    filepath = join(unzipdir,sname)
-    f.save( filepath )
-    return "youcantseethis"
-
+#------------------------ fetch
 
 #toolong @app.route('/fetch/bodytext/<path:no>')
 @app.route('/fetch')
@@ -147,14 +101,14 @@ def heavyfetchParse():
     data = { 'bodytext':valueText }
     return jsonify(data)
 
-@app.route('/bodyload')
-def bodyload():
-    global datas
-    global fluid
-    key = request.args.get('key')
-    tmpdict[n] = fluid[n][key]
-    data = { 'bodytext':valueText }
-    return jsonify(data)
+# @app.route('/bodyload')
+# def bodyload():
+#     global datas
+#     global fluid
+#     key = request.args.get('key')
+#     tmpdict[n] = fluid[n][key]
+#     data = { 'bodytext':valueText }
+#     return jsonify(data)
 
 
 
@@ -205,7 +159,66 @@ def fetchtag():
 
 
 
+
+
+def clearjar():
+    pass
+
 #----------------------upload
+from timemaker import millisec, datestr, intsec
+
+#-------lock jar.
+jarinfo = ["",0,0]
+
+def freejar():
+    global jarinfo
+    if intsec()-jarinfo[1] > 10 + jarinfo[2] :
+        unlockjar()
+    return jarinfo[0] == ""
+
+def lockjar(username):
+    global jarinfo
+    jarinfo[0] = username
+    jarinfo[1] = intsec()
+
+def authjar(username):
+    global jarinfo
+    return jarinfo[0] == username
+
+def unlockjar():
+    global jarinfo
+    jarinfo[0] = ""
+    jarinfo[1] = intsec()
+
+def jaresti(size):
+    global jarinfo
+    jarinfo[2] = int(float(size)*1.5)
+
+#this can be bad by js change.
+# @app.route('/lockjar', methods = [ 'POST'])
+# def lockjar():
+#     global jarinfo
+#     if jarinfo[0] == "":
+#         token = request.form['token']
+#         username = userdb.getname(token)
+#         if username == "noname":
+#             "only logged in."
+#         jarinfo[0] = username
+#         jarinfo[1] = datestr()
+#         return "jar in"
+#     else:
+#         return "jar busy! by {}, from {}".format(jarinfo[0],jarinfo[1])
+#
+# @app.route('/unlockjar', methods = [ 'POST'])
+# def unlockjar():
+#     global jarinfo
+#     token = request.form['token']
+#     username = userdb.getname(token)
+#     if username == jarinfo[0]:
+#         jarinfo[0] == ""
+#     jarinfo[1] = datestr()
+
+
 
 import zipfile
 from werkzeug.utils import secure_filename
@@ -219,73 +232,156 @@ def render_file():
 @app.route('/zipfileup', methods = [ 'POST'])
 def zipfileup():
     if request.method == 'POST':
-        boardtype = request.form['boardtype']
+        token = request.form['token']
         board = request.form['board']
+        ziptype = request.form['ziptype']
+        zipsize = request.form['zipsize']#for jaresti(size)
+
+
+        username = userdb.getname(token)
+        if username == "noname":
+            abort(403)#403 Forbidden
 
         if not board in newdb.db.keys():
-            return "board name err"
+            abort(403)#403 Forbidden
+
+        #---jar auth.
+        if freejar() == True:
+            lockjar(username)
+            jaresti(zipsize)
+        else:
+            return "jar busy! by {}, from {}, remain time: {}".format(jarinfo[0],jarinfo[1], (10+jarinfo[2])-(intsec()-jarinfo[1]) )
 
         f = request.files['file']
         #f.save(secure_filename(f.filename))
         if f.filename[-3:] != 'zip':
-            return 'zip파일을 줘!'
+            abort(403)#403 Forbidden
         sname = secure_filename(f.filename)
-        if boardtype=="만화":#manga
+
+        if ziptype=="만화":#manga
             fname = splitext(sname)[0]
             unzipdir = join(jar_dir,fname)
             mkdir( unzipdir)
-        if boardtype == "소설":#novels, imgs, crawl
-            fname = splitext(sname)[0]
+        if ziptype == "개별파일들":#novels, imgs, crawl
+            unzipdir = jar_dir
+        if ziptype == "폴더들":#novels, imgs, crawl
             unzipdir = jar_dir
 
         filepath = join(unzipdir,sname)
         f.save( filepath )
-        size = getsize( filepath )//1024//1024
+        size = getsize( filepath )//1024//1024#xMB.
+        if size>2000:
+            remove(filepath)# need log here.
+            abort(403)#403 Forbidden
 
         zf = zipfile.ZipFile( filepath )
         zf.extractall(unzipdir)
         zf.close()
-        newdict,jarerrlist = getJar( newdb.db[board] )
-        return str(newdict)+str(jarerrlist)
+        remove(filepath)
+        #newdict,jarerrlist = getJar( newdb.db[board] )
+        unlockjar()
+        return "zip upload done"
+        #return str(newdict)+str(jarerrlist)
         #return '처리완료:{},{}MB <br>이전 목록 길이:{} <br> {}'.format(sname,size,oldlen,scann)
 
 
-@app.route('/rawfileup', methods = [ 'POST'])
-def rawfileup():
-    if request.method == 'POST':
-        boardtype = request.form['boardtype']
-        board = request.form['board']
-
-        board = request.form['user']
-        board = request.form['date?']
-
-        if not board in newdb.db.keys():
-            return "board name err"
-
-        f = request.files['file']
-        #f.save(secure_filename(f.filename))
-        if f.filename[-3:] != 'zip':
-            return 'zip파일을 줘!'
-        sname = secure_filename(f.filename)
-        if boardtype=="만화":#manga
-            fname = splitext(sname)[0]
-            unzipdir = join(jar_dir,fname)
-            mkdir( unzipdir)
-        if boardtype == "소설":#novels, imgs, crawl
-            fname = splitext(sname)[0]
-            unzipdir = jar_dir
-
-        filepath = join(unzipdir,sname)
-        f.save( filepath )
-        size = getsize( filepath )//1024//1024
-
-        zf = zipfile.ZipFile( filepath )
-        zf.extractall(unzipdir)
-        zf.close()
-        newdict,jarerrlist = getJar( newdb.db[board] )
-        return str(newdict)+str(jarerrlist)
+# @app.route('/rawfileup', methods = [ 'POST'])
+# def rawfileup():
+#     if request.method == 'POST':
+#         board = request.form['board']
+#
+#         f = request.files['file']
+#         if f.filename[-3:] != 'zip':
+#             return 'zip파일을 줘!'
+#         sname = secure_filename(f.filename)
+#         fname = splitext(sname)[0]
+#         unzipdir = join(jar_dir,fname)
+#         mkdir( unzipdir)
+#         filepath = join(unzipdir,sname)
+#         f.save( filepath )
+#         size = getsize( filepath )//1024//1024
+#         zf = zipfile.ZipFile( filepath )
+#         zf.extractall(unzipdir)
+#         zf.close()
+#         return "done"
 
 
+
+#------------------------ post file upload.
+from tidyname import tidyName
+
+@app.route("/xmliterimg", methods=['POST'])
+def xmliterimg():
+    f = request.files['file']
+    #print(f)
+    iter = request.form['iter']
+    #print(iter)
+    #uploader = request.form['username']
+    token = request.form['token']
+    titletext = request.form['titletext']
+
+    username = userdb.getname(token)
+    if username == "noname":
+        return "log in plz"
+    if freejar() == True:
+        lockjar(username)
+        jaresti(60)
+
+    if authjar(username) == True:
+        pass
+    else:
+        return "jar busy! by {}, from {}, remain time: {}".format(jarinfo[0],jarinfo[1], (60+jarinfo[2])-(intsec()-jarinfo[1]) )
+
+    if titletext == "":titletext = "no title"
+    #unzipdir = join(jar_dir,"temp")
+    sname = tidyName(titletext)
+    unzipdir = join(jar_dir,sname)
+    makedirs(unzipdir, exist_ok=True)
+
+    ext = splitext(f.filename)[1]
+    sname =  iter+ext
+    #sname = secure_filename(f.filename)
+
+    filepath = join(unzipdir,sname)
+    f.save( filepath )
+    return "imgup"
+
+@app.route("/xmltext", methods=['POST'])
+def xmltext():
+    #uploader = request.form['username']
+    token = request.form['token']
+    username = userdb.getname(token)
+    if username == "noname":
+        #abort(403)#403 Forbidden
+        return "log in plz"
+
+    titletext = request.form['titletext']
+    bodytext = request.form['bodytext']
+
+
+    if freejar() == True:
+        lockjar(username)
+        jaresti(60)
+    if authjar(username) == True:
+        pass
+    else:
+        return "jar busy! by {}, from {}, remain time: {}".format(jarinfo[0],jarinfo[1], (60+jarinfo[2])-(intsec()-jarinfo[1]) )
+
+
+    if titletext == "":titletext = "no title"
+    titletext=titletext[:30]
+    #print(1) if 1==2 else print(2)
+    sname = tidyName(titletext)
+    unzipdir = join(jar_dir,sname)
+    makedirs(unzipdir, exist_ok=True)
+
+    txtname = join(unzipdir,"body.txt")
+    with open ( txtname, 'w', encoding = "utf-8") as f:
+        f.write(bodytext)
+    return "txtup"
+
+
+#-----------------------------new board.
 
 @app.route('/newboard', methods=['GET', 'POST'])
 def newboard():
@@ -336,7 +432,7 @@ def login():
         return userdb.login(username,sha)
 
 
-
+#-------------------------log in fetch.
 
 @app.route('/fetchlogin', methods = [ 'POST'] )
 def fetchlogin():
