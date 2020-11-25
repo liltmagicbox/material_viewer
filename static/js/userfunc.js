@@ -74,7 +74,7 @@ fetch(fetchurl,
     document.getElementById("username").value = username
     document.getElementById("sha").value = '로그인성공'
     showlogout()
-    return true
+    return true//do we need it?
   }
 })
 

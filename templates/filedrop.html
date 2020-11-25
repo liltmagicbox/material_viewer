@@ -51,6 +51,10 @@ order: 999;
   </head>
   <body>
 
+    <div id = "loginbox">
+
+    </div>
+
 
 
 
@@ -92,24 +96,31 @@ order: 999;
     <br>
     <p>-----------------</p>
 
-    <form method = "POST" action = "/zipfileup" enctype = "multipart/form-data">
-        제목:<input type="text" name="titletext" ><br>
-        내용:<input type="text" name="bodytext" ><br>
-        주연 태그:<input type="text" name="herotext" ><br>
-        태그:<input type="text" name="tagtext" ><br>
-        <!--input type=file multiple name=charts accept="image/*"-->
-        <br>
-        <button id = "uploadbutton" type = "button" onclick="uploadFiles()">안보이는업로드버튼 </button>
-        <button id = "submitbutton" type = "submit">눌러서 처리하기 </button>
-    </form>
+
+      제목:<input type="text" name="titletext" ><br>
+      내용:<input type="text" name="bodytext" ><br>
+      주연 태그:<input type="text" name="herotext" ><br>
+      태그:<input type="text" name="tagtext" ><br>
+      <!--input type=file multiple name=charts accept="image/*"-->
+      <br>
+      <!--button id = "uploadbutton" type = "button" onclick="uploadFiles()">안보이는업로드버튼 </button-->
+      <button id = "submitbutton" type = "button" onclick="uploadtext()">눌러서 처리하기 </button>
 
 
 
   </body>
 
+  <script type="text/javascript" src="./static/js/shasha.js"> </script>
+  <script type="text/javascript" src="./static/js/userfunc.js"> </script>
+  <script type="text/javascript">
+    frame = document.getElementById("loginbox")
+    makeloginbox(frame)
+  </script>
+
   <script type="text/javascript">
   var clicked=false
   var filelist=[]
+
 
     function dragOverHandler(ev) {
   //console.log('File(s) in drop zone');
@@ -117,20 +128,31 @@ order: 999;
   ev.preventDefault();
 }
 
-function uploadtext( uploader,titletext,bodytext,herotext,tagtext ) {
+//not used maybe..
+function uploadtext() {
   var url = '/xmltext'
   var xhr = new XMLHttpRequest()
   var formData = new FormData()
   xhr.open('POST', url, true)
   xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest')
 
-  formData.append("uploader", uploader)
+  token = getCookie('token')
+  formData.append("token", token)
+  //username = document.getElementsByName('username')[0].value
+  //formData.append("username", username)
+  titletext = document.getElementsByName('titletext')[0].value
   formData.append("titletext", titletext)
+  bodytext = document.getElementsByName('bodytext')[0].value
   formData.append("bodytext", bodytext)
+  herotext = document.getElementsByName('herotext')[0].value
   formData.append("herotext", herotext)
+  tagtext = document.getElementsByName('tagtext')[0].value
   formData.append("tagtext", tagtext)
+
   xhr.send(formData)
+  filelist.forEach(uploadFile)
 }
+
 
 function uploadFiles(event) {
   filelist.forEach(uploadFile)
@@ -145,8 +167,15 @@ function uploadFile(file, i) {
   //console.log(i) //holy! is magic of foreach?
 
   //formData.append('upload_preset', 'ujpu6gyk') //idonno whatis it
-  formData.append('iter', i)
+  formData.append('iter', i+1)
   formData.append('file', file)
+
+  //username = document.getElementsByName('username')[0].value
+  //formData.append("username", username)
+  token = getCookie('token')
+  formData.append("token", token)
+  titletext = document.getElementsByName('titletext')[0].value
+  formData.append("titletext", titletext)
 
   xhr.send(formData)
 }

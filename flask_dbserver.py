@@ -65,33 +65,41 @@ def staticFile(filenameinput):
 
 
 #------------------------fetch
+from tidyname import tidyName
 
 @app.route("/xmltext", methods=['POST'])
-def guestbook2():
-    uploader = request.form['uploader']
+def xmltext():
+    #uploader = request.form['username']
+    token = request.form['token']
+    username = getname(token)
+
     titletext = request.form['titletext']
     bodytext = request.form['bodytext']
     herotext = request.form['herotext']
     tagtext = request.form['tagtext']
 
-    sname = secure_filename(titletext)
+    sname = tidyName(titletext)
     unzipdir = join(jar_dir,sname)
     makedirs(unzipdir, exist_ok=True)
 
-    filepath = join(unzipdir,sname)
-    txtname = join(filepath,"body.txt")
+    txtname = join(unzipdir,"body.txt")
     with open ( txtname, 'w', encoding = "utf-8") as f:
         f.write(bodytext)
     return "txtwrite done"
 
 @app.route("/xmliterimg", methods=['POST'])
-def guestbook():
+def xmliterimg():
     f = request.files['file']
     #print(f)
     iter = request.form['iter']
     #print(iter)
+    #uploader = request.form['username']
+    token = request.form['token']
+    titletext = request.form['titletext']
 
-    unzipdir = join(jar_dir,"temp")
+    #unzipdir = join(jar_dir,"temp")
+    sname = tidyName(titletext)
+    unzipdir = join(jar_dir,sname)
     makedirs(unzipdir, exist_ok=True)
 
     ext = splitext(f.filename)[1]
@@ -337,7 +345,8 @@ def fetchlogin():
     #print(type(requestdict)) dict.fine.
     username = requestdict['username']
     sha = requestdict['sha']
-    print(username,sha)
+    #print(username,sha)
+
     #token = userdb.user.get(username).get('token')
     token = userdb.login(username,sha)#token='no' if not in.
     data = { 'token': token, 'username':username }
