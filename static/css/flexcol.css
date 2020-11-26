@@ -1,0 +1,623 @@
+.headerBox{
+  display:flex;
+  flex-direction: row;
+}
+
+.headerBox button{
+align-self : center;
+border-style: none;
+padding: 0;
+width: 50px;
+height: 50px;
+}
+
+.headerTitle img{
+    width: 100%;
+}
+
+.bannerFrame{
+  max-width : 510px;
+  max-height: 200px;
+  overflow : hidden;
+  border-radius: 0%;
+  border-width: thick;
+  border-style: ridge;
+  border-color: inherit;
+}
+.bannerFrame img{
+  width : 100%;
+
+}
+
+.menuCloseB {
+position: absolute;
+top: 10px;
+right: 10px;
+font-size: 36px;
+margin-left: 50px;
+
+background-color: #55aaaa;
+width: 40px;
+height:  40px;
+border-style: none;
+border-radius: 50%;
+}
+
+
+.loginBox{
+  overflow-x: hidden;
+  overflow: hidden;
+
+  background-color: rgba(30,30,90, 0.9);
+  width: 300px;
+  height: 0px;
+
+  position: fixed;
+  top: 55px;
+  left: 100px;
+  transition: 0.7s;
+  color: white;
+  padding-left: 30px;
+
+}
+
+.stop_scroll{
+  overflow: hidden;
+}
+
+.innerviewer .imgTitle{
+  text-align: center;
+  color:white;
+  margin: 5px auto;
+  font-size: 1.1rem;
+  overflow: visible;
+}
+
+.innerviewer .imgDate{
+  text-align: center;
+  margin: 0 auto;
+  color:white;
+}
+.innerviewer a{
+  text-align: center;
+  color:white;
+}
+.innerviewer p{
+  text-align: center;
+  color:white;
+}
+.innerviewer img{
+  width: auto;
+  max-width: 100%;
+}
+
+.innerviewer{
+  color:white;
+  display: flex;
+  flex-direction: column;
+  z-index: 2;
+  background-color: rgba(0,0,0,0.7);
+
+  margin: 0 auto;
+  height: 100%;
+  max-width: 520px;
+
+
+  /*position: fixed;
+  top: 0;
+  left: 0;*/
+  transition: 0.3s;
+  overflow: scroll;
+}
+
+
+.overviewer{
+  text-align: center;
+  z-index: 1;
+  background-color: rgba(50,50,50, 0.7);
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  transition: 0.3s;
+}
+
+
+
+/*--------------------------- side menu------ */
+
+
+.menuHolder{
+  display:flex;
+  flex-direction: row;
+}
+.voidScreen{
+  z-index: 1;
+  background-color: rgba(0,100,150, 0.5);
+
+  position: fixed;
+  width: 0;
+  height: 100%;
+
+  top: 0;
+  left: 0;
+  transition: 0.3s;
+}
+
+.sideMenu{
+  /*display: flex;
+  flex-direction: column;
+  max-width: 400px;
+  height: 100%;
+  background-color: #555500;*/
+
+  height: 100%;
+  width: 0;
+  position: fixed;
+  z-index: 2;
+  top: 0;
+  left: 0;
+  background-color: #FFB6C1;
+  overflow-x: hidden;
+  transition: 0.3s;
+  padding-top: 60px;
+}
+.sideMenu li {
+  list-style : none;
+}
+
+
+.sideMenu a {
+  padding: 8px 8px 8px 32px;
+  text-decoration: none;
+  font-size: 25px;
+  color: #818181;
+  display: block;
+  transition: 0.3s;
+}
+
+.sideMenu a:hover {
+  color: #f1f1f1;
+  background-color: #550000;
+}
+
+
+
+/*
+nav ul li{
+
+  background-color: #555500;
+
+  border-radius: 0.2rem;
+  border-width: thick;
+  border-color: silver;
+  border-style: solid;
+  margin: 20px;
+}
+*/
+/*
+nav ul li a{
+  text-align :  justify;
+  text-shadow: 0 0 .2em #000 ;
+  font-size: 32pt;
+  font-family: "Times New Roman";
+  font-weight: bold;
+  color: grey;
+  text-decoration: none;
+  padding-right: 3rem;
+  padding-left: 3rem;
+
+}
+*/
+
+
+
+
+
+  /*------------------------------ character tag button ------------*/
+
+  .tagB_character{
+    border-radius: 50%;
+    padding: 0px;
+    margin: 2px 4px;
+    width: 50px;
+    height: 50px;
+
+    background-color: #ffffff;
+    border-style: outset;
+    border-width: thick;
+    color: black;
+  }
+
+  .tagB_character[value = '0']{
+    border-style: dotted;
+    color: grey;
+  }
+  .tagB_character[value = '2']{
+    border-style: inset;
+    color: grey;
+  }
+
+  :root {
+    /*https://developer.mozilla.org/ko/docs/Web/CSS/Using_CSS_custom_properties*/
+    --main-bg-린: #FAFF54;
+    --main-bg-하나요: #9EFF4C;
+    --main-bg-마키: #FF3434;
+    --main-bg-호노카: #FFB85D;
+    --main-bg-코토리: #C3C3C3;
+    --main-bg-우미: #3B53FF;
+    --main-bg-니코: #FF59E8;
+    --main-bg-에리: #59FAFF;
+    --main-bg-노조미: #BB59FF;
+  }
+
+
+  .tagB_character[name ='린'][value ='2']{
+    background-color: var(--main-bg-린);
+  }
+  .tagB_character[name ='린']{
+    border-color: var(--main-bg-린);
+  }
+  .tagB_character[name ='하나요'][value ='2']{
+    background-color: var(--main-bg-하나요);
+  }
+  .tagB_character[name ='하나요']{
+    border-color: var(--main-bg-하나요);
+  }
+  .tagB_character[name ='마키'][value ='2']{
+    background-color: var(--main-bg-마키);
+  }
+  .tagB_character[name ='마키']{
+    border-color: var(--main-bg-마키);
+  }
+  .tagB_character[name ='호노카'][value ='2']{
+    background-color: var(--main-bg-호노카);
+  }
+  .tagB_character[name ='호노카']{
+    border-color: var(--main-bg-호노카);
+  }
+  .tagB_character[name ='코토리'][value ='2']{
+    background-color: var(--main-bg-코토리);
+  }
+  .tagB_character[name ='코토리']{
+    border-color: var(--main-bg-코토리);
+  }
+  .tagB_character[name ='우미'][value ='2']{
+    background-color: var(--main-bg-우미);
+  }
+  .tagB_character[name ='우미']{
+    border-color: var(--main-bg-우미);
+  }
+  .tagB_character[name ='니코'][value ='2']{
+    background-color: var(--main-bg-니코);
+  }
+  .tagB_character[name ='니코']{
+    border-color: var(--main-bg-니코);
+  }
+  .tagB_character[name ='에리'][value ='2']{
+    background-color: var(--main-bg-에리);
+  }
+  .tagB_character[name ='에리']{
+    border-color: var(--main-bg-에리);
+  }
+  .tagB_character[name ='노조미'][value ='2']{
+    background-color: var(--main-bg-노조미);
+  }
+  .tagB_character[name ='노조미']{
+    border-color: var(--main-bg-노조미);
+  }
+
+
+
+
+
+
+
+
+  /*------------------------------ tag button ------------*/
+#userTagbox{
+  max-width: 500px;
+  padding: 5px;
+
+  /*border-style: groove;
+  border-color: #eeeeee;
+  border-width: thick;*/
+
+}
+  .tagOpenB{
+    border-style: outset;
+    border-width: thick;
+    border-color: #8888ff;
+    border-radius: 20%;
+    background-color: white;
+    color: black;
+    font-weight: bold;
+    margin: 3px;
+    height: 40px;
+    width: auto;
+  }
+
+  .tagResetB{
+    border-style: groove;
+    border-width: thick;
+    border-color: red;
+    border-radius: 30%;
+    background-color: white;
+    color: black;
+    font-weight: bold;
+    margin: 3px;
+    height: 40px;
+    width: auto;
+  }
+
+
+  .tagB_user{
+    background-color: #f9f9f9;
+
+    border-style: dotted;
+    border-color: grey;
+    border-width: 3px;
+    border-radius: 30%;
+    margin: 3px;
+    height: 30px;
+  }
+  .tagB_user[value ='1']{
+    background-color: #99ff99;
+    border-style: outset;
+  }
+  .tagB_user[value ='2']{
+    background-color: coral;
+    border-style: inset;
+  }
+  .tagB_user.bigguy{
+    background-color: grey;
+    border-color: gold;
+    /*border-width: 4px; has bad experience.margin..*/
+    border-style: ridge;
+    color:gold;
+  }
+  .tagB_user.bigguy[value ='1']{
+    background-color: #99ff99;
+    border-style: outset;
+    color:black;
+  }
+  .tagB_user.bigguy[value ='2']{
+    background-color: coral;
+    border-style: inset;
+    color:black;
+  }
+
+
+
+
+
+
+  /*------------------------------ sort button ------------*/
+  .sortB{
+    background-color: white;
+    border-radius: 10%;
+    margin-left: 3px;
+    border-width: 2px;
+    border-style: outset;
+    background-color: white;
+    color: black;
+  }
+
+  .sortB[value="1"]{
+    /*background-color: black;*/
+    background-color: #ccffcc;
+  }
+  .sortB[value="2"]{
+    /*background-color: black;*/
+   background-color: orange;
+  }
+
+  .randSortB{
+    background-color: white;
+    border-radius: 10%;
+  }
+  .thumbONB{
+    background-color: white;
+    border-radius: 30%;
+    height: 30px;
+    width: auto;
+    margin-left: 3px;
+  }
+
+  .colB{
+    width: 33px;
+    height: 33px;
+    border-radius: 50%;
+    border-color: gold;
+    font-family: monospace;
+    font-weight: bold;
+    font-size: 20px;
+    text-align: justify;
+
+    border-width: 4px;
+    border-style: outset;
+  }
+
+  .colNumber{
+      width: 10px;
+      height: 20px;
+      pointer-events: none;
+  }
+
+    input[type=number]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    //transform: scale(2);
+    //cursor: pointer;
+    }
+
+
+
+
+
+
+
+/*--------------------------- img frame colors------ */
+
+
+  /*
+  .flexFrame{
+    display:flex;
+    justify-content: center;
+  } */
+
+  :root {
+  --린: #F9FF85;
+  --하: #ADFF85;
+  --마: #FF6868;
+  --호: #FFB85D;
+  --코: #C3C3C3;
+  --우: #859BFF;
+  --니: #FFA7E5;
+  --에: #ADFFFF;
+  --노: #E089FF;
+}
+
+.imgFrame .imgBox[color ='뮤즈']{background: linear-gradient(112deg,
+  var(--린) 11%,
+  var(--하) 22%,
+  var(--마) 33%,
+  var(--호) 44%,
+  var(--코) 55%,
+  var(--우) 66%,
+  var(--니) 77%,
+  var(--에) 88%,
+  var(--노) 99%
+  );}
+
+.imgFrame .imgBox[color ='린']{background-color: var(--린)}
+.imgFrame .imgBox[color ='하나요']{background-color: var(--하)}
+.imgFrame .imgBox[color ='마키']{background-color: var(--마)}
+.imgFrame .imgBox[color ='호노카']{background-color: var(--호)}
+.imgFrame .imgBox[color ='코토리']{background-color: var(--코)}
+.imgFrame .imgBox[color ='우미']{background-color: var(--우)}
+.imgFrame .imgBox[color ='니코']{background-color: var(--니)}
+.imgFrame .imgBox[color ='에리']{background-color: var(--에)}
+.imgFrame .imgBox[color ='노조미']{background-color: var(--노)}
+
+.imgFrame .imgBox[color ='비비']{background: linear-gradient(112deg, var(--니) 10%, var(--마) 50%, var(--에) 80%);}
+.imgFrame .imgBox[color ='릴화']{background: linear-gradient(112deg, var(--린) 10%, var(--노) 50%, var(--우) 80%);}
+.imgFrame .imgBox[color ='쁘랭땅']{background: linear-gradient(112deg, var(--코) 10%, var(--호) 50%, var(--하) 80%);}
+.imgFrame .imgBox[color ='1학년']{background: linear-gradient(112deg, var(--하) 10%, var(--린) 50%, var(--마) 80%);}
+.imgFrame .imgBox[color ='2학년']{background: linear-gradient(112deg, var(--우) 10%, var(--호) 50%, var(--코) 80%);}
+.imgFrame .imgBox[color ='3학년']{background: linear-gradient(112deg, var(--니) 10%, var(--노) 50%, var(--에) 80%);}
+.imgFrame .imgBox[color ='솔겜조']{background: linear-gradient(112deg, var(--에) 10%, var(--우) 50%, var(--마) 80%);}
+.imgFrame .imgBox[color ='니코린파나']{background: linear-gradient(112deg, var(--니) 10%, var(--린) 50%, var(--하) 80%);}
+
+.imgFrame .imgBox[color ='노조에리']{background: linear-gradient(112deg, var(--노) 23%, var(--에) 77%);}
+.imgFrame .imgBox[color ='니코마키']{background: linear-gradient(112deg, var(--니) 23%, var(--마) 77%);}
+.imgFrame .imgBox[color ='린파나']{background: linear-gradient(112deg, var(--린) 23%, var(--하) 77%);}
+.imgFrame .imgBox[color ='코토우미']{background: linear-gradient(112deg, var(--코) 23%, var(--우) 77%);}
+.imgFrame .imgBox[color ='린마키']{background: linear-gradient(112deg, var(--린) 23%, var(--마) 77%);}
+.imgFrame .imgBox[color ='에리우미']{background: linear-gradient(112deg, var(--에) 23%, var(--우) 77%);}
+.imgFrame .imgBox[color ='코토파나']{background: linear-gradient(112deg, var(--코) 23%, var(--하) 77%);}
+.imgFrame .imgBox[color ='노조니코']{background: linear-gradient(112deg, var(--노) 23%, var(--니) 77%);}
+.imgFrame .imgBox[color ='호노린']{background: linear-gradient(112deg, var(--호) 23%, var(--린) 77%);}
+
+
+
+
+/*--------------------------- img frame------ */
+.imgFrame{
+  display:flex;
+  flex-direction: row;
+  width: 90%;
+  margin : 0 auto;
+}
+
+.imgCol{
+  display:flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+
+  /*width: 25%;*/
+  margin-left: 1.5rem;
+  width: 100%;
+
+}
+.imgCol .col2{
+  flex: 50%;
+}
+.imgCol .col3{
+  flex: 33%;
+}
+.imgCol .col4{
+  flex: 25%;
+}
+.imgCol .col5{
+  flex: 20%;
+}
+.imgCol .col6{
+  flex: 16%;
+}
+
+.imgBox{
+  background-color: #FFEABA;
+  border-radius: 0.5rem;
+  /*border-width: thick;*/
+  /*border-color: silver;*/
+  border-style : outset;
+  padding : 0.5rem;
+}
+.imgBox > *{
+  margin-top : 0;
+  margin-bottom :0;
+}
+
+.imgBox pre{
+  /*word-break: break-all;*/
+  white-space: pre-wrap;
+}
+  .imgTitle{
+    font-size : 0.9rem;
+    /*font-size : 1vw;
+    max-height: 2.3rem; title bad..
+    overflow: hidden;*/
+
+    /*white-space:  pre-wrap;
+    text-overflow: ellipsis;
+    width: 20px;*/
+  }
+  .imgTitle[shrink='0']{
+    overflow: visible;
+  }
+
+  .imgDate{
+    font-size : 0.9rem;
+    text-align : right;
+  }
+
+  .imgArea{
+    width: 95%;
+    margin: 10px auto;
+  }
+  .imgArea>img{
+    width: 100%; //of outer size. if not, img fullsize.
+  }
+
+.moreloadbutton{
+  width: 100px;
+  height: 70px;
+}
+
+
+  @media screen and (max-width: 600px) {
+    .imgArea{
+      width: 100%;
+    }
+    .imgFrame{
+      width: 100%;
+    }
+    .imgCol{
+      /*width: 25%;*/
+      margin-left: 0.2em;
+    }
+
+    .sideMenu {padding-top: 15px;}
+    .sideMenu a {font-size: 18px;}
+  }

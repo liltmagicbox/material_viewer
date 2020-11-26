@@ -2,10 +2,12 @@
 <html lang="en" dir="ltr">
   <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
     <title>file upload</title>
     <style media="screen">
 
 #view_zone {
+max-width: 600px;
 border: 5px solid gold;
 display :flex;
 flex-wrap: wrap;
@@ -47,6 +49,59 @@ order: 999;
   width:  90px;
   height: 90px;
 }
+
+#fileElem {
+  display: none;
+}
+label.button {
+  display: inline-block;
+  padding: 10px;
+  background: #ccc;
+  cursor: pointer;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+label.button:hover {
+  background: #ddd;
+}
+
+/*
+파일명이안보여서그냥비활성화함.
+#zipinput {
+  display: none;
+}
+label.button {
+  display: inline-block;
+  padding: 10px;
+  background: #ccc;
+  cursor: pointer;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+label.button:hover {
+  background: #ddd;
+}
+*/
+
+
+
+
+@media screen and (max-width: 600px) {
+
+  #view_zone{
+    max-width: 300px;
+  }
+  h1{
+    font-size: small;
+  }
+
+  article{
+    max-width: 400px;
+    font-size: small;
+  }
+
+}
+
     </style>
   </head>
   <body>
@@ -57,7 +112,7 @@ order: 999;
 
 
 
-
+    <hr>
     <h1>zip파일업로드</h1>
     <br>
     <!--form method = "POST" action = "/zipfileup" enctype = "multipart/form-data"-->
@@ -75,6 +130,7 @@ order: 999;
         <option value="gallery">gallery</option>
       </select>
       <br>
+      <br>
 
       <select id = "ziptype" name="ziptype" required>
         <option value="">업로드파일 분류</option>
@@ -83,24 +139,34 @@ order: 999;
         <option value="폴더들">zip안의 폴더들</option>
       </select>
       <br>
+      <br>
+      <br>
 
          zip파일:<input id = "zipinput" type = "file" name = "file" accept=".zip" >
+         <!--label class="button" for="zipinput">zip파일선택</label-->
 
-         <button type = "button"  onclick="uploadzip()">투고하기</button>
+         <progress id="progress-bar" max=100 value=0></progress>
+         <br>
+         <br>
+         <button type = "button"  onclick="uploadzip_pre()">투고하기</button>
+         <br>
 
-    <p>각 폴더명 / 파일명이 제목으로 인식됨.</p>
-    <p>본문 넣고 싶으면, 각 폴더 안에 텍스트파일을 단 하나 넣으시오.</p>
+    <article class="">
+      <p>각 폴더명 / 파일명이 제목으로 인식됨.</p>
+      <p>본문 넣고 싶으면, 각 폴더 안에 텍스트파일을 단 하나 넣으시오.</p>
 
-    <p>폴더 : 각 폴더 안의 이미지+ txt본문. </p>
-    <p>txt : txt파일로 된 글 여러 개.</p>
-    <p>이미지 : 묶인 만화 zip 파일 혹은 짤 묶음.</p>
-    <p>독립이미지: 이미지를 한개씩 단독으로 올리기.</p>
+      <p>폴더 : 각 폴더 안의 이미지+ txt본문. </p>
+      <p>txt : txt파일로 된 글 여러 개.</p>
+      <p>이미지 : 묶인 만화 zip 파일 혹은 짤 묶음.</p>
+      <p>독립이미지: 이미지를 한개씩 단독으로 올리기.</p>
 
-    <p>트위터 --작가 짤 모음 1: 이미지</p>
-    <p> 번역)만화)이세계에갔더니.zip : 이미지</p>
+      <p>트위터 --작가 짤 모음 1: 이미지</p>
+      <p> 번역)만화)이세계에갔더니.zip : 이미지</p>
 
-    <p>2ch 소설 번역 모음.zip : txt</p>
-    <p>: txt</p>
+      <p>2ch 소설 번역 모음.zip : txt</p>
+      <p>: txt</p>
+    </article>
+
 
 
     <!------------------------------------------------------------------------->
@@ -108,8 +174,11 @@ order: 999;
 
     <h1>그냥글쓰기</h1>
     <br>
-    이미지를 아래 영역에 끌어다 놓거나 파일을 선택하세요(각 20MB제한)
-    순서를바꾸려면 이미지를 클릭.
+    <article class="">
+      이미지를 아래 영역에 끌어다 놓거나 파일을 선택하세요(각 20MB제한)
+      순서를바꾸려면 이미지를 클릭.
+    </article>
+
     <div id="view_zone" ondrop="dropHandler(event);" ondragover="dragOverHandler(event);">
 
       <!--div id="drop_zone" ondrop="dropHandler(event);" ondragover="dragOverHandler(event);">
@@ -123,6 +192,7 @@ order: 999;
     </div>
     <br>
     <input type="file" id="fileElem" multiple accept="image/*" onchange="handleFiles(event);">
+    <label class="button" for="fileElem">이미지파일선택</label>
     <br>
     <p>-----------------</p>
 
@@ -133,10 +203,11 @@ order: 999;
 
       <!--input type=file multiple name=charts accept="image/*"-->
       <br>
+      <br>
       <!--button id = "uploadbutton" type = "button" onclick="uploadFiles()">안보이는업로드버튼 </button-->
       <button id = "submitbutton" type = "button" onclick="uploadFiles()">눌러서 처리하기 </button>
       <br>
-
+      <progress id="progress-img" max=100 value=0></progress>
       이미지 파일:<span id = "filelen" >0</span><br>
       업로드 시도:<span id = "filesdo" >0</span><br>
       업로드 됨:<span id = "filesdone">0</span><br>
@@ -156,7 +227,10 @@ order: 999;
   <script type="text/javascript">
   var clicked=false
   var filelist=[]
+  var upload_key = "x"
+  var loginmsg = "업로드 하려면 로그인을..!"
   var writefillmsg = "이미지를 업로드 하거나, 내용을 채워주세요"
+  var selectfillmsg = "게시판 분류, zip파일 분류를 선택하세요"
   var over2gbmsg = "too large: 2GB"
 
 
@@ -175,6 +249,33 @@ document.addEventListener("dragover", function(event) {
 
 
 //------------------------zipfile upload button mapped.
+
+function logincheck(){
+  if(document.getElementById("sha").value == "로그인성공"){
+    return true
+  }
+  else{
+    alert(loginmsg)
+    return false
+  }
+}
+
+upload_key
+function getkey(token){
+token = getCookie('token')
+}
+
+function uploadzip_pre(event) {
+  if(logincheck()==false){return false}// escape if not logged in.
+
+  let boardval = document.getElementById("zipboard").value
+  let typeval = document.getElementById("ziptype").value
+
+  if(boardval=="" || typeval==""){ alert(selectfillmsg) }
+  else { uploadzip() }
+}
+
+
 function uploadzip() {
   var url = '/zipfileup'
   var xhr = new XMLHttpRequest()
@@ -186,6 +287,11 @@ function uploadzip() {
   xhr.addEventListener("load", function(e){  (e.srcElement.status==200 ? alert(e.srcElement.responseText) : upload_fail() )  } )
 
   xhr.addEventListener("error", upload_fail )
+
+  xhr.upload.addEventListener("progress", function(e) {
+    let progressBar = document.getElementById('progress-bar')
+    progressBar.value = (e.loaded * 100.0 / e.total)
+  })
   //console.log(i) //holy! is magic of foreach?
 
   //formData.append('upload_preset', 'ujpu6gyk') //idonno whatis it
@@ -201,8 +307,7 @@ function uploadzip() {
 
   //username = document.getElementsByName('username')[0].value
   //formData.append("username", username)
-  token = getCookie('token')
-  formData.append("token", token)
+  formData.append("upload_key", upload_key)
 
   formData.append("board", document.getElementById("zipboard").value )
   formData.append("ziptype", document.getElementById("ziptype").value  )
@@ -217,6 +322,7 @@ function uploadzip() {
 
 //--------------------------------upload files.
 function uploadFiles(event) {
+  if(logincheck()==false){return false}
   cleartry()
   filelist.forEach(uploadFile)
   if(filelist.length == 0){
@@ -241,14 +347,19 @@ function uploadFile(file, i) {
   xhr.addEventListener("error", fileerr )
   //console.log(i) //holy! is magic of foreach?
 
+  xhr.upload.addEventListener("progress", function(e) {
+    let progressBar = document.getElementById('progress-img')
+    progressBar.value = (e.loaded * 100.0 / e.total)
+  })
+
+
   //formData.append('upload_preset', 'ujpu6gyk') //idonno whatis it
   formData.append('iter', i+1)
   formData.append('file', file)
 
   //username = document.getElementsByName('username')[0].value
   //formData.append("username", username)
-  token = getCookie('token')
-  formData.append("token", token)
+  formData.append("upload_key", upload_key)
   titletext = document.getElementsByName('titletext')[0].value
   formData.append("titletext", titletext)
 
@@ -270,8 +381,7 @@ function uploadtext() {
   //xhr.addEventListener("load", upload_success)
   xhr.addEventListener("error", upload_fail)
 
-  token = getCookie('token')
-  formData.append("token", token)
+  formData.append("upload_key", upload_key)
   //username = document.getElementsByName('username')[0].value
   //formData.append("username", username)
   titletext = document.getElementsByName('titletext')[0].value

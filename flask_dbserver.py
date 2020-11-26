@@ -325,12 +325,12 @@ def xmliterimg():
         return "log in plz"
     if freejar() == True:
         lockjar(username)
-        jaresti(60)
+        jaresti(20)
 
     if authjar(username) == True:
         pass
     else:
-        return "jar busy! by {}, from {}, remain time: {}".format(jarinfo[0],jarinfo[1], (60+jarinfo[2])-(intsec()-jarinfo[1]) )
+        return "jar busy! by {}, from {}, remain time: {}".format(jarinfo[0],jarinfo[1], (20+jarinfo[2])-(intsec()-jarinfo[1]) )
 
     if titletext == "":titletext = "no title"
     #unzipdir = join(jar_dir,"temp")
@@ -344,7 +344,8 @@ def xmliterimg():
 
     filepath = join(unzipdir,sname)
     f.save( filepath )
-    return "imgup"
+    unlockjar()
+    return "imgup"#it's key to tell success! see filedrop.html
 
 @app.route("/xmltext", methods=['POST'])
 def xmltext():
@@ -378,7 +379,8 @@ def xmltext():
     txtname = join(unzipdir,"body.txt")
     with open ( txtname, 'w', encoding = "utf-8") as f:
         f.write(bodytext)
-    return "txtup"
+    unlockjar()
+    return "txtup"#it's key to tell success! see filedrop.html
 
 
 #-----------------------------new board.

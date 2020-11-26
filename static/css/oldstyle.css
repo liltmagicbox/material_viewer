@@ -1,0 +1,143 @@
+header {
+  background-color : #880088;
+  background: no-repeat left/cover url(./titleimg.jpg);
+  height: 120px;
+
+  display: flex;
+  align-items: center;
+}
+header p {
+  margin-left: 1em;
+  padding : 1%;
+  background: linear-gradient( 160deg, #FFFFFF, #FF9999 );
+
+  color: #F3F52D;
+  text-shadow: 0 0 .2em #000 ;
+  font-size: 32pt;
+  font-family: "Times New Roman";
+  font-weight: bold;
+}
+header img{
+  width: 100%;
+}
+
+
+
+
+nav {
+  font-size : calc(1rem + 0.5vw);
+  display: flex;
+  justify-content: flex-start;
+  /*width : device-width;*/
+  border :solid red 2px;
+  padding-left: 0.1em;
+}
+
+nav ul {
+
+  /*margin:auto;
+  this caused margin 180px, to center.
+  */
+  height: 50px;
+  background-color: #00ccff;
+  border-radius: 5px;
+  border-style: double;
+  border-width: thick;
+  border-color: green;
+
+  display: flex;
+  align-items: center;
+
+  padding-left: 1em;
+  margin:0px;
+
+}
+
+
+nav ul li {
+  border-style : groove;
+  font: gothic;
+  list-style-position :inside;
+
+}
+
+
+
+.imgshower {
+border-style: dashed ;
+display: flex;
+flex-wrap: wrap;
+
+}
+
+.imgbox{
+  background-color: #99FFFF;
+
+  /*width : 350px;*/
+  flex: 0 0 200px;
+  /*이미지들어가며다깨고들어감*/
+  border-radius: 20px;
+  border-style:dashed;
+  border-width: thick;
+}
+
+
+main article {
+  background-color: #ffccff;
+  border-radius: 20px;
+  border-style: dotted;
+  border-width: thick;
+  border-color: red;
+
+}
+main h1 {
+  color: #888888;
+}
+
+footer p {
+display : inline;
+}
+
+button:hovera {
+    background-color: pink; /* Green */
+    color: white;
+     box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
+
+  }
+
+
+  aside{
+    /*font-size : calc(1rem + 0.5vw);*/
+    font-size : 1.5rem;
+    background-color: silver;
+    border-radius: 1em;
+
+    flex-shrink: 0
+  }
+
+
+  footer{
+    border: blue 5px solid ;
+  }
+
+  .bodybox{
+    margin-top: 1em;
+    display:flex;
+    /*flex-shrink: 0;
+    padding: 20px;
+    flex: 1;*/
+    /*flex: 30%;*/
+    /*flex-wrap: wrap;*/
+  }
+
+
+  @media screen and (max-width: 600px) {
+    .bodybox{
+      /*flex-flow:column;*/
+      flex-direction: column;
+
+    }
+    aside{
+      text-align:center;
+    }
+  }
