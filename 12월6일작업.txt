@@ -1,0 +1,386 @@
+오후 1:38 2020-12-06
+zip업로드시, 태그강제적용되는걸 에러 처리 잘 함.
+'name' in dir()
+한글깨짐이발생함. safename때문인듯.
+11┐∙29└╧└█╛≈
+1129라는파일이ㅣ..
+1129
+로 줄어들었고.흠.
+
+sname 거치니까 한글이 짤려버림;
+플라스크전역에서, utf8 쓴다고 선언해줘야하려나싶다.
+
+11월29일작업.zip
+1129.zip
+sname뺄까싶은데요?
+zip은 근데 존재자체가... 만화단일인경우 싫겠지.
+그냥 sname 빼버리지.
+..는 이후 폴더생성,변수저장때 문제발생이군.
+에러나서 탈출한 경우, jar를 비우고 수행해야겠다.
+#-*- coding:utf-8 -*-
+https://guzene.tistory.com/150
+에의하면, 외부라이브러리 불어오는경우는 안되는듯..?
+
+import sys
+reload(sys)
+sys.stedefaultencoding('utf-8')
+..파이3는 이거 안 먹힌대.
+
+폴더생성은 ㅇㅋ고. sname일단안했음. 나의 그걸로하지뭐.ㅇㅋ.
+sname에서 한글 다 자를줄야!왜지;
+zip해제시 한글깨짐.곤란.
+근데 txt는 단일이라 노상관인데..문자열도 같은걸로깨지니
+뛸뀁1.jpg 이런식이면 괜찮지않나;
+
+if "tagtext" in dir():
+                newdb.addtag(board,id, uploadtime,uploader,tagtext )
+이거하면, 이전에 태그가 있었으면, 지속된다.하..
+a=None해도 그대로고.흠..
+''로 선언후, ''가 아니면으로 ㄱㄱ.
+
+https://stackoverflow.com/questions/14604438/unicode-error-while-zipfile-extract
+disk_file_name = m.filename.encode('utf8')
+
+import zipfile, sys, os,
+zf = zipfile.ZipFile(sys.argv[1], 'r')
+for m in zf.infolist():
+    data = zf.read(m) # extract zipped data into memory
+    # convert unicode file path to utf8
+    disk_file_name = m.filename.encode('utf8')
+    dir_name = os.path.dirname(disk_file_name)
+    try:
+        os.makedirs(dir_name)
+    except OSError as e:
+        if e.errno == os.errno.EEXIST:
+            pass
+        else:
+            raise
+    except Exception as e:
+        raise
+
+    with open(disk_file_name, 'wb') as fd:
+        fd.write(data)
+zf.close()
+ㅇㅋ.
+
+e.errno면 패스로군.꽤나 좋네..?
+일단 이걸로 ㄱ.
+치명적으로 지금 한글ext하면 다깨진다고??
+근데전엔안그랬는데; 아무튼 생기니 잘되었다.리눅스여도그러니.
+
+오후 2:02 2020-12-06
+ㅇㅋ.
+
+1.zip명폴더생성
+zip을이동
+extract
+zip제거
+
+vs
+1.zip명의폴더생성,그안에넣기
+
+이게낫지싶은데요..근데 지금규격맞추자.ㅇ.
+
+오후 2:15 2020-12-06
+filename='(5║╬)│¬╕╕└╟ ╚ú│δ─½.txt' 
+진짜깨짐.
+
+(5║╬)│¬╕╕└╟ ╚ú│δ─½
+〇〇했을 때 아내의 반응 1부
+어허..
+일부한글만 깨지네.대단하군.
+오후 2:21 2020-12-06
+몰겠다.한글제목인데,,
+╟╤▒█┼╫╜║╞«
+진짜깨지네.
+
+>>> import zipfile
+>>> a=zipfile.ZipFile('한글테스트.zip')
+>>> a.infolist()
+[<ZipInfo filename='╟╤▒█┼╫.txt' external_attr=0x20 file_size=0>]
+>>>
+
+그냥 메모장 생성한것도이렇게된다.
+
+>>> a.infolist()[0].filename
+'╟╤▒█┼╫.txt'
+>>> a.infolist()[0].filename.encode('utf8')
+b'\xe2\x95\x9f\xe2\x95\xa4\xe2\x96\x92\xe2\x96\x88\xe2\x94\xbc\xe2\x95\xab.txt'
+이럼괜찮지뭐.
+
+>>> c.decode('utf-8')
+'╟╤▒█┼╫.txt'
+흠
+>>> '한글테'.encode('utf8')
+b'\xed\x95\x9c\xea\xb8\x80\xed\x85\x8c'
+
+xea가 xe2로 바뀌었고..뒤에도다바뀐듯.ㅇㅇ. 아하..
+
+>>> a.namelist()[0].encode('cp949')
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+UnicodeEncodeError: 'cp949' codec can't encode character '\u255f' in position 0: illegal multibyte sequence
+하.
+하.
+
+>>> a.namelist()[0].encode('cp437').decode('cp949')
+'한글테.txt'
+>>> a.namelist()[0].encode('cp437').decode('cp437')
+'╟╤▒█┼╫.txt'
+하.
+찾아냈다.
+
+https://gist.github.com/hideaki-t/c42a16189dd5f88a955d
+여기에 언급된대로.하...
+932는 일본이고.아하... 대단한발견이야.후후후후후후..
+cp437
+는 그.. zipfile라이브러리의 c 코드를 보고 알게되는것이다.아하.
+zipfile.py 
+를 보면 되었나?
+와진자그러네!아하. 이게파이썬이군...잘 배웠다.
+
+즉,내부파일을 순회해제는 해야겠어.그냥풀기하면곤란하니.
+..혹은 437을 애초에 949..로하긴 너무 잔인한듯.ㅇㅋ.
+
+이건 이후 간접적으로 리눅스 이동시 심하게 겪을수도 있겠다.
+파이썬 외부로 한글문자열이 나가지 않게 밀폐해야겠어. 동의 함.
+애초에, zip업로드가, 그냥자동으로..였는데말야.
+zip수정하고 jar 돌려도 파일명변경이 안 되잖아. 곤란하군.
+일단 jar 안 거치는 수정을 구현해야겠고
+
+txt 다중있는파일을 받는경우, 지금체계로는 실제 문제가 발생했고,,
+어케해결할까.
+폴더생성은되잖아.그럼 내부파일은 상관없다..려나..?
+아.txt는 낱개해체시 이게발생해서그래.ㅇㅇ.
+zip에서 읽는다 라는 수행시도 그러하고.
+
+import binascii
+import importlib.util
+import io
+import itertools
+import os
+import posixpath
+import shutil
+import stat
+import struct
+import sys
+import threading
+import time
+import contextlib
+ㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋ그냥다하고보네.ㅇㅋ..
+
+    def extractall(self, path=None, members=None, pwd=None):
+        """Extract all members from the archive to the current working
+           directory. `path' specifies a different directory to extract to.
+           `members' is optional and must be a subset of the list returned
+           by namelist().
+        """
+        if members is None:
+            members = self.namelist()
+
+        if path is None:
+            path = os.getcwd()
+        else:
+            path = os.fspath(path)
+
+        for zipinfo in members:
+            self._extract_member(zipinfo, path, pwd)
+
+아..파이썬진자좋다..
+
+Traceback (most recent call last):
+  File "<pyshell#13>", line 1, in <module>
+    cpunzip('새 폴더.zip')
+  File "C:\GitHub\material_viewer\uniunzip.py", line 50, in cpunzip
+    disk_file_name = m.filename.encode('cp437').decode('cp949')
+  File "C:\Python39\lib\encodings\cp437.py", line 12, in encode
+    return codecs.charmap_encode(input,errors,encoding_map)
+UnicodeEncodeError: 'charmap' codec can't encode characters in position 0-3: character maps to <undefined>
+가 발생함. 거의 다 왔네.
+
+>>> zf.filelist[0].filename
+'(1║╬)╚ú│δ─½┐í░╘ ░φ╣Θ╣▐╛╥╛ε.txt'
+>>> zf.filelist[0].filename.encode('cp437').decode('cp949')
+'(1부)호노카에게 고백받았어.txt'
+>>> 
+
+인데
+
+>>> zf.filelist[5].filename.encode('cp437').decode('cp949')
+Traceback (most recent call last):
+  File "<pyshell#24>", line 1, in <module>
+    zf.filelist[5].filename.encode('cp437').decode('cp949')
+  File "C:\Python39\lib\encodings\cp437.py", line 12, in encode
+    return codecs.charmap_encode(input,errors,encoding_map)
+UnicodeEncodeError: 'charmap' codec can't encode characters in position 0-3: character maps to <undefined>
+>>> zf.filelist[5].filename
+"〇〇였을 때 아내의 반응 중 외도하는 상대가 μ's의 멤버였을때.txt"
+이다.
+
+오히려 정상처리되는녀석은 안되네.이해는되지만.
+
+>>> '한글입니다'.encode('cp437')
+Traceback (most recent call last):
+  File "<pyshell#26>", line 1, in <module>
+    '한글입니다'.encode('cp437')
+  File "C:\Python39\lib\encodings\cp437.py", line 12, in encode
+    return codecs.charmap_encode(input,errors,encoding_map)
+UnicodeEncodeError: 'charmap' codec can't encode characters in position 0-4: character maps to <undefined>
+ㅇㅋ.
+
+'한글입니다'.encode('cp949')
+b'\xc7\xd1\xb1\xdb\xc0\xd4\xb4\xcf\xb4\xd9'
+>>> '한글입니다'.encode('utf8')
+b'\xed\x95\x9c\xea\xb8\x80\xec\x9e\x85\xeb\x8b\x88\xeb\x8b\xa4'
+
+UnicodeEncodeError
+
+try except 바로 썼다. 깔끔히 잘 되는데..?
+
+open으로 wb를 써버리는게 심히 충격적.ㅇㅋ.
+
+encode를 u8로 한 뒤에 그걸 다시 저장해도 그게그거같다.
+try로 charset이 아닌경우 cp437로 변환먼저시도하게 하자.ㅇㅋ.
+
+에러에서, 있으면 통과하고 아닌에러면 raise하는거구나.아하.
+
+오후 4:39 2020-12-06
+국내문학/
+Traceback (most recent call last):
+  File "<pyshell#3>", line 1, in <module>
+    cpunzip('lovelivess.zip')
+  File "C:\GitHub\material_viewer\uniunzip.py", line 63, in cpunzip
+    with open(disk_file_name, 'wb') as fd:
+OSError: [Errno 22] Invalid argument: '국내문학/'
+
+<ZipInfo filename='╞·/' external_attr=0x10>
+external_attr=0x10
+인게 폴더인경우같은데..
+for i in a.infolist():
+	i.external_attr
+32
+16
+32
+라던가.
+ㅇㅇ.폴더인경우만 16 찍힌다.ㅇㅋ.
+
+>>> for i in a.infolist():
+	if i.external_attr == 16:
+		print('ha')
+
+		
+ha
+ㅇㅋ.
+
+폴더의압축해제라.어케하지?
+open해서 wb하지않으면 되지.ㅇㅋ.
+
+>>> for i in a.infolist():
+	a.extract(i)
+
+	
+'C:\\GitHub\\material_viewer\\새 폴더\\a┐í└╠.txt'
+'C:\\GitHub\\material_viewer\\새 폴더\\╞·'
+'C:\\GitHub\\material_viewer\\새 폴더\\╞·\\b║±.txt'
+까진 왔고
+
+
+직접적으로,다중폴더인경우 이게 문제되잖아.하..
+
+383버전으로 다시돌아가볼까?괜찮아뵘.ㅇㅇ.
+
+포터블파이썬최고...
+아무튼 의외로 이전버전도 동일했다.ㅇㅋ.
+
+하..이전에 분명 문제안되었을텐데말야.
+
+extractall 한글 깨짐
+이라 치니 잔뜩 나오네.아하..
+
+member.filename = member.filename.encode('cp437').decode('euc-kr', 'ignore')
+zf.extract(member, dest_path)
+신기한 방식이군.
+아예바꿔버리고,그걸로 extract 수행.이해는되고..
+
+통계적으로,정말다행히도,폴더안의파일은 망가져도된다..고생각함.
+ㅇㅋ.그렇게 수행하기.
+
+1.txt다량
+2.짤다량
+3.만화zip단일
+4.만화폴더여러개
+
+문제가되는건, 파일명이 글제목으로 간주되는, 3번제외모두.
+3번은 다르게, safename을 적용못한다.
+
+zf.extract( zf.infolist()[1] )
+하니, 그냥 폴더만생기고 더 안됨.쳇.
+
+>>> a=os.listdir('ha')[0]
+>>> a.encode('cp437').decode('cp949')
+'a에이.txt'
+응 이것도 되네.
+전부 풀고, listdir로 다시바꾸자.ㅇㅋ.
+
+
+>>> for i in os.listdir('ha'):
+	try:
+	    i.encode('cp437').decode('cp949')
+	except UnicodeEncodeError:
+	    print(i)
+
+	    
+'1.txt'
+'a'
+'a.zip'
+'a에이.txt'
+'폴'
+새 텍스트 문서.txt
+폴
+
+한글명txt하고,
+한글명폴더명은 에러가뜬다.지극힡타당하고요..
+영어명은 자연변환잘되네.
+아무튼이건예외가명확하니잘됨ㅇ.ㅋㅇ.
+
+리스트로얻은뒤에처리.ㅇㅋ.
+>>> for i in os.listdir('ha'):
+	try:
+	    i.encode('cp437').decode('cp949')
+	except UnicodeEncodeError:
+	    i
+
+아..zip은 이미열려있는경우 포함안해야.
+
+아...폴더안에또진입..은안해도됨.개꿀.
+
+오후 5:53 2020-12-06
+"제목": "(5║╬)│¬╕╕└╟ ╚ú│δ─½",
+어떻게하지.
+(5║╬)│¬╕╕└╟ ╚ú│δ─½.txt notf
+여기까지왔다.좋고..
+당연한거네;. 이렇게 이상한 이름이,존재할 리가 없잖아.
+
+파워셀에선, 잘 되는데, cmd로실행시 안 되는듯.
+
+idle에선 디버그모드시 튕기는군.아하.이래서안썼어.
+
+일단 문자열은,읽힌결과상으론 같은데 말야.
+
+폴더도 동일하게 os rename 안 된다.
+
+py파일을조지자.
+
+아8로 읽기 실패시 437로 읽는다 구만.
+이걸 949로 강제해버리자.ㅇㅋ.
+ㅇㅋ개꿀
+
+errmsg:
+resizer:no img!
+resizer:no img!
+resizer:no img!
+
+2020.12.06 18:38:33:
+,새,(Exception('empty dir! : 새'), ':at line', 118)
+
+깔끔하네

@@ -24,7 +24,7 @@ see_default = "all"
 see_trash = "trash"
 see_hidden = "hidden"
 
-
+uploadtime_key = "업로드시"
 uploader_key = "업로더"
 
 
@@ -43,10 +43,11 @@ def backdown():
 
 #time may be defaulted. if need, it will be updated.
 #no! time will be logged in server.
-def newarticle(board,id, uploader):
+def newarticle(board,id, uploader,uploadtime):
     db[board][id]={}
     db[board][id][see_key] = see_default
     db[board][id][uploader_key] = uploader
+    db[board][id][uploadtime_key] = uploadtime
     for i in parseKeys:
         db[board][id][i]=""
     for i in imgKeys:
@@ -62,7 +63,7 @@ def trasharticle(board,id,):
     db[board][id][see_key] = see_trash
 
 # concern write speed.
-def after_article(board):
+def after_newarticle(board):
     headcheck(board)
     backup()
 
@@ -94,6 +95,10 @@ def hide(board,id,key,userinfo):
     idx = userinfo[text_key]
     target[idx][see_key]=see_hidden
 
+def addtag(board,id, time,user,text ):
+    key = tag_key
+    userinfo = setuserinfo(time,user,text,see=see_default)
+    add(board,id,key,userinfo)
 
 
 #def iswriter()
@@ -166,10 +171,10 @@ def scan_head(board):
         #tmpdict[headidkey] = k
         tmpdict[headtitlekey] = db[board][id][title_key]
         tmpdict[headdatekey] = db[board][id][date_key]
-        tmpdict[imgkey] =[]
+        tmpdict[headimgkey] =[]
         if db[board][id].get(resizedkey) !=[]:
             for i in db[board][id][resizedkey]:
-                tmpdict[imgkey].append( i.split(id)[1] )
+                tmpdict[headimgkey].append( i.split(id)[1] )
         # tmpdict[thumbkey] =[]
         # if db[board][id].get(thumbkey) !=[]:
         #     for i in db[board][id][thumbkey]:

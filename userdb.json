@@ -1,0 +1,35 @@
+[
+    {
+        "1211560d241c26ebeeaed3c151eab13a53bf6116e7596030e5f2ef30049bc84c": "mas",
+        "62270fc8639f4d21f5a427114322af591fb4897f5cc4ac1d569abbc289732a53": "나노하",
+        "5e35acc2aa8ade210dbc61df5a0f45c8d6a99accec0b3a883ac0e54f5e623c75": "nano"
+    },
+    {
+        "mas": {
+            "sha": "7906442072170f5fc79f914edc62420162b22a9ae851d0a9fd3078187bf7f26a",
+            "token": "1211560d241c26ebeeaed3c151eab13a53bf6116e7596030e5f2ef30049bc84c",
+            "salt": "mas",
+            "tsalt": "nosaltfrenchfries"
+        },
+        "나노하": {
+            "sha": "8a9703c87ae02f9ad0bc9a71ef9a24d2da1a178823c58b9f74ae2de9295776f1",
+            "token": "62270fc8639f4d21f5a427114322af591fb4897f5cc4ac1d569abbc289732a53",
+            "salt": "나노하",
+            "tsalt": "nosaltfrenchfries"
+        },
+        "nano": {
+            "sha": "1a334e80ac7c44f4d04f0617f9216c78f9d205c9c49f0910bee8677954b42e19",
+            "token": "5e35acc2aa8ade210dbc61df5a0f45c8d6a99accec0b3a883ac0e54f5e623c75",
+            "salt": "nano",
+            "tsalt": "nosaltfrenchfries"
+        }
+    },
+    [
+        "mas",
+        "나노하"
+    ],
+    [
+        "mas",
+        "나노하"
+    ]
+]

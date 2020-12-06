@@ -155,16 +155,7 @@ def getJar(preventSet={}):
                 parsedDict[id_key] = '_'+str(uuid4())[:13]
             #----------------- txt file parser
 
-            #----------------------for custom dict additional option
-            #del only [번역]---.
-            if parsedDict['제목'].startswith('[번역]'):
-                parsedDict['제목'] = parsedDict['제목'].split('[번역]')[1].strip()
-            #if '센세)', add 태그.
-            if parsedDict['제목'].find('센세)') != -1 :
-                if parsedDict.get('태그') == None:
-                    parsedDict['태그']=[]
-                parsedDict['태그'].append( '작가:'+parsedDict['제목'].split('센세)')[0].strip() )
-            #----------------------for custom dict additional option
+            
 
 
             #resizer. create imgs, get imglist.

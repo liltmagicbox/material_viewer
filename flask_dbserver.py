@@ -1,7 +1,10 @@
+"prevent #-*- coding:utf-8 -*-"
+
 from os import listdir, mkdir, rename, remove, makedirs
 from os.path import isfile, join, splitext, isdir, getsize
+from shutil import rmtree#remove not work if filled.rmtree(tempdir)
 
-from jar import getJar, jar_dir
+from jar import getJar, jar_dir, imgtower_dir
 import newdb
 import userdb
 from jsonio import *
@@ -165,14 +168,16 @@ def clearjar():
     pass
 
 #----------------------upload
-from timemaker import millisec, datestr, intsec
-
+from timemaker import millisec, datestr, intsec, datestrstamp
+from uuid import uuid4
 #-------lock jar.
-jarinfo = ["",0,0]
+# user, time, remainT, key(secret)
+jarinfo = ["",0,0,""]
 
-def freejar():
+
+def isfreejar():
     global jarinfo
-    if intsec()-jarinfo[1] > 10 + jarinfo[2] :
+    if jarinfo[2]-intsec()<0:
         unlockjar()
     return jarinfo[0] == ""
 
@@ -180,19 +185,32 @@ def lockjar(username):
     global jarinfo
     jarinfo[0] = username
     jarinfo[1] = intsec()
-
-def authjar(username):
-    global jarinfo
-    return jarinfo[0] == username
+    jarinfo[2] = jarinfo[1]+30
+    jarinfo[3] = str(uuid4())[:13]
+    return jarinfo[3]
 
 def unlockjar():
     global jarinfo
     jarinfo[0] = ""
     jarinfo[1] = intsec()
+    jarinfo[3] = ""
 
-def jaresti(size):
+# def authjar(username):
+#     global jarinfo
+#     return jarinfo[0] == username
+
+def jaraddtime(size):
     global jarinfo
-    jarinfo[2] = int(float(size)*1.5)
+    jarinfo[2] += int(float(size)*2) #1000MB, 2000sec.
+
+def keycheck(uploadkey):
+    return jarinfo[3]==uploadkey
+
+def getuploadkey(username):
+    if isfreejar() == True:
+        return lockjar(username)
+    else:
+        return ""
 
 #this can be bad by js change.
 # @app.route('/lockjar', methods = [ 'POST'])
@@ -218,9 +236,28 @@ def jaresti(size):
 #         jarinfo[0] == ""
 #     jarinfo[1] = datestr()
 
+from tidyname import tidyName
 
+@app.route('/uploadkey', methods = [ 'POST'])
+def uploadkey():
+    if request.method == 'POST':
+        token = request.form['token']
+
+        username = userdb.getname(token)
+        if username == "noname":
+            abort(403)#403 Forbidden
+        #---jar auth.
+        uploadkey = getuploadkey(username)
+        if uploadkey == "":
+            msg = "jar busy! by {}, from {}, remain time: {}".format(jarinfo[0], datestrstamp(jarinfo[1]), (jarinfo[2]-intsec()) )
+        else:
+            msg = ""
+
+        data = { 'uploadkey': uploadkey, 'msg':msg }
+        return jsonify(data)
 
 import zipfile
+import zipfileuni
 from werkzeug.utils import secure_filename
 #업로드 HTML 렌더링
 @app.route('/upload')
@@ -232,39 +269,33 @@ def render_file():
 @app.route('/zipfileup', methods = [ 'POST'])
 def zipfileup():
     if request.method == 'POST':
-        token = request.form['token']
         board = request.form['board']
         ziptype = request.form['ziptype']
         zipsize = request.form['zipsize']#for jaresti(size)
 
-
-        username = userdb.getname(token)
-        if username == "noname":
-            abort(403)#403 Forbidden
+        upload_key = request.form['upload_key']
+        if keycheck(upload_key) == False: abort(403)#403 Forbidden
 
         if not board in newdb.db.keys():
             abort(403)#403 Forbidden
+        if float(zipsize)>2000:
+            abort(403)#403 Forbidden
 
-        #---jar auth.
-        if freejar() == True:
-            lockjar(username)
-            jaresti(zipsize)
-        else:
-            return "jar busy! by {}, from {}, remain time: {}".format(jarinfo[0],jarinfo[1], (10+jarinfo[2])-(intsec()-jarinfo[1]) )
 
         f = request.files['file']
         #f.save(secure_filename(f.filename))
+        #print(f.filename)
         if f.filename[-3:] != 'zip':
             abort(403)#403 Forbidden
-        sname = secure_filename(f.filename)
+        #sname = secure_filename(f.filename)
+        sname = tidyName(f.filename)
+        #print(sname)
 
-        if ziptype=="만화":#manga
+        if ziptype=="단일만화":#manga
             fname = splitext(sname)[0]
             unzipdir = join(jar_dir,fname)
             mkdir( unzipdir)
-        if ziptype == "개별파일들":#novels, imgs, crawl
-            unzipdir = jar_dir
-        if ziptype == "폴더들":#novels, imgs, crawl
+        if ziptype == "여러개묶음":#novels, imgs, crawl
             unzipdir = jar_dir
 
         filepath = join(unzipdir,sname)
@@ -274,13 +305,62 @@ def zipfileup():
             remove(filepath)# need log here.
             abort(403)#403 Forbidden
 
-        zf = zipfile.ZipFile( filepath )
+        jaraddtime(size)
+        zf = zipfileuni.ZipFile( filepath )
         zf.extractall(unzipdir)
         zf.close()
         remove(filepath)
-        #newdict,jarerrlist = getJar( newdb.db[board] )
+
+
+        for d in listdir(unzipdir):
+            try:
+                #input('waithere..')
+                #rename(d, d.encode('cp437').decode('cp949') )
+                newname = d.encode('cp437').decode('cp949')
+                print(newname)
+                rename(d, 'ha.txt' )
+                print(d)
+            except UnicodeEncodeError:
+                print(d,'uni')
+                pass
+            except FileNotFoundError:
+                print(d,'notf')
+                for dd in listdir(unzipdir):
+                    print(d==dd)
+                pass
+        input('waithere..')
+
+        newdict,jarerrlist = getJar( newdb.db[board] )
+        errstr = ""
+        for i in jarerrlist: errstr+=i
+
+        #board = board
+        uploader = jarinfo[0]
+        uploadtime = datestr()
+        for id in newdict:
+            #----------------------for custom dict additional option
+            #del only [번역]---.
+            if newdict[id]['제목'].startswith('[번역]'):
+                newdict[id]['제목'] = newdict[id]['제목'].split('[번역]')[1].strip()
+            #if '센세)', add 태그.
+            tagtext = ""#for tag exist.
+            if newdict[id]['제목'].find('센세)') != -1 :
+                tagtext = '작가:'+newdict[id]['제목'].split('센세)')[0].strip()
+
+            #-general work
+            newdb.newarticle(board,id,uploader,uploadtime)
+            newdb.db[board][id].update( newdict[id] )
+
+            #post-custom additonal option..it caused err!
+            if tagtext != "":
+                newdb.addtag(board,id, uploadtime,uploader,tagtext )
+
+        #get headdict, backup.
+        newdb.after_newarticle(board)
+
         unlockjar()
-        return "zip upload done"
+        zipdonetext = "success:{}, err:{}, errmsg:{}".format( len(newdict), len(jarerrlist), errstr )
+        return zipdonetext
         #return str(newdict)+str(jarerrlist)
         #return '처리완료:{},{}MB <br>이전 목록 길이:{} <br> {}'.format(sname,size,oldlen,scann)
 
@@ -308,32 +388,21 @@ def zipfileup():
 
 
 #------------------------ post file upload.
-from tidyname import tidyName
+
 
 @app.route("/xmliterimg", methods=['POST'])
 def xmliterimg():
     f = request.files['file']
-    #print(f)
     iter = request.form['iter']
+    #print(f)
     #print(iter)
-    #uploader = request.form['username']
-    token = request.form['token']
+    upload_key = request.form['upload_key']
+    if keycheck(upload_key) == False: abort(403)#403 Forbidden
+
+    #--------make dir
     titletext = request.form['titletext']
-
-    username = userdb.getname(token)
-    if username == "noname":
-        return "log in plz"
-    if freejar() == True:
-        lockjar(username)
-        jaresti(20)
-
-    if authjar(username) == True:
-        pass
-    else:
-        return "jar busy! by {}, from {}, remain time: {}".format(jarinfo[0],jarinfo[1], (20+jarinfo[2])-(intsec()-jarinfo[1]) )
-
     if titletext == "":titletext = "no title"
-    #unzipdir = join(jar_dir,"temp")
+    titletext = titletext[:30]
     sname = tidyName(titletext)
     unzipdir = join(jar_dir,sname)
     makedirs(unzipdir, exist_ok=True)
@@ -341,49 +410,50 @@ def xmliterimg():
     ext = splitext(f.filename)[1]
     sname =  iter+ext
     #sname = secure_filename(f.filename)
-
     filepath = join(unzipdir,sname)
+    jaraddtime(5)
     f.save( filepath )
-    unlockjar()
     return "imgup"#it's key to tell success! see filedrop.html
 
 @app.route("/xmltext", methods=['POST'])
 def xmltext():
     #uploader = request.form['username']
-    token = request.form['token']
-    username = userdb.getname(token)
-    if username == "noname":
-        #abort(403)#403 Forbidden
-        return "log in plz"
-
-    titletext = request.form['titletext']
     bodytext = request.form['bodytext']
 
+    upload_key = request.form['upload_key']
+    #print(upload_key) #note that if same tab, fast clicked, it fails. by new key.
+    if keycheck(upload_key) == False: abort(403)#403 Forbidden
 
-    if freejar() == True:
-        lockjar(username)
-        jaresti(60)
-    if authjar(username) == True:
-        pass
-    else:
-        return "jar busy! by {}, from {}, remain time: {}".format(jarinfo[0],jarinfo[1], (60+jarinfo[2])-(intsec()-jarinfo[1]) )
-
-
+    #--------make dir
+    titletext = request.form['titletext']
     if titletext == "":titletext = "no title"
-    titletext=titletext[:30]
-    #print(1) if 1==2 else print(2)
+    titletext = titletext[:30]
     sname = tidyName(titletext)
     unzipdir = join(jar_dir,sname)
     makedirs(unzipdir, exist_ok=True)
 
+    #print(1) if 1==2 else print(2)
     txtname = join(unzipdir,"body.txt")
     with open ( txtname, 'w', encoding = "utf-8") as f:
         f.write(bodytext)
+
+
     unlockjar()
     return "txtup"#it's key to tell success! see filedrop.html
 
 
 #-----------------------------new board.
+#
+# @app.route('/parent', methods=['GET', 'POST'])
+# def parent():
+#     return render_template('htmlparent.html')
+
+@app.route('/son', methods=['GET', 'POST'])
+def son():
+    a={}
+    a['age']=3
+    return render_template('son.html' , ob=a)
+
 
 @app.route('/newboard', methods=['GET', 'POST'])
 def newboard():
@@ -397,6 +467,93 @@ def createboard():
         heros = request.form['heros']
         newdb.newboard(name)
         return "new board created : {}".format(name)
+
+
+#제목하고 작성자,업로더 등 비밀스런 풀정보 다 공개하기.. 및 수정,삭제모드.
+#정렬은 솔직히 하기 싫은데요..
+
+# @app.route('/articleboard' )
+# def articleboard():
+#     dataList = []
+#     board = "gallery"
+#     for id in newdb.db[board]:
+#         item = {}
+#         item["id"] = newdb.db[board][id][newdb.id_key]
+#         item["title"] = newdb.db[board][id][newdb.title_key]
+#         item["writer"] = newdb.db[board][id][newdb.writer_key]
+#         item["date"] = newdb.db[board][id][newdb.date_key]
+#
+#         item["uploadtime"] = newdb.db[board][id].get(newdb.uploadtime_key)
+#         item["uploader"] = newdb.db[board][id].get(newdb.uploader_key)
+#
+#         dataList.append( item )
+#
+#         boardList = list(newdb.db.keys())
+#     #return render_template('articleboard.html' ,dataList = dataList, boardList = boardList)
+
+
+@app.route('/articleboard' )
+def articleboard():
+    boardList = list(newdb.db.keys())
+    return render_template('articleboard.html' , boardList = boardList)
+
+@app.route('/Fshowarticles' , methods = ['POST'] )
+def Fshowarticles():
+    requestdict = request.get_json()
+    board = requestdict['board']
+    print(board)
+
+    dataList=[]
+    for id in newdb.db[board]:
+        item = {}
+        item["id"] = newdb.db[board][id][newdb.id_key]
+        item["title"] = newdb.db[board][id][newdb.title_key]
+        item["writer"] = newdb.db[board][id][newdb.writer_key]
+        item["date"] = newdb.db[board][id][newdb.date_key]
+
+        item["uploadtime"] = newdb.db[board][id].get(newdb.uploadtime_key)
+        item["uploader"] = newdb.db[board][id].get(newdb.uploader_key)
+
+        dataList.append( item )
+
+    return jsonify(dataList)
+
+
+@app.route('/xmldelarticle' , methods = ['POST'] )
+def xmldelarticle():
+    board = request.form['board']
+    id = request.form['id']
+    if subarticle(board,id) == True:
+        text = "del success!"
+    else:
+        text = "del fail.."
+    return text
+
+@app.route('/fetchdelarticle' , methods = ['POST'] )
+def fetchdelarticle():
+    requestdict = request.get_json()
+    board = requestdict['board']
+    id = requestdict['id']
+    if subarticle(board,id) == True:
+        text = "sub success!"
+    else:
+        text = "sub fail.."
+    data={"text" : text}
+    return jsonify(data)
+
+
+#x버튼에연계, post로 들어오면,제거하기.?
+def subarticle(board,id):
+    newdb.subarticle(board,id)
+    subimgs(id)
+    return True
+
+def subimgs(id):
+    rmtree( join(imgtower_dir, id) )
+
+# too tricky, even imgtower. we do not prevent from now.!
+#def getpreventset():
+#    newdb.db[board][id]
 
 #--------------------------user methods
 
@@ -462,4 +619,4 @@ def fetchnewuser():
 
 
 if __name__ == "__main__":
-    app.run(debug = False, host='0.0.0.0' , port = '12800')
+    app.run(debug = True, host='0.0.0.0' , port = '12800')
