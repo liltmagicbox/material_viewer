@@ -314,7 +314,9 @@ def zipfileup():
 
         newdict,jarerrlist = getJar( newdb.db[board] )
         errstr = ""
-        for i in jarerrlist: errstr+=i
+        for i in jarerrlist:
+            errstr+=i
+            errstr+="\n"
 
         #board = board
         uploader = jarinfo[0]
@@ -423,7 +425,9 @@ def xmltext():
     #---get jar seq.
     newdict,jarerrlist = getJar( newdb.db[board] )
     errstr = ""
-    for i in jarerrlist: errstr+=i
+    for i in jarerrlist:
+        errstr+=i
+        errstr+="\n"
 
     #board = board
     uploader = jarinfo[0]
@@ -439,8 +443,8 @@ def xmltext():
 
     unlockjar()
     #return "txtup"#it's key to tell success! see filedrop.html
-    zipdonetext = "success:{}, err:{}, errmsg:{}".format( len(newdict), len(jarerrlist), errstr )
-    return zipdonetext
+    textdonetext = "success:{}, err:{}, errmsg:{}".format( len(newdict), len(jarerrlist), errstr )
+    return textdonetext
 
 
 #-----------------------------new board.
@@ -464,10 +468,21 @@ def newboard():
 def createboard():
     if request.method == 'POST':
         name = request.form['name']
-        boardtype = request.form['boardtype']
-        heros = request.form['heros']
-        newdb.newboard(name)
-        return "new board created : {}".format(name)
+        token = request.form['token']
+        username = userdb.getname(token)
+        if username == "noname":
+            return "you can not make it!"
+        if userdb.ismanager(username) or userdb.ismaster(username):
+            pass
+        else:
+            return "you can not make it!"
+
+        #boardtype = request.form['boardtype']
+        #heros = request.form['heros']2020.12.07.
+        if newdb.newboard(name) == True:
+            return "new board created : {}".format(name)
+        else:
+            return " board already! "
 
 
 #제목하고 작성자,업로더 등 비밀스런 풀정보 다 공개하기.. 및 수정,삭제모드.

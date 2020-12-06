@@ -32,14 +32,20 @@ uploader_key = "업로더"
 db={}
 
 def newboard(name):
-    db[name] ={}
-    backup()
+    if db.get(name) == None:
+        db[name] ={}
+        backup()
+        return True
+    return False
 
 def backup():
     saveJson(db,"db.json")
+    return True
+
 def backdown():
     global db
     db = loadJson("db.json")
+    return True
 
 #time may be defaulted. if need, it will be updated.
 #no! time will be logged in server.
