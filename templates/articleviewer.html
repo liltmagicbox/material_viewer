@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="kr" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+  </head>
+  <body>
+    <h2> {{boardname}} </h2>
+
+    {% for item in itemList %}
+    <li>
+      <span> {{ item.id }} </span>
+      <span> {{ item.title }} </span>
+      <span> / </span>
+      <span> {{ item.writer }} </span>
+      <span> / </span>
+      <span> {{ item.date }} </span>
+      <span> / </span>
+      <span> {{ item.uploader }} </span>
+      <span> {{ item.uploadtime }} </span>
+      <button id = {{item.id}} type = "button"  onclick="delarticle(event)">삭제</button>
+    </li>
+    {% endfor %}
+
+  </body>
+
+  <script type="text/javascript">
+    function delarticle(event){
+      //console.log( event.currentTarget )
+      //let board = document.getElementById("board").value
+      let board = document.getElementsByTagName('h2')[0].innerText
+      let id = event.currentTarget.id
+      xmldelarticle(board,id)
+    }
+
+    function xmldelarticle(board,id){
+      var url = '/xmldelarticle'
+      var xhr = new XMLHttpRequest()
+      var formData = new FormData()
+      xhr.open('POST', url, true)// true means async.
+      xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest')
+
+      xhr.addEventListener("load", function(e){
+        //Fshowarticles()
+        ( e.srcElement.status==200 ? alert(e.srcElement.responseText) : alert("fail..") )
+      })
+
+      formData.append("board", board  )
+      formData.append("id", id  )
+      xhr.send(formData)
+    }
+
+
+  </script>
+
+</html>

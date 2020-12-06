@@ -1,0 +1,191 @@
+오후 3:25 2020-12-01
+변수와,삭제가능한글목록 보기 위해.
+
+flask, 디버그모드 하니, 파일 바로 반영된다.이걸몰라가지고;;
+https://hiio.tistory.com/28?category=932682
+심지어, 플라스크코드변경해도 안끄고 반영됨.대단하군;
+
+오후 3:35 2020-12-01
+상속 성공함.
+
+/parent
+/son
+이 각각 있을때, /parent면 그거만 깔끔히되고
+/son으로 들어간다.상식적으로도 이게 좋지.
+
+{% extends 'htmlparent.html' %}
+
+{% block content %}
+<h1>son is here</h1>
+{% endblock %}
+
+가 형태이다. 나머지는 저기서 끌어옵니다- 라는 의미.
+역시나, /layout 은 없어도 잘 된다.ㅇㅋ.
+
+이게 좋은건, 이제 내부 덩어리를 독립적으로 짠 뒤에
+가져올 수가 있어.근데 css고려하면, 묶어두는게낫지싶은데..
+
+오후 4:02 2020-12-01
+https://gosmcom.tistory.com/157?category=353434
+진자는, txt도 렌더링이 가능하다...
+충격적이군...허......인데
+template = env.get_tempate('text.txt')
+template.render()
+라서.ㅇㅋ. 이건그냥 개념상 txt로작성된 html에가깝다.
+
+{{username}}은 경험치 {{exp}}를 갖고있다.
+template.render( username = "", exp=100 )
+ㅇㅋ
+
+data.username
+data.exp
+도 되네.신기하다.
+
+나도,전에보면, userinfo = {username = ""} 식이었지.
+userinfo[username]이어도 되겠지만..이걸,
+userinfo.username
+이면 더 좋았겠지. 클래스인가?
+ㅇㅇ.개념상근데 연결됨.ㅇㅋ.
+..당연히 안 되는걸로 알고 있었고.
+353434글에따르면,  ..진쟈가 처리시, object를 받으면, . 접근이되는듯.
+app = Flask( static_folder = '') 가 되네.허..
+
+https://stackoverflow.com/questions/20646822/how-to-serve-static-files-in-flask
+send file 계열은 조심스레쓰라는듯.. 유저입력을 그대로 받는경우.
+<path>같은거면 공격가능하니.ㅇㅋ.
+
+https://frhyme.github.io/python-lib/flask_more_with_css/
+<link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+가 발견 됨. url/static/css/main.css 까지 접근되는듯하다.
+이것도일단별로.
+
+오후 4:55 2020-12-01
+https://flask-docs-kr.readthedocs.io/ko/latest/patterns/templateinheritance.html
+
+{% extends "layout.html" %}
+{% block title %}Index{% endblock %}
+{% block head %}
+  {{ super() }}
+  <style type="text/css">
+    .important { color: #336699; }
+  </style>
+{% endblock %}
+{% block content %}
+  <h1>Index</h1>
+  <p class="important">
+    Welcome on my awesome homepage.
+{% endblock %}
+
+자식탬플릿이 이렇게도 가는군.ㅇㅋ.
+
+오후 4:57 2020-12-01
+변수입력에 성공함.ㅇㅋ.
+클래스도 ㄱㄱ.
+잘 됨.
+a={}
+a['age'] = 3
+render_ (, ob = a
+{{ob.age}}
+
+잘됨.
+
+http://pythonstudy.xyz/python/article/307-Django-%ED%85%9C%ED%94%8C%EB%A6%BF-Template
+기타 사용들.
+주석이라던가.
+
+{% if count > 0 %}
+    Data Count = {{ count }}
+{% else %}
+    No Data
+{% endif %}
+
+{% for item in dataList %}
+  <li>{{ item.name }}</li>
+{% endfor %}
+
+for만 쓰지싶다.
+https://opentutorials.org/module/3669/22003
+에도좋게설명됨.
+<a href="{{ url_for('index') }}">Flask 블로그</a>
+
+오후 5:46 2020-12-01
+대충잘되는중.
+셀렉트에서 value를 직접따오는데,이렇게해야겠지뭐..
+FileNotFoundError: [WinError 3] 
+지정된 경로를 찾을 수 없습니다:
+ 'static/imgtower\\_a87e17e3-8099'
+...
+실제로 텅비어있었다.
+폴더삭제라서 안될수가없는상황.
+에러면 504등으로 에러잘뜨네.ㅇㅋ.
+
+어ㅋㅋㅋㅋㅋㅋㅋㅋ 글진짜 사라짐.
+200ok 떴고,폴더도 삭제됨.굿.
+리프레시는,, ㅇㅇ.버튼누르면 처리완료시 누르게하던가하지뭐.ㅇㅋ.
+
+ del db[board][id]
+KeyError: '_abedae5d-4402'
+
+이게뜨기도 한다.
+del 시도 전에,이미삭제된것입니다 라고하던가싶다.ㅇ..
+
+오후 5:57 2020-12-01
+페치로해봤는데, 에러메세지 고려하면 그냥 기존것이 훨 낫지싶기도.
+json으로 어떻게든받아야하는게 기분 나빠.
+일단잘됨. 리로드도잘되고.
+
+오류나며면, 200이 아니라서, json해독이 불가능함.
+이거면 구형방식이 더 좋아보인다.동의하고..
+에러시에도,리프레시를 어떻게든하게할까싶기도 해. []가 실패하는거니.
+ㅇㅇ일단강제로지워버리고,에러메세지뜨든말든으로함.
+dict에 없으면,없는거랑 마찬가지니까뭐.ㅇㅋ.
+
+강력삭제하면 너무위험한거같은데요의 문제. 흠..
+
+진짜삭제합니까? 혹은 삭제/영구삭제/취소 팝업. 흠..
+
+체크박스로,선택가능하게하고
+삭제누르면 확인창뜨게하자.ㅇㅋ.
+
+게시판리스트를 저기서 끌고오기.
+이걸 미니로 할까..?
+
+글쓰기
+글삭제
+
+외엔 안 쓰이지싶어.ㅇㅇ..
+
+오후 6:07 2020-12-01
+매우흡족하게도 잘 됨.ㅇㅋ.
+
+렌더템플릿에서의 처리니까말야...
+<>로 받은 뒤에 그걸 전해주자싶어.
+aref로 연결해주고.
+
+새로고침하니,게시판이 초기화된다.흠..
+
+내용을 페치로 받아오고,새로고침하지말기.
+ㅇㅋ.
+뿌린다 라는 통합명령인거네.
+
+뿌린다는,데이터받아와야지.
+의외지만 여기선 json써야하는거같네..?
+ㅇㅇ동의함.
+
+리스트를,그대로던져주지?ㅇㅇ.
+
+오후 6:37 2020-12-01
+거의 다 함.
+dict가 덩어리째로 들어오는데,
+이걸 이제..각각 반영하면됨.
+하.이건차차하지.
+
+오후 6:40 2020-12-01
+거의다했다. ```로 묶기까지 함. 이러면 변수는요?
+하...
+나중에하자여기부턴.ㅇㅋ.
+
+innerhtml로.
+아!그거!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+iframe 외에 다른게있나몰겠다만
+아무튼 그거로하면되던거였어.ㅇㅋ..해결.

@@ -17,6 +17,7 @@
     <div id="articlearea">
 
     </div>
+    <iframe src="/articleviewer/gallery" width="800" height="600"></iframe>
   </body>
 
   <script type="text/javascript">
@@ -64,8 +65,17 @@
       //console.log(myJson)
       let articlearea = document.getElementById('articlearea')
       articlearea.innerHTML = ""
-      myJson.forEach( function (i){ listmaker(i,articlearea) } )
-      //let text = myJson['text']
+      console.log(myJson)
+
+      //myJson.forEach( function (i){ listmaker(i,articlearea) } )
+
+      //item["id"] = newdb.db[board][id][newdb.id_key]
+      //item["title"] = newdb.db[board][id][newdb.title_key]
+      //item["writer"] = newdb.db[board][id][newdb.writer_key]
+      //item["date"] = newdb.db[board][id][newdb.date_key]
+      //item["uploadtime"] = newdb.db[board][id].get(newdb.uploadtime_key)
+      //item["uploader"] = newdb.db[board][id].get(newdb.uploader_key)
+
       //window.location.reload()
     })
 
@@ -74,20 +84,20 @@
     }
 
     function listmaker(item,parent){
-
-      ```<li>
-        <span> {{ item.id }} </span>
-        <span> {{ item.title }} </span>
+      ```
+      <li>
+        <span>  item.id  </span>
+        <span>  item.title  </span>
         <span> / </span>
-        <span> {{ item.writer }} </span>
+        <span>  item.writer  </span>
         <span> / </span>
-        <span> {{ item.date }} </span>
+        <span>  item.date  </span>
         <span> / </span>
-        <span> {{ item.uploader }} </span>
-        <span> {{ item.uploadtime }} </span>
-        <button id = {{item.id}} type = "button"  onclick="delarticle(event)">삭제</button>
-      </li>```
-
+        <span>  item.uploader  </span>
+        <span>  item.uploadtime  </span>
+        <button id = item.id type = "button"  onclick="delarticle(event)">삭제</button>
+      </li>
+      ```
       parent.appendChild()
     }
 

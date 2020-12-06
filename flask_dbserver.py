@@ -311,25 +311,6 @@ def zipfileup():
         zf.close()
         remove(filepath)
 
-
-        for d in listdir(unzipdir):
-            try:
-                #input('waithere..')
-                #rename(d, d.encode('cp437').decode('cp949') )
-                newname = d.encode('cp437').decode('cp949')
-                print(newname)
-                rename(d, 'ha.txt' )
-                print(d)
-            except UnicodeEncodeError:
-                print(d,'uni')
-                pass
-            except FileNotFoundError:
-                print(d,'notf')
-                for dd in listdir(unzipdir):
-                    print(d==dd)
-                pass
-        input('waithere..')
-
         newdict,jarerrlist = getJar( newdb.db[board] )
         errstr = ""
         for i in jarerrlist: errstr+=i
@@ -496,6 +477,24 @@ def createboard():
 def articleboard():
     boardList = list(newdb.db.keys())
     return render_template('articleboard.html' , boardList = boardList)
+
+@app.route('/articleviewer/<path:input>' )
+def articleviewer(input):
+    board = input
+    dataList=[]
+    for id in newdb.db[board]:
+        item = {}
+        item["id"] = newdb.db[board][id][newdb.id_key]
+        item["title"] = newdb.db[board][id][newdb.title_key]
+        item["writer"] = newdb.db[board][id][newdb.writer_key]
+        item["date"] = newdb.db[board][id][newdb.date_key]
+
+        item["uploadtime"] = newdb.db[board][id].get(newdb.uploadtime_key)
+        item["uploader"] = newdb.db[board][id].get(newdb.uploader_key)
+
+        dataList.append( item )
+
+    return render_template('articleviewer.html' , boardname = board, itemList = dataList)
 
 @app.route('/Fshowarticles' , methods = ['POST'] )
 def Fshowarticles():

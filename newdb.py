@@ -57,6 +57,8 @@ def newarticle(board,id, uploader,uploadtime):
 
 def subarticle(board,id,):
     del db[board][id]
+    after_newarticle(board)#CAUTION for perfomance issue, if happens.
+
 def hidearticle(board,id,):
     db[board][id][see_key] = see_hidden
 def trasharticle(board,id,):
