@@ -1,0 +1,12 @@
+<li>
+  <span> {{ item.id }} </span>
+  <span> {{ item.title }} </span>
+  <span> / </span>
+  <span> {{ item.writer }} </span>
+  <span> / </span>
+  <span> {{ item.date }} </span>
+  <span> / </span>
+  <span> {{ item.uploader }} </span>
+  <span> {{ item.uploadtime }} </span>
+  <button id = {{item.id}} type = "button"  onclick="delarticle(event)">삭제</button>
+</li>

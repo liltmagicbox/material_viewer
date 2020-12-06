@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="kr" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>모든글보기</title>
+  </head>
+  <body>
+
+    <select id = "board" name="board" required>
+      {% for board in boardList %}
+      <option value= {{board}}> {{board}} </option>
+      {% endfor %}
+    </select>
+    <button onclick="Fshowarticles(event)">열람</button>
+    <hr>
+
+    <div id="articlearea">
+
+    </div>
+  </body>
+
+  <script type="text/javascript">
+    function delarticle(event){
+      //console.log( event.currentTarget )
+      let board = document.getElementById("board").value
+      let id = event.currentTarget.id
+      xmldelarticle(board,id)
+    }
+
+    function xmldelarticle(board,id){
+      var url = '/xmldelarticle'
+      var xhr = new XMLHttpRequest()
+      var formData = new FormData()
+      xhr.open('POST', url, true)// true means async.
+      xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest')
+
+      xhr.addEventListener("load", function(e){
+        Fshowarticles()
+        ( e.srcElement.status==200 ? alert(e.srcElement.responseText) : alert("fail..") )
+      })
+
+      formData.append("board", board  )
+      formData.append("id", id  )
+      xhr.send(formData)
+    }
+
+    function Fshowarticles(){
+
+      let board = document.getElementById("board").value
+      dict={}
+      dict["board"]=board
+      let url = window.location.href.split(window.location.pathname)[0]
+      let fetchurl = url+'/Fshowarticles'
+    fetch(fetchurl,{
+      method: 'POST', // or 'PUT'
+      //headers:{'Content-Type': 'text/plain;charset=UTF-8'}
+      headers:{'Content-Type': 'application/json'},
+      body: JSON.stringify(dict)
+    })
+    //.then( response => response.json() )
+    .then( function(response){
+      return response.json()})
+    .then(function(myJson){
+      //console.log(myJson)
+      let articlearea = document.getElementById('articlearea')
+      articlearea.innerHTML = ""
+      myJson.forEach( function (i){ listmaker(i,articlearea) } )
+      //let text = myJson['text']
+      //window.location.reload()
+    })
+
+
+
+    }
+
+    function listmaker(item,parent){
+
+      ```<li>
+        <span> {{ item.id }} </span>
+        <span> {{ item.title }} </span>
+        <span> / </span>
+        <span> {{ item.writer }} </span>
+        <span> / </span>
+        <span> {{ item.date }} </span>
+        <span> / </span>
+        <span> {{ item.uploader }} </span>
+        <span> {{ item.uploadtime }} </span>
+        <button id = {{item.id}} type = "button"  onclick="delarticle(event)">삭제</button>
+      </li>```
+
+      parent.appendChild()
+    }
+
+
+
+    //too bad. can't deal error.
+    function fetchdelarticle(board,id){
+      dict={}
+      dict["board"]=board
+      dict["id"]=id
+      let url = window.location.href.split(window.location.pathname)[0]
+      let fetchurl = url+'/fetchdelarticle'
+    fetch(fetchurl,{
+      method: 'POST', // or 'PUT'
+      //headers:{'Content-Type': 'text/plain;charset=UTF-8'}
+      headers:{'Content-Type': 'application/json'},
+      body: JSON.stringify(dict)
+    })
+    //.then( response => response.json() )
+    .then( function(response){window.location.reload()
+      return response.json()})
+    .then(function(myJson){
+      console.log(myJson)
+      let text = myJson['text']
+      //location.reload()
+      //window.location.reload()
+      alert(text)
+    })
+  }
+
+  </script>
+</html>
