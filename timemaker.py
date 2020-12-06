@@ -14,6 +14,11 @@ def datestr():
     now=now.astimezone(tzinfo)
     return now.strftime("%Y.%m.%d %H:%M:%S")
 
+def daystr():
+    now = datetime.datetime.now()
+    now=now.astimezone(tzinfo)
+    return now.strftime("%Y.%m.%d")
+
 #datetime.datetime.utcfromtimestamp(1606644954)
 #datetime.datetime(2020, 11, 29, 10, 15, 54)
 #datetime.datetime.utcfromtimestamp(1606644954+(9*3600))

@@ -19,7 +19,7 @@ resized_dir = 'resized'
 thumb_dir = 'thumb'
 ndirs = [origin_dir,resized_dir,thumb_dir]
 
-imgExt = {'.jpg','.jpeg','.png','.gif','.webp','.bmp',}
+imgExt = {'.jpg','.jpeg','.png','.gif','.webp','.bmp', '.jfif',}
 
 def resizeDir( targetDir, resizew=700,thumbw=300 ,imgname = None):
     errlist=[]

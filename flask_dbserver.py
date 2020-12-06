@@ -168,7 +168,7 @@ def clearjar():
     pass
 
 #----------------------upload
-from timemaker import millisec, datestr, intsec, datestrstamp
+from timemaker import millisec, datestr, intsec, datestrstamp, daystr
 from uuid import uuid4
 #-------lock jar.
 # user, time, remainT, key(secret)
@@ -429,13 +429,18 @@ def xmltext():
     uploader = jarinfo[0]
     uploadtime = datestr()
     for id in newdict:
+        if newdict[id].get(newdb.date_key) == None:
+            newdict[id][newdb.date_key] = daystr()
+
         newdb.newarticle(board,id,uploader,uploadtime)
         newdb.db[board][id].update( newdict[id] )
 
     newdb.after_newarticle(board)
 
     unlockjar()
-    return "txtup"#it's key to tell success! see filedrop.html
+    #return "txtup"#it's key to tell success! see filedrop.html
+    zipdonetext = "success:{}, err:{}, errmsg:{}".format( len(newdict), len(jarerrlist), errstr )
+    return zipdonetext
 
 
 #-----------------------------new board.

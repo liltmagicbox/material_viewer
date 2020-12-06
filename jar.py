@@ -40,7 +40,7 @@ multiLineKey = body_key#for txt2dict
 #----------------------- user funcion variable
 
 maxMB=20# >20MB, del.
-safeext = {'.jpg','.jpeg','.png','.gif','.webp','.bmp','.txt'}
+safeext = {'.jpg','.jpeg','.png','.gif','.webp','.bmp','.txt', '.jfif'}
 
 msgemptyjar = 'empty jar_dir'
 msgdirdir = "dir in dir.. deleted dir."
@@ -155,7 +155,7 @@ def getJar(preventSet={}):
                 parsedDict[id_key] = '_'+str(uuid4())[:13]
             #----------------- txt file parser
 
-            
+
 
 
             #resizer. create imgs, get imglist.

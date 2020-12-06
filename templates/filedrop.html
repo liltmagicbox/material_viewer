@@ -461,7 +461,8 @@ function uploadtext() {
   //xhr.addEventListener("load", function(e){alert(e.srcElement.responseText)} )
 
   //xhr.addEventListener("load", function(e){  (e.srcElement.status==200 ? upload_success() : upload_fail() )  } )
-  xhr.addEventListener("load", function(e){  (e.srcElement.responseText=="txtup" ? upload_success() : upload_fail() )  } )
+  //xhr.addEventListener("load", function(e){  (e.srcElement.responseText=="txtup" ? upload_success() : upload_fail() )  } )
+  xhr.addEventListener("load", function(e){  (e.srcElement.status==200 ? alert(e.srcElement.responseText) : upload_fail() )  } )
 
   //xhr.addEventListener("load", upload_success)
   xhr.addEventListener("error", upload_fail)
