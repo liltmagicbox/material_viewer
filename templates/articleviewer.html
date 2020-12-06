@@ -5,6 +5,12 @@
     <title></title>
   </head>
   <body>
+
+    <div id = "loginbox">
+
+    </div>
+    <hr>
+
     <h2> {{boardname}} </h2>
 
     {% for item in itemList %}
@@ -24,16 +30,20 @@
 
   </body>
 
+
+
   <script type="text/javascript">
     function delarticle(event){
       //console.log( event.currentTarget )
       //let board = document.getElementById("board").value
       let board = document.getElementsByTagName('h2')[0].innerText
       let id = event.currentTarget.id
-      xmldelarticle(board,id)
+      let token = getCookie("token")
+      //console.log(token)
+      xmldelarticle(board,id,token)
     }
 
-    function xmldelarticle(board,id){
+    function xmldelarticle(board,id,token){
       var url = '/xmldelarticle'
       var xhr = new XMLHttpRequest()
       var formData = new FormData()
@@ -47,7 +57,26 @@
 
       formData.append("board", board  )
       formData.append("id", id  )
+      formData.append("token", token  )
       xhr.send(formData)
+    }
+
+
+
+    function getCookie(cname) {
+      var name = cname + "=";
+      var decodedCookie = decodeURIComponent(document.cookie);
+      var ca = decodedCookie.split(';');
+      for(var i = 0; i <ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') {
+          c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+          return c.substring(name.length, c.length);
+        }
+      }
+      return "";
     }
 
 

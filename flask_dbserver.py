@@ -262,7 +262,8 @@ from werkzeug.utils import secure_filename
 #업로드 HTML 렌더링
 @app.route('/upload')
 def render_file():
-    return render_template('filedrop.html')
+    boardList = list(newdb.db.keys())
+    return render_template('filedrop.html', galleryList = boardList )
 
 #파일 업로드 처리
 #https://flask.palletsprojects.com/en/1.1.x/patterns/fileuploads/
@@ -398,6 +399,7 @@ def xmliterimg():
 
 @app.route("/xmltext", methods=['POST'])
 def xmltext():
+    board = request.form['board']
     #uploader = request.form['username']
     bodytext = request.form['bodytext']
 
@@ -418,6 +420,19 @@ def xmltext():
     with open ( txtname, 'w', encoding = "utf-8") as f:
         f.write(bodytext)
 
+    #---get jar seq.
+    newdict,jarerrlist = getJar( newdb.db[board] )
+    errstr = ""
+    for i in jarerrlist: errstr+=i
+
+    #board = board
+    uploader = jarinfo[0]
+    uploadtime = datestr()
+    for id in newdict:
+        newdb.newarticle(board,id,uploader,uploadtime)
+        newdb.db[board][id].update( newdict[id] )
+
+    newdb.after_newarticle(board)
 
     unlockjar()
     return "txtup"#it's key to tell success! see filedrop.html
@@ -478,8 +493,8 @@ def articleboard():
     boardList = list(newdb.db.keys())
     return render_template('articleboard.html' , boardList = boardList)
 
-@app.route('/articleviewer/<path:input>' )
-def articleviewer(input):
+@app.route('/articleview/<path:input>' )
+def articleview(input):
     board = input
     dataList=[]
     for id in newdb.db[board]:
@@ -494,7 +509,8 @@ def articleviewer(input):
 
         dataList.append( item )
 
-    return render_template('articleviewer.html' , boardname = board, itemList = dataList)
+    sortedList = sorted( dataList , key= lambda k: k["uploadtime"]  ,reverse = True)#higher first
+    return render_template('articleviewer.html' , boardname = board, itemList = sortedList)
 
 @app.route('/Fshowarticles' , methods = ['POST'] )
 def Fshowarticles():
@@ -522,6 +538,15 @@ def Fshowarticles():
 def xmldelarticle():
     board = request.form['board']
     id = request.form['id']
+    token = request.form['token']
+
+    username = userdb.getname(token)
+
+    if userdb.ismanager(username) or userdb.ismaster(username):
+        pass
+    else:
+        return "you can not delete!"
+
     if subarticle(board,id) == True:
         text = "del success!"
     else:
@@ -548,7 +573,10 @@ def subarticle(board,id):
     return True
 
 def subimgs(id):
-    rmtree( join(imgtower_dir, id) )
+    try:
+        rmtree( join(imgtower_dir, id) )
+    except FileNotFoundError:
+        pass
 
 # too tricky, even imgtower. we do not prevent from now.!
 #def getpreventset():

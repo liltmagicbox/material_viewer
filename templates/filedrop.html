@@ -127,7 +127,9 @@ label.button:hover {
 
       <select id = "zipboard" name="board" required>
         <option value="">게시판</option>
-        <option value="gallery">gallery</option>
+        {% for gallery in galleryList %}
+        <option value="{{gallery}}">{{gallery}}</option>
+        {% endfor %}
       </select>
       <br>
       <br>
@@ -186,7 +188,17 @@ label.button:hover {
     <p>-----------------</p>
 
 
-      제목:<input type="text" name="titletext"  placeholder="최대30자" maxlength="30"><br>
+    <select id = "writeboard" name="writeboard" >
+      <option value="">게시판</option>
+
+      {% for gallery in galleryList %}
+      <option value="{{gallery}}">{{gallery}}</option>
+      {% endfor %}
+    </select>
+    <br>
+    <br>
+
+    제목:<input type="text" name="titletext"  placeholder="최대30자" maxlength="30"><br>
       내용:<textarea name="bodytext" rows="5" cols="40"></textarea><br>
       <!--input type="text" name="bodytext" ><br-->
 
@@ -224,6 +236,7 @@ label.button:hover {
   var attachfilemsg = "zip파일을 첨부 하세요"
   var over2gbmsg = "too large: 2GB"
 
+  var gallfillmsg = "게시판을 선택해주세요"
 
     function dragOverHandler(ev) {
   //console.log('File(s) in drop zone');
@@ -362,6 +375,19 @@ function uploadzip() {
 
 //--------------------------------upload files.
 
+function gallfillcheck(){
+  let boardval = document.getElementById("writeboard").value
+
+  if(boardval=="" ){
+    alert(gallfillmsg)
+    return false
+  }
+  else{
+    return true
+  }
+}
+
+
 function uploadfilecheck(){
   if(filelist.length == 0){
     let tmptext = document.getElementsByName("bodytext")[0].value
@@ -375,7 +401,9 @@ return true
 
 function uploadFiles_pre(event) {
   if(logincheck()==false){return false}
+  if(gallfillcheck()==false){return false}// escape if not gallfill.
   if(uploadfilecheck()==false){return false}// escape if not logged in.
+
 
   getupload_key(uploadFiles)
 }
@@ -449,6 +477,9 @@ function uploadtext() {
   formData.append("herotext", herotext)
   tagtext = document.getElementsByName('tagtext')[0].value
   formData.append("tagtext", tagtext)*/
+
+  board = document.getElementById('writeboard').value
+  formData.append("board", board)
 
   xhr.send(formData)
 }
