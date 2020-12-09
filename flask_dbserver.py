@@ -16,16 +16,23 @@ app = Flask(__name__)
 
 @app.route('/')
 def hello():
-   return 'hello'
+    return 'hello'
 
 
 @app.route('/view')
 def viewmain():
-   return render_template('rocketbox.html')
+    if request.method == "GET":
+        board = request.args.get('board')
+        #print(board)works great!!!
+        if board == None:
+            board = "뉴보드5"#default view.
+        headver = newdb.head[board][0]# .json script version.
+        boardList = list(newdb.db.keys())
+    return render_template('rocketbox.html', boardList=boardList, board = board, headver = headver )
 
 @app.route('/taginput')
 def taginput():
-   return render_template('highspeedtag.html')
+    return render_template('highspeedtag.html')
 
 @app.route('/server_info')
 def hello_json():
@@ -113,7 +120,22 @@ def heavyfetchParse():
 #     data = { 'bodytext':valueText }
 #     return jsonify(data)
 
+@app.route('/fetchbodytext')
+def fetchbodytext():
+    board = request.args.get('board')
+    no = request.args.get('no')
+    key = request.args.get('key')
 
+    #request.query_string
+    ##print(no,key)
+    valueText = newdb.db[board][no][key]
+    ##print(valueText)
+    #return( valueText )
+    #data = {'server_name' : '0.0.0.0', 'server_port' : '8080'}# it! works!
+    #return valueText
+
+    data = { 'bodytext':valueText }
+    return jsonify(data)
 
 
 
@@ -201,7 +223,7 @@ def unlockjar():
 
 def jaraddtime(size):
     global jarinfo
-    jarinfo[2] += int(float(size)*2) #1000MB, 2000sec.
+    jarinfo[2] += int(float(size)*3) #1000MB, 2000sec... to 3.
 
 def keycheck(uploadkey):
     return jarinfo[3]==uploadkey
@@ -332,6 +354,9 @@ def zipfileup():
                 tagtext = '작가:'+newdict[id]['제목'].split('센세)')[0].strip()
 
             #-general work
+            if newdict[id].get(newdb.date_key) == None:
+                newdict[id][newdb.date_key] = daystr()
+
             newdb.newarticle(board,id,uploader,uploadtime)
             newdb.db[board][id].update( newdict[id] )
 

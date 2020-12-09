@@ -123,7 +123,7 @@ def getJar(preventSet={}):
                     errlist.append( "{}:,{},{}".format(datestr(),fdir,msgdirdir) )
                     continue# not to remove removed!
                 name,ext = splitext(f)
-                if not ext in safeext:
+                if not ext.lower() in safeext:
                     remove( fdir )
                     errlist.append( "{}:,{},{}".format(datestr(),fdir,msgnotsafe) )
                     continue

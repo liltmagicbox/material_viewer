@@ -25,6 +25,7 @@ function setupCol(outFrame,col){
 
 
 
+
 function fillImgcol(noList,outFrame,page){
   let boxColor = setColor()
   let miniLoad = parseInt( document.getElementsByClassName("thumbONB")[0].value )
@@ -45,7 +46,6 @@ function fillImgcol(noList,outFrame,page){
 
   }
 }
-
 // function makemoreload(outFrame){
 //   let butt = document.createElement('button')
 //   butt.className = 'moreloadbutton'
@@ -76,11 +76,17 @@ function makeImgbox(datas, no, outFrame,boxColor=0,miniLoad = 0){
   //create box , img, title, date , attach to outframe
 
   //thumbPath = './static/resized/'+no+'/'+no+datas[no]['리사이즈'][0]
-  let thumbPath = './static/resized/'+no+'/'+datas[no]['리사이즈'][0]
-  if(miniLoad==1){ thumbPath = './static/thumb/'+no+'/'+no+'_1.jpg' }
+  let thumbPath = './static/resource/nothumb.jpg'
+  if(datas[no]["리사이즈"].length!=0){
+    thumbPath = './static/imgtower/'+no+'/resized/'+datas[no]['리사이즈'][0]
+    //if(miniLoad==1){ thumbPath = './static/imgtower/' +no+ '/thumb/' +datas[no]['썸네일'][0] }
+    if(miniLoad==1){ thumbPath = './static/imgtower/'+no+'/thumb/'+ no+'_1.jpg' }
+  }
+
   let titleText = datas[no]['제목']
   let dateText = datas[no]['날짜']
   let imgNumber = datas[no]['리사이즈'].length
+  //let board = decodeURI( window.location.search.split("board=")[1].split("&")[0] )
 
   let box = document.createElement('div')
   box.className = 'imgBox'
@@ -113,6 +119,7 @@ function makeImgbox(datas, no, outFrame,boxColor=0,miniLoad = 0){
   let bodyB = document.createElement('button')
   bodyB.type = 'button' // if want submit, change. see mdn button
   bodyB.className = 'bodyB'
+  //bodyB.board= board
   bodyB.innerText = '로드('+(imgNumber-1)+')'
   //bodyB.id = "bodyB_"+no
   bodyB.no = no
@@ -168,7 +175,9 @@ function overLayview(){
 
 
   box = innerviewer
-  let no= preimg.parentElement.id.split('_')[1]
+  //let no= preimg.parentElement.id.split('_')[1]
+  let before_id = preimg.parentElement.id.indexOf('_')
+  let no = preimg.parentElement.id.slice(before_id+1)
 
   let titleText = datas[no]['제목']
   let dateText = datas[no]['날짜']
@@ -184,16 +193,22 @@ function overLayview(){
   box.appendChild(date)
 
   let imlist = datas[no]['리사이즈']
-  let resizePath = './static/resized/'+no+'/'
+
+  if(imlist.length!=0){
+
+  let resizePath = './static/imgtower/'+no+'/resized/'
   //let partList = imlist.slice(1)
   for( var filename of imlist){
     let im = document.createElement('img')
     im.src = resizePath+filename
     innerviewer.appendChild(im)
   }
-  let bodyText = document.createElement('pre')
+  }
 
-  let params = { 'no': no, 'key':'본문',}
+  let bodyText = document.createElement('pre')
+  bodyText.innerHTML+="<br><br>"
+
+  let params = { 'no': no, 'key':'본문', "board" : board}
   var esc = encodeURIComponent;
   let query = Object.keys(params)
     .map(k => esc(k) + '=' + esc(params[k]))
@@ -201,7 +216,7 @@ function overLayview(){
 
   //let url = window.location.href.replace( window.location.pathname , '')
   let url = window.location.href.split(window.location.pathname)[0]
-  let fetchurl = url+'/fetch?'+query
+  let fetchurl = url+'/fetchbodytext?'+query
 
   fetch(fetchurl)
   .then( function(response){return response.json()})
@@ -212,8 +227,8 @@ function overLayview(){
     if(urls!=null){
       for( var u of urls){
         //linkalt = u.slice(u.indexOf('//')+2,25)+'...'
-        let linkalt = '링크'
-        bodyText.innerHTML += linkalt.link(u)+'\n'
+        let linkalt = u
+        bodyText.innerHTML += linkalt.link(u)+'\n'+'\n'
       }
       let rawText2 = rawText
     for( var u of urls){
@@ -263,16 +278,19 @@ function eventBodyload(event){
   //let imArea = document.getElementById("imgArea_"+no)
   //let imArea = box.firstElementChild
 
+
   box.getElementsByClassName("imgTitle")[0].setAttribute("shrink",0)
 
 
   let imgArea = box.getElementsByClassName('imgArea')[0]
+  imgArea.innerHTML = "" // ONLY mobile n>1 requires thumbnail, fullchange.
 
   let imlist = datas[no]['리사이즈']
-  let resizePath = './static/resized/'+no+'/'
+
+  if(imlist.length !=0){
+  let resizePath = './static/imgtower/'+no+'/resized/'
   //imlist.shift()//for 1 already..
 
-  imgArea.innerHTML = "" // ONLY mobile n>1 requires thumbnail, fullchange.
   let imList = []//
   //let partList = imlist.slice(1)
   for( var filename of imlist){
@@ -287,19 +305,22 @@ function eventBodyload(event){
     imgArea.appendChild(im)
   }
 
+
   for( var im of imList){//
   im.style.display = 'inline'//
   window.scroll(0, scrollYbeforeloadbody )
   }
   window.scroll(0, scrollYbeforeloadbody )
+  }
 
 
   let bodyText = document.createElement('pre')
+  bodyText.innerHTML += "<br><br>"
   //bodyText.width = imgArea.clientWidth
   //box.appendChild(bodyText) why you here?!
 
   //make query string. flask gets and returns no,key mini datas.
-  let params = { 'no': no, 'key':'본문',}
+  let params = { 'no': no, 'key':'본문', 'board': board }
   var esc = encodeURIComponent;
   let query = Object.keys(params)
     .map(k => esc(k) + '=' + esc(params[k]))
@@ -309,7 +330,7 @@ function eventBodyload(event){
   //http://liltbox.iptime.org:25252/fetch/bodytext/10399976
   //let url = window.location.href.replace( window.location.pathname , '')
   let url = window.location.href.split(window.location.pathname)[0]
-  let fetchurl = url+'/fetch?'+query
+  let fetchurl = url+'/fetchbodytext?'+query
   fetch(fetchurl)
   .then( function(response){return response.json()})
   .then(function(myJson){
@@ -362,8 +383,9 @@ function eventBodyload(event){
     if(urls!=null){
       for( var u of urls){
         //linkalt = u.slice(u.indexOf('//')+2,25)+'...'
-        let linkalt = '링크'
-        bodyText.innerHTML += linkalt.link(u)+'\n'
+        //let linkalt = '링크'
+        let linkalt = u
+        bodyText.innerHTML += linkalt.link(u)+'\n'+'\n'
       }
 
 
@@ -371,7 +393,7 @@ function eventBodyload(event){
     for( var u of urls){
       //bodyText.innerHTML += rawText.slice(rawText.lastIndexOf(urls[urls.length-1])+urls[urls.length-1].length+1)
       let remain = ''
-      for( var i of rawText2.split(u) ){remain+=i}
+      for( var i of rawText2.split(u) ){remain+=i+"*link*"}
       rawText2 = remain
 
       //console.log(rawText2,'r2')
@@ -381,6 +403,8 @@ function eventBodyload(event){
     else{
       bodyText.innerHTML+=rawText
     }
+    //rawText = rawText.replace(u, u.link(u)+'<br><br>' )
+    //tryed this , but twitter.com  and twitter.com/view problem..ha.
 
 
 

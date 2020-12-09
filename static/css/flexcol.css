@@ -556,6 +556,7 @@ nav ul li a{
   flex: 16%;
 }
 
+/*---------------    imgbox   ----------------------*/
 .imgBox{
   background-color: #FFEABA;
   border-radius: 0.5rem;
@@ -599,12 +600,12 @@ nav ul li a{
   .imgArea>img{
     width: 100%; //of outer size. if not, img fullsize.
   }
+/*---------------    imgbox   ----------------------*/
 
 .moreloadbutton{
   width: 100px;
   height: 70px;
 }
-
 
   @media screen and (max-width: 600px) {
     .imgArea{

@@ -1,0 +1,43 @@
+.imgBox{
+  background-color: #FFEAEA;
+  border-radius: 0.5rem;
+  border-style : outset;
+  /*border-width: thick;*/
+  /*border-color: silver;*/
+  padding : 0.5rem;
+}
+.imgBox > *{
+  margin-top : 0;
+  margin-bottom :0;
+}
+
+.imgBox pre{
+  /*word-break: break-all;*/
+  white-space: pre-wrap;
+}
+  .imgTitle{
+    font-size : 0.9rem;
+    /*font-size : 1vw;
+    max-height: 2.3rem; title bad..
+    overflow: hidden;*/
+
+    /*white-space:  pre-wrap;
+    text-overflow: ellipsis;
+    width: 20px;*/
+  }
+  .imgTitle[shrink='0']{
+    overflow: visible;
+  }
+
+  .imgDate{
+    font-size : 0.9rem;
+    text-align : right;
+  }
+
+  .imgArea{
+    width: 100%;
+    margin: 10px auto;
+  }
+  .imgArea>img{
+    width: 100%; /*of outer size. if not, img fullsize.*/
+  }

@@ -128,11 +128,17 @@ from jsonio import *
 #from dhexmaker import dhexstr, dhex3
 #dhexstr(list) -> str
 
-headidkey = "K"
-headtitlekey = "T"
-headdatekey = "D"
-headimgkey = "IM"
-headthumbkey = "TH"
+# headidkey = "K"
+# headtitlekey = "T"
+# headdatekey = "D"
+# headimgkey = "IM"
+# headthumbkey = "TH"
+
+headidkey = id_key
+headtitlekey = title_key
+headdatekey = date_key
+headimgkey = resizedkey
+headthumbkey = thumbkey
 
 
 head = {}
@@ -143,9 +149,13 @@ def headcheck(board):
         head[board] = [ "0",{} ]
 
     newhead = scan_head(board)
-    if newhead != head[board][1]:
+    if newhead != head[board][1] or head[board][1] == {}:
         head[board][1] = newhead
         head[board][0] = millisec()
+
+        dataspath = "./static/head_{}.json".format(board)
+        saveVarjson( head[board][1] , dataspath )
+
 
 def gethead(board,head_ver):
     headcheck(board)
@@ -180,9 +190,13 @@ def scan_head(board):
         tmpdict[headtitlekey] = db[board][id][title_key]
         tmpdict[headdatekey] = db[board][id][date_key]
         tmpdict[headimgkey] =[]
-        if db[board][id].get(resizedkey) !=[]:
-            for i in db[board][id][resizedkey]:
-                tmpdict[headimgkey].append( i.split(id)[1] )
+        for i in db[board][id][resizedkey]:
+            tmpdict[headimgkey].append( i )
+
+        #if db[board][id].get(resizedkey) !=[]:
+        #    for i in db[board][id][resizedkey]:
+        #        tmpdict[headimgkey].append( i.split(id)[1] )
+
         # tmpdict[thumbkey] =[]
         # if db[board][id].get(thumbkey) !=[]:
         #     for i in db[board][id][thumbkey]:
@@ -259,6 +273,9 @@ def bodyload(board,id):
 #---------------when loading, load before.
 try:
     backdown()
+    boardList = list( db.keys() )
+    for board in boardList:
+        headcheck(board)
     print("db backup loaded")
 except:
     print("db backup not")
