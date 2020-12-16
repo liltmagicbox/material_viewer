@@ -121,6 +121,21 @@ function fetchlogout(){
 }
 
 
+function filltoken(){
+//username = document.getElementById("username")
+let token = getCookie("token")
+if (token == ""){
+  console.log('no token. get again after 1s..')
+setTimeout("filltoken()", 1000)
+}
+
+else{
+let userbox = document.getElementById("token")
+userbox.value = token
+}
+
+}
+
 
 
 function getCookie(cname) {

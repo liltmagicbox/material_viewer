@@ -88,17 +88,7 @@ function tagBshow(){
   setviewListN()
 }
 
-function setBanner(inter_Set){
-  let thisunit = "undefined"
 
-  for(var key of Object.keys(unitDict)){
-    let unit = unitDict[key]
-    if(issameset(inter_Set,unit)==true){ thisunit = key }
-  }
-
-  document.getElementsByClassName("bannerImg")[0].src = "/static/resource/banner/"+thisunit+".jpg"
-  document.getElementsByClassName("bannerImg")[0].alt = thisunit
-}
 
 
 function issameset(set1,set2){
@@ -146,6 +136,18 @@ function differout(set1,set2){
   return new Set([...set1].filter(x => !set2.has(x)))
 }
 
+//need: only unit, not char. but scan char also. not only units.
+function setBanner(inter_Set){
+  let thisunit = "undefined"
+
+  for(var key of Object.keys(unitDict)){
+    let unit = unitDict[key]
+    if(issameset(inter_Set,unit)==true){ thisunit = key }
+  }
+
+  document.getElementsByClassName("bannerImg")[0].src = "/static/resource/banner/"+thisunit+".jpg"
+  document.getElementsByClassName("bannerImg")[0].alt = thisunit
+}
 
 function setColor(){
   let inter_Set = new Set([])

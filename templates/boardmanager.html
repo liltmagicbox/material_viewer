@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="kr" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>모든글보기</title>
+  </head>
+  <body>
+
+    <div id="loginbox">
+
+    </div>
+
+    <select id = "board" name="board" required>
+      {% for board in boardList %}
+      <option value= {{board}}> {{board}} </option>
+      {% endfor %}
+    </select>
+    <button id="boardinfoB">로드하기</button>
+    <hr>
+
+    <br>
+    <div id="charBarea">
+      캐릭터:
+    </div>
+    <br>
+    <div id="unitBarea">
+      유닛:
+    </div>
+    <br>
+    <div id="artBarea">
+      작가:
+    </div>
+    <br>
+
+    <hr>
+    입력은 띄어쓰기로 구분해주세요.<br>
+    <br>
+
+
+    작가 목록: <input  id="artists" type="text" name="artists"><br>
+      캐릭터 목록: <input  id="characters" type="text" name="characters"><br>
+      유닛 목록: <input  id="units" type="text" name="units"><br>
+    유닛 안의 캐릭터 목록:
+    <div id="unitmember">
+    </div>
+
+    <button id="submitB" type="button" >제출</button>
+
+  </body>
+
+  <script type="text/javascript">
+
+  document.getElementById("boardinfoB").addEventListener( "click", function(){xmlboardinfos()} )
+
+  function xmlboardinfos(){
+  var url = '/xmlboardinfos'
+  var xhr = new XMLHttpRequest()
+  var formData = new FormData()
+  xhr.open('POST', url )// true means async.
+  xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest')
+
+  xhr.addEventListener("load",  function(e){
+    dict = JSON.parse( e.srcElement.responseText )
+    let artBarea = document.getElementById("artBarea")
+    let charBarea = document.getElementById("charBarea")
+    let unitBarea = document.getElementById("unitBarea")
+    artBarea.innerHTML = ""
+    charBarea.innerHTML = ""
+    unitBarea.innerHTML = ""
+    for(var k of Object.keys(dict)){
+      if(k=="artistList"){ dict[k].forEach(i=> fillbutton(i,artBarea)) }
+      else if(k=="characterList"){ dict[k].forEach(i=> fillbutton(i,charBarea)) }
+      else if(k=="unitDict"){ Object.keys(dict[k]).forEach(i=> fillbutton(i,unitBarea)) }
+    }
+   })
+  //xhr.addEventListener("load", function(e){  (e.srcElement.status==200 ? alert(e.srcElement.responseText) : alert("다시 시도하세요!") )  } )
+  //data = { 'uploadkey': uploadkey, 'msg':msg }
+  let boardname = document.getElementById("board").value
+  formData.append("boardname", boardname)
+  xhr.send(formData)
+  }
+
+  function fillbutton(n,targetarea) {
+    let b=document.createElement("button")
+    b.innerText = n
+    targetarea.appendChild(b)
+  }
+  </script>
+
+
+  <script type="text/javascript">
+    document.getElementById("submitB").addEventListener("click", function(){ xmladdboardinfo() })
+
+    function xmladdboardinfo(){
+      let artists = document.getElementById("artists").value
+      let characters = document.getElementById("characters").value
+      let units = document.getElementById("units").value
+      let unitjson = getmemberjson()
+
+      var url = '/xmladdboardinfo'
+      var xhr = new XMLHttpRequest()
+      var formData = new FormData()
+      xhr.open('POST', url )// true means async.
+      xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest')
+
+      xhr.addEventListener("load",  function(e){alert(e.srcElement.responseText)} )
+      //xhr.addEventListener("load", function(e){  (e.srcElement.status==200 ? alert(e.srcElement.responseText) : alert("다시 시도하세요!") )  } )
+
+      let boardname = document.getElementById("board").value
+      let token = getCookie("token")
+      formData.append("boardname", boardname)
+      formData.append("token", token)
+
+      formData.append("artists", artists)
+      formData.append("characters", characters)
+      //formData.append("units", units)
+      formData.append("unitjson", unitjson)
+      xhr.send(formData)
+    }
+
+  </script>
+
+
+
+
+
+
+  <script type="text/javascript" src="./static/js/shasha.js"> </script>
+  <script type="text/javascript" src="./static/js/userfunc.js"> </script>
+
+    <script type="text/javascript">
+      frame = document.getElementById("loginbox")
+      makeloginbox(frame)
+    </script>
+
+
+
+  <script type="text/javascript">
+  let units = document.getElementById("units")
+  units.addEventListener("input", function(e){inputchecker()} )
+
+  function inputchecker(){
+    let unitmember = document.getElementById("unitmember")
+    unitmember.innerHTML = ""
+
+    let units = document.getElementById("units")
+    units.value.split(" ").forEach( u=> unitfiller(u,unitmember) )
+  }
+
+  function unitfiller(u,target){
+    if(u==""){return false}
+
+    let div =document.createElement("div")
+    div.id = u
+
+    let span =document.createElement("span")
+    span.innerText = u+":"
+    div.appendChild(span)
+
+    let input =document.createElement("input")
+    input.type = "text"
+    input.name = u
+    //input.className = "memberdetail"
+    //input.addEventListener( "input", function(e){memberchecker()} )
+    div.appendChild(input)
+
+    target.appendChild(div)
+    target.appendChild(document.createElement("br"))
+  }
+
+
+
+  function getmemberjson(){
+    tmpdict={}
+    let memberi = document.getElementsByClassName("memberdetail")
+    for( var i of memberi){
+      tmpdict[i.name] = i.value
+    }
+
+    return JSON.stringify(tmpdict)
+  }
+
+  </script>
+
+</html>

@@ -11,22 +11,11 @@
 
     <form class="newboard" action="/createboard" method="post">
       <input id="token" type="text" name="token" hidden = True ><br>
+
       게시판 이름: <input  id="boardname" type="text" name="name"><br>
-      <!--div>
-      게시판 타입:
-
-      <input type="radio" id="만화" name="boardtype" value="만화">
-      <label for="만화">만화</label>
-      <input type="radio" id="소설" name="boardtype" value="소설">
-      <label for="소설">소설</label><br>
-
-      캐릭터 목록: <input type="text" name="heros"><br>
-      캐릭터 색깔: <input type="text" name="heros"><br>
-      캐릭터 조합: <input type="text" name="heros"><br>
-    </div-->
-
-      <button type="submit" name="button">제출</button>
+      <button id="submitB" type="submit" name="button" >등록</button>
     </form>
+
 
   </body>
 
@@ -39,7 +28,12 @@
     </script>
 
     <script type="text/javascript">
+    filltoken()
+    //simple login checker.fine. it's in userfunc.
+
+    /*
     setTimeout("filluser()", 200)
+
 
       function filluser(){
       //username = document.getElementById("username")
@@ -67,6 +61,22 @@
       }
       return "";
     }
+    function getCookie(cname) {
+      var name = cname + "=";
+      var decodedCookie = decodeURIComponent(document.cookie);
+      var ca = decodedCookie.split(';');
+      for(var i = 0; i <ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') {
+          c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+          return c.substring(name.length, c.length);
+        }
+      }
+      return "";
+    }
+    */
 
     </script>
 

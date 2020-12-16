@@ -8,7 +8,7 @@ from jar import getJar, imgtower_dir, jar_dir
 import newdb
 import userdb
 from jsonio import *
-
+import json
 from flask import send_from_directory, send_file, Response
 from flask import Flask, render_template, request, jsonify, abort, redirect
 
@@ -17,65 +17,6 @@ app = Flask(__name__)
 
 
 
-artistList = ["reonardo",
-"あさかわさん",
-"うる",
-"う・ω・る",
-"みぃ",
-"ガリアブス",
-"ナカム",
-"天翔幻獣",
-"黒潮",]
-
-
-
-에리="에리"
-노조미="노조미"
-우미="우미"
-니코="니코"
-마키="마키"
-호노카="호노카"
-코토리="코토리"
-하나요="하나요"
-린="린"
-characterList = [호노카,우미,코토리,린,하나요,마키,노조미,에리,니코]
-
-unitDict = {
-"뮤즈":[코토리,우미,호노카,마키,린,하나요,노조미,에리,니코],
-
-"에리" :[에리],
-"노조미":[노조미],
-"우미" :[우미],
-"니코" :[니코],
-"마키" :[마키],
-"호노카":[호노카],
-"코토리":[코토리],
-"하나요":[하나요],
-"린":[린],
-
-"1학년":[린,하나요,마키],
-"2학년":[우미,코토리,호노카],
-"3학년":[노조미,에리,니코],
-
-"비비":[니코,마키,에리],
-"릴화":[노조미,우미,린],
-"쁘랭땅":[코토리,호노카,하나요],
-
-"노조에리":[노조미,에리],
-"니코마키":[니코,마키],
-"린파나":[린,하나요],
-"코토우미":[코토리,우미],
-
-"니코린파나":[니코,린,하나요],
-"린마키":[린,마키],
-"에리우미":[에리,우미],
-"코토파나":[코토리,하나요],
-"노조니코":[노조미,니코],
-
-"호노린":[호노카,린],
-"솔겜조":[에리,우미,마키],
-
-}
 
 @app.route('/')
 def hello():
@@ -97,9 +38,10 @@ def viewmain():
             return redirect( "/view?board="+board )
 
         headver = newdb.head[board][0]# .json script version.
-        global characterList
-        global unitDict
-        global artistList
+
+        characterList = newdb.characterList[board]
+        unitDict = newdb.unitDict[board]
+        artistList = newdb.artistList[board]
     return render_template('rocketbox.html', boardList=boardList, board = board, headver = headver,
     artistList=artistList, characterList=characterList, unitDict=unitDict )
 
@@ -450,6 +392,7 @@ def zipfileup():
             if newdict[id]['제목'].find('센세)') != -1 :
                 #tagtext = '작가:'+newdict[id]['제목'].split('센세)')[0].strip()
                 tagtext = newdict[id]['제목'].split('센세)')[0].strip()
+                newdict[id]['제목'] = newdict[id]['제목'].split('센세)')[1].strip()
 
             #-general work
             if newdict[id].get(newdb.date_key) == None:
@@ -630,6 +573,48 @@ def createboard():
 #         boardList = list(newdb.db.keys())
 #     #return render_template('articleboard.html' ,dataList = dataList, boardList = boardList)
 
+@app.route('/boardmanager' )
+def boardmanager():
+    boardList = list(newdb.db.keys())
+    return render_template('boardmanager.html' , boardList = boardList)
+
+@app.route('/xmlboardinfos', methods=[ 'POST'])
+def boardinfos():
+    if request.method == 'POST':
+        boardname = request.form['boardname']
+        d={}
+        d["artistList"]=newdb.artistList[boardname]
+        d["characterList"]=newdb.characterList[boardname]
+        d["unitDict"]=newdb.unitDict[boardname]
+        return jsonify(d)
+
+@app.route('/xmladdboardinfo', methods=[ 'POST'])
+def xmladdboardinfo():
+    if request.method == 'POST':
+        artists = request.form['artists']
+        characters = request.form['characters']
+        #units = request.form['units']
+        unitjson = request.form['unitjson']
+
+        board = request.form['boardname']
+
+        token = request.form['token']
+        username = userdb.getname(token)
+        if username == "noname":
+            return "you can not make it!"
+        if userdb.ismanager(username) or userdb.ismaster(username):
+            pass
+        else:
+            return "you can not make it!"
+
+        unitdict = json.loads(unitjson)
+        newdb.artistList[board].extend(artists.split())
+        newdb.characterList[board].extend(characters.split())
+        newdb.unitDict[board].update(unitdict)
+        newdb.backup()
+
+        return "man"
+
 
 @app.route('/articleboard' )
 def articleboard():
@@ -655,26 +640,26 @@ def articleview(input):
     sortedList = sorted( dataList , key= lambda k: k["uploadtime"]  ,reverse = True)#higher first
     return render_template('articleviewer.html' , boardname = board, itemList = sortedList)
 
-@app.route('/Fshowarticles' , methods = ['POST'] )
-def Fshowarticles():
-    requestdict = request.get_json()
-    board = requestdict['board']
-    print(board)
-
-    dataList=[]
-    for id in newdb.db[board]:
-        item = {}
-        item["id"] = newdb.db[board][id][newdb.id_key]
-        item["title"] = newdb.db[board][id][newdb.title_key]
-        item["writer"] = newdb.db[board][id][newdb.writer_key]
-        item["date"] = newdb.db[board][id][newdb.date_key]
-
-        item["uploadtime"] = newdb.db[board][id].get(newdb.uploadtime_key)
-        item["uploader"] = newdb.db[board][id].get(newdb.uploader_key)
-
-        dataList.append( item )
-
-    return jsonify(dataList)
+# @app.route('/Fshowarticles' , methods = ['POST'] )
+# def Fshowarticles():
+#     requestdict = request.get_json()
+#     board = requestdict['board']
+#     print(board)
+#
+#     dataList=[]
+#     for id in newdb.db[board]:
+#         item = {}
+#         item["id"] = newdb.db[board][id][newdb.id_key]
+#         item["title"] = newdb.db[board][id][newdb.title_key]
+#         item["writer"] = newdb.db[board][id][newdb.writer_key]
+#         item["date"] = newdb.db[board][id][newdb.date_key]
+#
+#         item["uploadtime"] = newdb.db[board][id].get(newdb.uploadtime_key)
+#         item["uploader"] = newdb.db[board][id].get(newdb.uploader_key)
+#
+#         dataList.append( item )
+#
+#     return jsonify(dataList)
 
 
 @app.route('/xmldelarticle' , methods = ['POST'] )
