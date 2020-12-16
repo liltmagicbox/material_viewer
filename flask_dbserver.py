@@ -4,18 +4,83 @@ from os import listdir, mkdir, rename, remove, makedirs
 from os.path import isfile, join, splitext, isdir, getsize
 from shutil import rmtree#remove not work if filled.rmtree(tempdir)
 
-from jar import getJar, jar_dir, imgtower_dir
+from jar import getJar, imgtower_dir, jar_dir
 import newdb
 import userdb
 from jsonio import *
 
-from flask import send_from_directory, send_file
-from flask import Flask, render_template, request, jsonify, abort
+from flask import send_from_directory, send_file, Response
+from flask import Flask, render_template, request, jsonify, abort, redirect
 
 app = Flask(__name__)
 
+
+
+
+artistList = ["reonardo",
+"あさかわさん",
+"うる",
+"う・ω・る",
+"みぃ",
+"ガリアブス",
+"ナカム",
+"天翔幻獣",
+"黒潮",]
+
+
+
+에리="에리"
+노조미="노조미"
+우미="우미"
+니코="니코"
+마키="마키"
+호노카="호노카"
+코토리="코토리"
+하나요="하나요"
+린="린"
+characterList = [호노카,우미,코토리,린,하나요,마키,노조미,에리,니코]
+
+unitDict = {
+"뮤즈":[코토리,우미,호노카,마키,린,하나요,노조미,에리,니코],
+
+"에리" :[에리],
+"노조미":[노조미],
+"우미" :[우미],
+"니코" :[니코],
+"마키" :[마키],
+"호노카":[호노카],
+"코토리":[코토리],
+"하나요":[하나요],
+"린":[린],
+
+"1학년":[린,하나요,마키],
+"2학년":[우미,코토리,호노카],
+"3학년":[노조미,에리,니코],
+
+"비비":[니코,마키,에리],
+"릴화":[노조미,우미,린],
+"쁘랭땅":[코토리,호노카,하나요],
+
+"노조에리":[노조미,에리],
+"니코마키":[니코,마키],
+"린파나":[린,하나요],
+"코토우미":[코토리,우미],
+
+"니코린파나":[니코,린,하나요],
+"린마키":[린,마키],
+"에리우미":[에리,우미],
+"코토파나":[코토리,하나요],
+"노조니코":[노조미,니코],
+
+"호노린":[호노카,린],
+"솔겜조":[에리,우미,마키],
+
+}
+
 @app.route('/')
 def hello():
+    #http://localhost:12800/newboard
+    #return redirect( "/view?board="+boardList[0] )
     return 'hello'
 
 
@@ -24,15 +89,28 @@ def viewmain():
     if request.method == "GET":
         board = request.args.get('board')
         #print(board)works great!!!
-        if board == None:
-            board = "뉴보드5"#default view.
-        headver = newdb.head[board][0]# .json script version.
         boardList = list(newdb.db.keys())
-    return render_template('rocketbox.html', boardList=boardList, board = board, headver = headver )
+        if board == None:
+            board = boardList[0]
+            headver = newdb.head[board][0]# .json script version.
+            #board = "뉴보드5"#default view.
+            return redirect( "/view?board="+board )
+
+        headver = newdb.head[board][0]# .json script version.
+        global characterList
+        global unitDict
+        global artistList
+    return render_template('rocketbox.html', boardList=boardList, board = board, headver = headver,
+    artistList=artistList, characterList=characterList, unitDict=unitDict )
 
 @app.route('/taginput')
 def taginput():
-    return render_template('highspeedtag.html')
+    if request.method == "GET":
+        board = request.args.get('board')
+        if board == None:
+            return redirect( "/taginput?board=뉴보드5" )
+        headver = newdb.head[board][0]# .json script version.
+    return render_template('highspeedtag.html' , board = board, headver = headver)
 
 @app.route('/server_info')
 def hello_json():
@@ -142,44 +220,63 @@ def fetchbodytext():
 #이거보단명령어.ㅇㅋ. fluiddb.fluid[no]['캐릭터태그']
 
 tdict={}
-@app.route('/fetchtag')
+@app.route('/fetchtag'  , methods = ['POST'])
 def fetchtag():
-    global datas
     global tdict
     #print(request.query_string)
-    no = request.args.get('no')
-    taglist = request.args.get('taglist')
-    taglist = taglist.split(',')
-    #tdict[no]=taglist
-    taglist = list(set(taglist))
+
+    requestdict = request.get_json()
+    token = requestdict['token']
+    board = requestdict['board']
+    id = requestdict['id']
+    taglist = requestdict['taglist']
+
+
+    # token = request.args.get('token')
+    # board = request.args.get('board')
+    # id = request.args.get('id')
+    # taglist = request.args.get('taglist')
+    #taglist = taglist.split(',')
+    #tdict[id]=taglist
+    #taglist = list(set(taglist))
 
     if taglist[0]=='뮤즈':
         taglist=['호노카','코토리','우미','마키','린','하나요','에리','니코','노조미']
 
 
 
-    no=str(no)
-    user='핫산테크'
-    key='캐릭터태그'
-    if taglist[0]=='':
-        fluiddb.cleartext(user,no,key,)
+    id=str(id)
+    username = userdb.getname(token)
+    if username == "noname":
+        abort(403)#403 Forbidden
 
-    if fluiddb.fluidset(no) == True:#made this time.
+    time = datestr()
+    key = newdb.hero_key
+    newdb.db[board][id][key] = {}
+
+    if taglist[0]=='':
+        pass
+    else:
         for text in taglist:
-            if fluiddb.addtext(user,no,key,text) != True:
-                print('NEVER SEE THIS error but exception it exit.bad!')
-            else:
-                print('add first ok')
-    else:#alreadywas. rewrite
-        fluiddb.cleartext(user,no,key,)
-        for text in taglist:
-            #fluiddb.subtext(user,no,key,text)
-            fluiddb.addtext(user,no,key,text)
-            #print('subtext', fluiddb.subtext(user,no,key,text) )
-            #print('addagain', fluiddb.addtext(user,no,key,text) )
-    #fluiddb.addn(user,no,'조')
-    print(no,taglist)
-    return 'ok'
+            userinfo = newdb.setuserinfo(time,username,text, see = newdb.see_default)
+            newdb.add(board,id,key,userinfo)
+
+    # if fluiddb.fluidset(no) == True:#made this time.
+    #     for text in taglist:
+    #         if fluiddb.addtext(user,no,key,text) != True:
+    #             print('NEVER SEE THIS error but exception it exit.bad!')
+    #         else:
+    #             print('add first ok')
+    # else:#alreadywas. rewrite
+    #     fluiddb.cleartext(user,no,key,)
+    #
+    #         #print('subtext', fluiddb.subtext(user,no,key,text) )
+    #         #print('addagain', fluiddb.addtext(user,no,key,text) )
+    # #fluiddb.addn(user,no,'조')
+    # print(no,taglist)
+    #return newdb.db[board][id][key]
+
+    return "1"
 
 
 
@@ -351,7 +448,8 @@ def zipfileup():
             #if '센세)', add 태그.
             tagtext = ""#for tag exist.
             if newdict[id]['제목'].find('센세)') != -1 :
-                tagtext = '작가:'+newdict[id]['제목'].split('센세)')[0].strip()
+                #tagtext = '작가:'+newdict[id]['제목'].split('센세)')[0].strip()
+                tagtext = newdict[id]['제목'].split('센세)')[0].strip()
 
             #-general work
             if newdict[id].get(newdb.date_key) == None:
@@ -619,7 +717,7 @@ def subarticle(board,id):
 
 def subimgs(id):
     try:
-        rmtree( join(imgtower_dir, id) )
+        rmtree( jimgtower_dir, id)
     except FileNotFoundError:
         pass
 
@@ -676,7 +774,12 @@ def fetchlogin():
 
     #token = userdb.user.get(username).get('token')
     token = userdb.login(username,sha)#token='no' if not in.
-    data = { 'token': token, 'username':username }
+
+    if userdb.ismanager(username) or userdb.ismaster(username):
+        userlevel = "manager"
+    else:
+        userlevel = ""
+    data = { 'token': token, 'username':username , "userlevel":userlevel}
     return jsonify(data)
 
 @app.route('/fetchnewuser' , methods = [ 'POST'])
@@ -684,11 +787,217 @@ def fetchnewuser():
     requestdict = request.get_json()
     username = requestdict['username']
     sha = requestdict['sha']
-    print(username,sha)
+    #print(username,sha)
     data = { 'bodytext' : userdb.newuser(username,sha) }
     return jsonify(data)
 
 
+#-----------------------button value change
+@app.route('/xmlrecomlike' , methods = ['POST'] )
+def xmlrecomlike():
+    key = request.form['key']
+    if key == "recom":
+        dbkey = newdb.recom_key
+    elif key == "like":
+        dbkey = newdb.like_key
+
+    board = request.form['board']
+    id = request.form['id']
+    token = request.form['token']
+    username = userdb.getname(token)
+    if username == "noname":
+        return "noname"
+    time = datestr()
+    # if newdb.press_recom( board, id, time, username) == 1:
+    #     return "value1"
+    # else:
+    #     return "value0"
+    newdb.press_recomlike( board, id, time, username, dbkey )
+    return str(len(newdb.db[board][id][dbkey]))
+
+
+@app.route('/xmlcomm' , methods = ['POST'] )
+def xmlcomm():
+
+    text = request.form['text']
+    board = request.form['board']
+    id = request.form['id']
+    token = request.form['token']
+    username = userdb.getname(token)
+    if username == "noname":
+        return "noname"
+
+    time = datestr()
+    key = newdb.comm_key
+    # if newdb.press_recom( board, id, time, username) == 1:
+    #     return "value1"
+    # else:
+    #     return "value0"
+    #newdb.press_recomlike( board, id, time, username, dbkey )
+    #return str(len(newdb.db[board][id][dbkey]))
+
+    #print(text,id,board,username,time)# works great.
+    userinfo = newdb.setuserinfo(time,username,text, see = newdb.see_default)
+    newdb.add(board,id,key,userinfo)
+    return "done"
+
+@app.route('/xmldelcomm' , methods = ['POST'] )
+def xmldelcomm():
+    board = request.form['board']
+    id = request.form['id']
+    idx = request.form['idx']
+
+    token = request.form['token']
+    username = userdb.getname(token)
+    if username == "noname":
+        return "noname"
+
+    writer = newdb.db[board][id][newdb.comm_key][idx][newdb.user_key]
+    if username != writer:
+        if userdb.ismanager(username) or userdb.ismaster(username):
+            pass
+        else:
+            return "noname"
+
+    del newdb.db[board][id][newdb.comm_key][idx]
+    return "done"
+
+@app.route('/fetchcommload' , methods = [ 'POST'])
+def fetchcommload():
+    requestdict = request.get_json()
+    id = requestdict['id']
+    board = requestdict['board']
+    token = requestdict['token']
+
+    username = userdb.getname(token)
+    #print(username,board,id)
+    data = newdb.db[board][id][newdb.comm_key]
+    return jsonify(data)
+
+
+#--------------------------tag
+@app.route('/xmltag' , methods = ['POST'] )
+def xmltag():
+
+    text = request.form['text']
+    board = request.form['board']
+    id = request.form['id']
+    token = request.form['token']
+    username = userdb.getname(token)
+    if username == "noname":
+        return "noname"
+
+    time = datestr()
+    key = newdb.tag_key
+    # if newdb.press_recom( board, id, time, username) == 1:
+    #     return "value1"
+    # else:
+    #     return "value0"
+    #newdb.press_recomlike( board, id, time, username, dbkey )
+    #return str(len(newdb.db[board][id][dbkey]))
+
+    #print(text,id,board,username,time)# works great.
+    for t in text.split():
+        userinfo = newdb.setuserinfo(time,username,t, see = newdb.see_default)
+        newdb.add(board,id,key,userinfo)
+    return "done"
+
+@app.route('/xmldeltag' , methods = ['POST'] )
+def xmldeltag():
+    board = request.form['board']
+    id = request.form['id']
+    idx = request.form['idx']
+
+    token = request.form['token']
+    username = userdb.getname(token)
+    if username == "noname":
+        return "noname"
+
+    writer = newdb.db[board][id][newdb.tag_key][idx][newdb.user_key]
+    if username != writer:
+        if userdb.ismanager(username) or userdb.ismaster(username):
+            pass
+        else:
+            return "noname"
+
+    del newdb.db[board][id][newdb.tag_key][idx]
+    return "done"
+
+@app.route('/fetchtagload' , methods = [ 'POST'])
+def fetchtagload():
+    requestdict = request.get_json()
+    id = requestdict['id']
+    board = requestdict['board']
+    token = requestdict['token']
+
+    username = userdb.getname(token)
+    #print(username,board,id)
+    data = newdb.db[board][id][newdb.tag_key]
+    #return newdb.db[board][id][key]
+    return jsonify(data)
+
+@app.route('/fetchtaglist' , methods = [ 'POST'])
+def fetchtaglist():
+    requestdict = request.get_json()
+    board = requestdict['board']
+
+    data = newdb.scan_tag(board)
+    #data = dict(sorted( data.items() , key= lambda k: len(data[k[0]]) ,reverse= True))
+    #dict gone unordered in js.
+    return jsonify(data)
+
+
+#-------------------downalod origin imgs
+@app.route('/xmldownlist', methods=['POST'])
+def xmldownlist():
+    board = request.form['board']
+    id = request.form['id']
+    origin = request.form['origin']
+
+    if origin == "true":
+        imgkey = newdb.originkey
+    else:
+        imgkey = newdb.resizedkey
+
+    files = newdb.db[board][id][imgkey]
+    s=""
+    for f in files:
+        s+=f+" "
+    return s
+
+
+@app.route('/multidown', methods=['GET'])
+def multidown():
+    board = request.args.get('board')
+    id = request.args.get('id')
+    origin = request.args.get('origin')
+    file = request.args.get('file')
+    #print(board,id,origin,file)
+
+    if origin == "true":
+        imgdir = "origin"
+    else:
+        imgdir = "resized"
+
+    filepath = join(imgtower_dir,id,imgdir,file)
+    return send_file( filename_or_fp = filepath ,as_attachment = True)
+
+
+@app.route("/getPlotCSV")
+def getPlotCSV():
+    # with open("outputs/Adjacency.csv") as fp:
+    #     csv = fp.read()
+    csv = '1,2,3\n4,5,6\n'
+    return Response(
+        csv,
+        mimetype="text/csv",
+        headers={"Content-disposition":
+                 "attachment; filename=myplot.csv"})
+
+@app.route('/backup')
+def backup():
+    newdb.backup()
+    return "yeah"
 
 if __name__ == "__main__":
     app.run(debug = True, host='0.0.0.0' , port = '12800')

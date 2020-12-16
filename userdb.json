@@ -3,7 +3,8 @@
         "1211560d241c26ebeeaed3c151eab13a53bf6116e7596030e5f2ef30049bc84c": "mas",
         "62270fc8639f4d21f5a427114322af591fb4897f5cc4ac1d569abbc289732a53": "나노하",
         "5e35acc2aa8ade210dbc61df5a0f45c8d6a99accec0b3a883ac0e54f5e623c75": "nano",
-        "3d3676ae6ce437f31d9eb76fc0c17b3a18e83b391d35de6d5eb8cf06226da7c8": "나노하2"
+        "3d3676ae6ce437f31d9eb76fc0c17b3a18e83b391d35de6d5eb8cf06226da7c8": "나노하2",
+        "e5461efc0b427505e53020c7bff49ee09784a232edc5b6499b0ebf18cad83d24": "나노하3"
     },
     {
         "mas": {
@@ -28,6 +29,12 @@
             "sha": "d9e4e8e8dbfd1e356fa38487d2a70bf25555b10e0962ab208b28e43658e75d63",
             "token": "3d3676ae6ce437f31d9eb76fc0c17b3a18e83b391d35de6d5eb8cf06226da7c8",
             "salt": "나노하2",
+            "tsalt": "nosaltfrenchfries"
+        },
+        "나노하3": {
+            "sha": "cc8fdb1c844a24e4710be254e406b0357b807710b29cc9d941f077939863da3e",
+            "token": "e5461efc0b427505e53020c7bff49ee09784a232edc5b6499b0ebf18cad83d24",
+            "salt": "나노하3",
             "tsalt": "nosaltfrenchfries"
         }
     },

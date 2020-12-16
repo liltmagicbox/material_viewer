@@ -62,6 +62,7 @@ fetch(fetchurl,
   //console.log(rawText)
 
   //let username = myJson['username']
+  let userlevel = myJson['userlevel']
   let token = myJson['token']
   if(token=='no'){
     alert('뭔가 문제가..!')
@@ -73,6 +74,8 @@ fetch(fetchurl,
     document.cookie = "sha="+sha
     document.getElementById("username").value = username
     document.getElementById("sha").value = '로그인성공'
+    document.getElementById("userlevel").value = userlevel
+    document.getElementById("userlevel").innerText = userlevel
     showlogout()
     return true//do we need it?
   }
@@ -167,6 +170,7 @@ let lazyhtml =`
 <button id= "fetchloginB" type="button" name="button">로그인</button>
 <button id= "fetchnewuserB" type="button" name="button"> <a href="/newuserpage">새로만들기</a> </button>
 <button id= "fetchlogoutB" type="button" name="button" hidden>로그아웃</button>
+<button id= "userlevel" type="button" ></button>
 `
 function makeloginbox(frame){
   //frame.innerHtml = lazyhtml

@@ -5,33 +5,8 @@ var tagSet_big= new Set([])
 var tagSet_strong= new Set([])
 
 function initTagframe(){
-
-  let ch_tagBox = document.getElementById('characterTagbox')
-  let ch_className = 'tagB_character'
-  let ch_Taglist = ['마키', '린', '하나요', '호노카', '코토리', '우미', '니코', '에리', '노조미']
-  for( var tagtext of ch_Taglist){
-    fillTagframe(tagtext,ch_tagBox,ch_className,state=1)
-  }
-
-  /*
-  moodTagbox = document.getElementById('moodTagbox')
-  moodclassname = "tagB_mood"
-  moodTaglist = ['일상', '먹는다', '여행', '훈훈함', '모후모후', '엄격', '시리어스', '호러', '개그']
-  for ( tagtext of moodTaglist){
-  fillTagframe(tagtext,moodTagbox,moodclassname)
-  }
-  */
-
-
   let userTagbox = document.getElementById('userTagbox')
   makeTagopenB(userTagbox)
-
-
-
-
-
-  makeResetB(userTagbox)
-
 }
 
 function makeTagopenB(tagFrame){
@@ -40,61 +15,92 @@ function makeTagopenB(tagFrame){
   tagB.className = 'tagOpenB'
   tagB.innerText = '추가 태그 로드'
   tagB.setAttribute('value','0')
-  tagB.addEventListener('click',tagOpen )
+  tagB.addEventListener('click', function(){tagOpen(tagFrame)} )
   tagFrame.appendChild(tagB)
 }
 
-function tagOpen(){
-  let userTagbox = document.getElementById('userTagbox')
-  if(event.currentTarget.value ==0){loadUsertag(userTagbox)}//it draws gloval id. not intended!
-  event.currentTarget.value =1
-  //event.currentTarget.innerText = '모두의태그'
+function tagOpen(tagFrame){
+  let params = { 'board': board }
+  let fetchurl = '/fetchtaglist'
+  fetch(fetchurl,
+  {
+    method: 'POST', // or 'PUT'
+    body: JSON.stringify(params), // data can be `string` or {object}!
+    headers:{
+      'Content-Type': 'application/json'
+    }
+  })
+  .then( response => response.json() )
+  .then( function(myJson){
+    tagDict = myJson
+    loadUsertag(tagFrame,myJson)
+  })
 }
 
+function loadUsertag(tagFrame,userTagdict){
+  tagFrame.innerHTML =""
 
-function loadUsertag(userTagbox){
-  userTagbox.innerHTML =""
-  userTagbox.innerText = '모두의 태그 : '
-  let userclassname = 'tagB_user'
-  //let bigTagname='tagB_big'
-  //let userTaglist = ['안된다' ,'뭐?','뭐가','허허허', '아니','이양반아']
-  // fetch,always.
-  //no, load and add datas
-  //and parse datas, get tagsortlist.fine.
-  userTagdict = {'안된다':['9441582','9554060'] ,'뭐?':['9446903','9922107','10399976'],'뭐가':['9448768'],'허허허':['9448884'], '아니':['9449095'],'이양반아':['9449215']}
-  for( var key in userTagdict){
-    fillTagframe(key ,userTagbox,userclassname,state=2, tagNumber=userTagdict[key].length)
+  //global var characterList by html maker... also unitList
+  for( var text in userTagdict){
+    tagclassList = ['tagB',"tagB_big","tagB_character"]
+    if(characterList.includes(text)){
+      fillTagframe(tagFrame, text, tagNumber=userTagdict[text].length, tagclassList)
+    }
   }
-  makeResetB(userTagbox)
-  makebigThrebar(userTagbox)
+  for( var text in userTagdict){
+    if(unitList.includes(text) && !characterList.includes(text) ){
+      tagclassList = ['tagB',"tagB_big","tagB_unit"]
+      fillTagframe(tagFrame, text, tagNumber=userTagdict[text].length, tagclassList)
+    }
+  }
+  for( var text in userTagdict){
+    if(artistList.includes(text)){
+      tagclassList = ['tagB',"tagB_big","tagB_artist"]
+      fillTagframe(tagFrame, text, tagNumber=userTagdict[text].length, tagclassList)
+    }
+  }
+
+  for( var text in userTagdict){
+    if(!characterList.includes(text) && !unitList.includes(text) && !artistList.includes(text) ){
+      tagclassList = ['tagB']
+      fillTagframe(tagFrame, text, tagNumber=userTagdict[text].length, tagclassList)
+    }
+  }
+
+  makeResetB(tagFrame)
+  makebigThrebar(tagFrame)
+  makeviewListN(tagFrame)
 }
+
 
 function makeResetB(tagFrame){
   let tagB = document.createElement('button')
   tagB.type = 'button' // if want submit, change. see mdn button
   tagB.className = 'tagResetB'
   tagB.innerText = '리셋'
-  tagB.addEventListener('click',tagReset )
+  tagB.addEventListener('click',tagBReset )
   tagFrame.appendChild(tagB)
 }
-function tagReset(){
-  let tagclassNameList = ["tagB_character",'tagB_user']
-  for( var tagclassName of tagclassNameList){
-    let tagclassList = document.getElementsByClassName(tagclassName)
-    for( var tagB of tagclassList){ tagB.value = 0 }
-  }
-  tagSet = new Set([])
-  tagSet_user = new Set([])
-  tagSet_exclusive = new Set([])
-  tagSet_big= new Set([])
-  tagSet_strong= new Set([])
 
-  trueBanner()
+function tagBReset(){
+  let inter_Class = document.getElementsByClassName("tagB_inter")
+  let union_Class = document.getElementsByClassName("tagB_union")
+  let exclude_Class = document.getElementsByClassName("tagB_exclude")
 
-  //resetBigguy()//no other way.. not by input,change. inf.loop warn.
-  viewList = Object.keys(datas)
-  fillNewlist(viewList)
+  //for list change problem
+  let inter_List=[]
+  let union_List=[]
+  let exclude_List=[]
+  for(var button of inter_Class){ inter_List.push(button) }
+  for(var button of union_Class){ union_List.push(button) }
+  for(var button of exclude_Class){ exclude_List.push(button) }
+
+  for(var button of inter_List){ button.classList.remove("tagB_inter")}
+  for(var button of union_List){ button.classList.remove("tagB_union")}
+  for(var button of exclude_List){ button.classList.remove("tagB_exclude")}
+  tagBshow()
 }
+
 
 
 
@@ -109,7 +115,7 @@ function makebigThrebar(tagFrame){
   //value jnot working
   //tagB.oninput = 'getNewbigguy(this.value)'
   tagB.addEventListener('input', getNewtext )
-  tagB.addEventListener('change', tagReset )// simple.! could be click()..
+  tagB.addEventListener('change', tagBReset )// simple.! could be click()..
 
 
   let partisan = document.createElement('div')
@@ -124,6 +130,8 @@ function makebigThrebar(tagFrame){
   tagFrame.appendChild(partisan)
 
 }
+
+
 
 /*
 function resetBigguy(){//as reset..failed. for reset, simply, click.
@@ -142,15 +150,32 @@ function getNewtext(){//as reset..failed. for reset, simply, click.
 
 function setBigguy(){
   let bigguyval = document.getElementById('bigThrebar').value
-  let tagB_userList = document.getElementsByClassName("tagB_user")
-  //console.log(tagclassList);
-  for( var butt of tagB_userList){
-    //console.log(butt.getAttribute(tagNumber))
-    if( butt.tagNumber >= bigguyval ){butt.classList.add('bigguy')}
-    else{ butt.className = "tagB_user" }
-    //console.log(butt.tagNumber)
+  let tagB_class = document.getElementsByClassName("tagB")
+  let tagB_List=[]
+  for(var button of tagB_class){ tagB_List.push(button) }
+
+  for( var butt of tagB_List){
+    let classList = butt.classList
+    if(!classList.contains("tagB_character")){
+      if( butt.tagN >= bigguyval ){butt.classList.add('tagB_big')}
+      else{butt.classList.remove('tagB_big')}
+    }
   }
 }
+
+
+function makeviewListN(tagFrame){
+  let viewListN = document.createElement('p')
+  viewListN.className = 'viewListN'
+  viewListN.id = 'viewListN'
+  viewListN.innerText = viewList.length
+  tagFrame.appendChild(viewListN)
+}
+function setviewListN(){
+  let viewListN = document.getElementById('viewListN')
+  viewListN.innerText = viewList.length
+}
+
 
 
 

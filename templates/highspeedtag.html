@@ -73,13 +73,13 @@ input[type=submit] {
 
 
 img{
-  height: 600px;
-  max-width: 100%;
+  height: 500px;
+  max-width: 1000px;
 }
 
 .imgArea{
   display:block;
-  height: 600px;
+  height: 500px;
 }
 .imgBox{
   display:flex;
@@ -92,6 +92,7 @@ img{
   width: 1900px;
 }
 #tagtext {
+
   background-color: white;
   color:red;
 }
@@ -100,7 +101,8 @@ p{
 }
 </style>
 
-<script type="text/javascript" src="./static/headdict.json"> </script>
+<!--script type="text/javascript" src="./static/headdict.json"> </script-->
+<script type="text/javascript" src="./static/head_{{board}}.json?{{headver}}"> </script>
 
 <script type="text/javascript" src="./static/js/sortnolist.js"> </script>
 <script type="text/javascript" src="./static/js/tagquery.js"> </script>
@@ -111,12 +113,19 @@ p{
 <script type="text/javascript" src="./static/js/initimgframe.js"> </script>
 <script type="text/javascript" src="./static/js/initsortframe.js"> </script>
 
+<script type="text/javascript" src="./static/js/shasha.js"> </script>
+<script type="text/javascript" src="./static/js/userfunc.js"> </script>
+
 
 </head>
 <body>
 
 <!--h2>고속태그입력모드</h2-->
 <p>PC사용이 권장됨, 키보드,스페이스로구분(2번 이상 띄워져도됨), 이미있는건 스페이스로 자동완성, 없는건 직접치자. 엔터로 입력확정.</p>
+<div id="loginbox">
+
+</div>
+
 <div class="imgFrame" id = "imgFrame">
 
 </div>
@@ -125,12 +134,8 @@ p{
 <form autocomplete="on" action="#">
   <!--input id="userip" type="hidden" name="ip" notused,for no js get_ip. -->
   <!--input id="submitimg" type="image" alt="제출"  width="50" height="50"-->
-닉네임 :
-<input id="tagNickname" type="text" name="tagNickname" maxlength="16" placeholder="닉네임을입력하자_최대16자" >
-<br>
-마법의 주문 :
-<input id="tagMagicspell" type="text" name="tagMagicspell" maxlength="80" placeholder="인증을 위한 마법의 주문_최대80자">
-  <br>
+
+
 
   태그:
   <div class="autocomplete" style="width:300px;">
@@ -141,9 +146,16 @@ p{
 
   <!--input  type="submit"-->
 </form>
-<button type="button" id='subsub' name="button">하하</button>
+<button type="button" id='subsub' name="button">입력</button>
 <input type="text" id='tagtext' placeholder="입력한태그">
-<a href="/backup">backup</a>
+<!--a href="/backup">backup</a-->
+<br>
+
+<div id="tagserver">
+
+</div>
+
+
 <script>
 function autocomplete(inp, arr) {
   /*the autocomplete function takes two arguments,
@@ -255,10 +267,11 @@ function autocomplete(inp, arr) {
         //tagtext = document.getElementById('tagtext')
         //tagtext.placeholder = '입력된태그'
         //tagtext.placeholder = tagdone[idx]
-        myInput
+
         myInput = document.getElementById('myInput')
-        tagtext.placeholder = '태그를입력하자'
-        tagtext.placeholder = tagdone[idx]
+        //tagtext.placeholder = '태그를입력하자'
+        //tagtext.placeholder = tagdone[idx]
+        gettagtext()
 
       }
       else if (e.keyCode == 39) {//right
@@ -270,8 +283,9 @@ function autocomplete(inp, arr) {
         outFrame.innerHTML=''
         maketagviewbox(datas,viewList[idx],outFrame)
         tagtext = document.getElementById('tagtext')
-        tagtext.placeholder = '입력된태그'
-        tagtext.placeholder = tagdone[idx]
+        gettagtext()
+        //tagtext.placeholder = '입력된태그'
+        //tagtext.placeholder = tagdone[idx]
       }
   });
   function addActive(x) {
@@ -326,7 +340,13 @@ function maketagviewbox(datas, no, outFrame,boxColor=0,miniLoad = 0){
   //create box , img, title, date , attach to outframe
 
   //thumbPath = './static/resized/'+no+'/'+no+datas[no]['리사이즈'][0]
-  let thumbPath = './static/resized/'+no+'/'+datas[no]['리사이즈'][0]
+
+  //let thumbPath = './static/resized/'+no+'/'+datas[no]['리사이즈'][0]
+  let thumbPath = './static/resource/nothumb.jpg'
+  if(datas[no]["리사이즈"].length!=0){
+    thumbPath = './static/imgtower/'+no+'/resized/'+datas[no]['리사이즈'][0]
+  }
+
   let titleText = datas[no]['제목']
   let dateText = datas[no]['날짜']
   let imgNumber = datas[no]['리사이즈'].length
@@ -359,7 +379,8 @@ function maketagviewbox(datas, no, outFrame,boxColor=0,miniLoad = 0){
   for(i of datas[no]['리사이즈']){
     //i = "10231529_1.jpg"
   let im = document.createElement('img')
-  im.src = './static/resized/'+no+'/'+i
+  im.src = './static/imgtower/'+no+'/resized/'+i
+
   im.height = '600px'
   imgArea.appendChild(im)
 }
@@ -404,15 +425,20 @@ subsub.addEventListener('click',sendsend )
 
 function sendsend(){
 
+
   inlist=[]
   ta = document.getElementById('myInput')
   tas= ta.value.split(' ')
   for(t of tas){if(t!=''){inlist.push(t)}}
 
-  no = viewList[idx]
+  id = viewList[idx]
   taglist=inlist
 
-  let params = { 'no': no, 'taglist':taglist}
+  //let board = board
+  let token = getCookie("token")
+
+  let params = { 'board': board, 'id': id, 'taglist':taglist  , 'token':token}
+  /*
   var esc = encodeURIComponent;
   let query = Object.keys(params)
     .map(k => esc(k) + '=' + esc(params[k]))
@@ -422,9 +448,21 @@ function sendsend(){
   //http://liltbox.iptime.org:25252/fetch/bodytext/10399976
   //let url = window.location.href.replace( window.location.pathname , '')
   let url = 'http://liltbox.iptime.org:25252'
-  let fetchurl = url+'/fetchtag?'+query
-  console.log(fetchurl)
-  fetch(fetchurl).then( function(response){
+  //let fetchurl = url+'/fetchtag?'+query
+  let fetchurl = '/fetchtag?'+query
+  */
+  //console.log(fetchurl)
+  let fetchurl = '/fetchtag'
+  fetch(fetchurl,
+    {
+      method: 'POST', // or 'PUT'
+      body: JSON.stringify(params), // data can be `string` or {object}!
+      headers:{
+        'Content-Type': 'application/json'
+      }
+    }
+  )
+  .then( function(response){
     tagdone[idx]= taglist.toString()
 
 
@@ -448,4 +486,16 @@ function sendsend(){
 </script>
 
 </body>
+
+<script type="text/javascript">
+  frame = document.getElementById("loginbox")
+  makeloginbox(frame)
+</script>
+
+<script>
+  let box = document.getElementById("tagserver")
+  let no = document.getElementsByClassName("imgBox")[0].no
+  tagtext
+</script>
+
 </html>

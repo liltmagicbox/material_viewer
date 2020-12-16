@@ -35,6 +35,7 @@ def newboard(name):
     if db.get(name) == None:
         db[name] ={}
         backup()
+        headcheck(name)
         return True
     return False
 
@@ -107,6 +108,17 @@ def addtag(board,id, time,user,text ):
     key = tag_key
     userinfo = setuserinfo(time,user,text,see=see_default)
     add(board,id,key,userinfo)
+
+def press_recomlike(board,id, time,user, key):
+    userinfo = setuserinfo(time,user,text="",see=see_default)
+    target = db[board][id][key]
+    for k in target.keys():
+        if target[k][user_key] == user:
+            del target[k]
+            return 0
+    #means else.
+    add(board,id,key,userinfo)
+    return 1
 
 
 #def iswriter()
@@ -202,9 +214,16 @@ def scan_head(board):
         #     for i in db[board][id][thumbkey]:
         #         tmpdict[thumbkey].append( i.split(id)[1] )
 
+        #added for tag sort legacy.
+        tmpdict[hero_key] =[]
+        for i in db[board][id][hero_key]:
+            tmpdict[hero_key].append( i )
+
         tempdict[id] = tmpdict
 
-    return tempdict
+    #return tempdict
+    sortedList = dict(sorted( tempdict.items() , key= lambda k: db[board][k[0]][uploadtime_key]  ,reverse = True))
+    return sortedList
 
 
 #--------------------------------------------------tagdict
@@ -212,7 +231,8 @@ def scan_head(board):
 def scan_tag(board):
     tmpdict = {}
     for id in db[board]:
-        for tname in db[board][id][tag_key]:
+        for idx in db[board][id][tag_key]:
+            tname = db[board][id][tag_key][idx][text_key]
             if tmpdict.get(tname) == None:
                 tmpdict[tname] = []#hope same id in tname not happen
             tmpdict[tname].append(id)

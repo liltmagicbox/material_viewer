@@ -64,7 +64,7 @@
 
         <a href="/newboard">새 게시판</a>
         <a href="/articleboard">게시판 관리</a>
-        
+
         <a href="/assignuser">계정 권한 부여</a>
 
 
@@ -129,6 +129,38 @@
     <footer id='foot'>
       <p> 2020 lovelive gallery </p>
     </footer>
+
+    <script type="text/javascript">
+
+      artistList = []
+      {%for key in artistList %}
+        artistList.push( "{{key}}" )
+      {%endfor%}
+
+      characterList = []
+      {%for key in characterList %}
+        characterList.push( "{{key}}" )
+      {%endfor%}
+
+      unitList = []
+      {%for key in unitDict.keys() %}
+        unitList.push( "{{key}}" )
+      {%endfor%}
+
+      strDict = {}
+      {%for key,value in unitDict.items() %}
+          strDict["{{key}}"] ="{{value}}"
+      {%endfor%}
+
+    unitDict = {}
+    for( var key of Object.keys(strDict) ){
+      let str = strDict[key]
+      let templist = str.replaceAll("&#39;",'"').replaceAll('"',"").replaceAll(" ","").replaceAll('[',"").replaceAll(']',"").split(",")
+      unitDict[key] = new Set(templist)
+    }
+    strDict = {}
+
+    </script>
 
     <script type="text/javascript">
     initTagframe()

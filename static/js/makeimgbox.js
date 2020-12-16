@@ -86,12 +86,13 @@ function makeImgbox(datas, no, outFrame,boxColor=0,miniLoad = 0){
   let titleText = datas[no]['제목']
   let dateText = datas[no]['날짜']
   let imgNumber = datas[no]['리사이즈'].length
-  //let board = decodeURI( window.location.search.split("board=")[1].split("&")[0] )
+  let board = decodeURI( window.location.search.split("board=")[1].split("&")[0] )
 
   let box = document.createElement('div')
   box.className = 'imgBox'
   box.id = "imgBox_"+no
   box.no = no
+  box.board = board
   box.setAttribute('color', boxColor)
 
   let title = document.createElement('h2')
@@ -119,15 +120,24 @@ function makeImgbox(datas, no, outFrame,boxColor=0,miniLoad = 0){
   let bodyB = document.createElement('button')
   bodyB.type = 'button' // if want submit, change. see mdn button
   bodyB.className = 'bodyB'
-  //bodyB.board= board
   bodyB.innerText = '로드('+(imgNumber-1)+')'
   //bodyB.id = "bodyB_"+no
-  bodyB.no = no
+  //bodyB.board= board
+  //bodyB.no = no
+
   //bodyB.name = ""
   //bodyB.value = ""
   //bodyB.pressed = false
   bodyB.addEventListener('click',eventBodyload )
   box.appendChild(bodyB)
+
+
+  let downB = document.createElement('button')
+  downB.type = 'button' // if want submit, change. see mdn button
+  downB.className = 'downB'
+  downB.innerText = '다운'
+  downB.addEventListener('click', function(e){eventDownload(box.no, box.board)} )
+  box.appendChild(downB)
 
   //다운로드버튼이다. 누르면 zip으로다운해준다. ...필요한가??일단미작성.
   /*
@@ -176,8 +186,10 @@ function overLayview(){
 
   box = innerviewer
   //let no= preimg.parentElement.id.split('_')[1]
+  console.log(preimg)
   let before_id = preimg.parentElement.id.indexOf('_')
   let no = preimg.parentElement.id.slice(before_id+1)
+  let board = preimg.parentElement.parentElement.board
 
   let titleText = datas[no]['제목']
   let dateText = datas[no]['날짜']
@@ -262,6 +274,12 @@ function eventImclick(event){
   bodyLoad(box)
 }
 
+
+
+
+
+
+
 function eventBodyload(event){
   //event.currentTarget.pressed = !event.currentTarget.pressed
   //let box = event.currentTarget.id
@@ -272,11 +290,17 @@ function eventBodyload(event){
   //window.scroll(0, scrollYbefore )
 
   let button = event.currentTarget//for delete self
-  let no = event.currentTarget.no
+  //let no = event.currentTarget.no
+  //let board = event.currentTarget.board
+
   //let box = document.getElementById("imgBox_"+no)
   let box = event.currentTarget.parentElement
   //let imArea = document.getElementById("imgArea_"+no)
   //let imArea = box.firstElementChild
+
+  let no = box.no
+  let board = box.board
+
 
 
   box.getElementsByClassName("imgTitle")[0].setAttribute("shrink",0)
@@ -316,6 +340,7 @@ function eventBodyload(event){
 
   let bodyText = document.createElement('pre')
   bodyText.innerHTML += "<br><br>"
+  box.appendChild(bodyText)
   //bodyText.width = imgArea.clientWidth
   //box.appendChild(bodyText) why you here?!
 
@@ -376,6 +401,8 @@ function eventBodyload(event){
 
 
 
+    let inText = document.createElement('p')
+
     //url parse and get link. notice that full url text will  go thorugh img box..
     let urls = rawText.match(/\bhttps?:\/\/\S+/gi)
 
@@ -393,24 +420,27 @@ function eventBodyload(event){
     for( var u of urls){
       //bodyText.innerHTML += rawText.slice(rawText.lastIndexOf(urls[urls.length-1])+urls[urls.length-1].length+1)
       let remain = ''
-      for( var i of rawText2.split(u) ){remain+=i+"*link*"}
+      for( var i of rawText2.split(u) ){remain+=i+"*"}
       rawText2 = remain
 
       //console.log(rawText2,'r2')
     }
-    bodyText.innerHTML+=rawText2
+
+
+    inText.innerText = rawText2
     }
     else{
-      bodyText.innerHTML+=rawText
+      inText.innerText = rawText
     }
     //rawText = rawText.replace(u, u.link(u)+'<br><br>' )
     //tryed this , but twitter.com  and twitter.com/view problem..ha.
 
 
 
+    bodyText.appendChild(inText)
     //bodyText.innerText += myJson['bodytext']
     //bodyText.style.display = 'inline' text over, width change case.
-    box.appendChild(bodyText)
+    //box.appendChild(bodyText)
 
 
 
@@ -437,8 +467,467 @@ function eventBodyload(event){
   button.addEventListener('click',scrollup )
 
 
+  //finally xml buttons.
+  box.appendChild( document.createElement("hr") )
+
+  addrecomB(box,no,board)
+  addlikeB(box,no,board)
+
+  addcommarea(box,no,board)
+
+  addtagarea(box,no,board)
+
 }
 
 function scrollup(){
   window.scroll(0, scrollYbeforeloadbody )
 }
+
+
+function addrecomB(box,no,board){
+  let recomB = document.createElement('button')
+  recomB.type = 'button'
+  recomB.className = 'recomB'
+  recomB.innerText = '추천'
+  recomB.value = "0"
+  recomB.no = no
+  recomB.board= board
+
+  //recomB.id = "recomB_"+no
+  //recomB.name = ""
+  //recomB.value = ""
+  //recomB.pressed = false
+  recomB.addEventListener('click', function(e){xmlrecomB(recomB)} )
+  box.appendChild(recomB)
+}
+function addlikeB(box,no,board){
+  let likeB = document.createElement('button')
+  likeB.type = 'button'
+  likeB.className = 'likeB'
+  likeB.innerText = '좋아'
+  likeB.value = "0"
+  likeB.no = no
+  likeB.board= board
+
+  //likeB.id = "likeB_"+no
+  //likeB.name = ""
+  //likeB.value = ""
+  //likeB.pressed = false
+  likeB.addEventListener('click', function(e){xmllikeB(likeB)} )
+  box.appendChild(likeB)
+}
+function xmlrecomB(recomB){
+  var url = '/xmlrecomlike'
+  var xhr = new XMLHttpRequest()
+  var formData = new FormData()
+  xhr.open('POST', url, true)
+  xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest')
+
+  xhr.addEventListener("load", function(event){
+    let response = event.srcElement.responseText
+    if( response == "noname"){alert("로그인 하세요!")}
+    //if( response == "value1"){recomB.value="1"; recomB.innerText="추천함";}
+    //if( response == "value0"){recomB.value="0"; recomB.innerText="추천";}
+    if( response<9999 ){recomB.innerText= "추천("+response+")"}
+  } )
+
+  let id = recomB.no
+  let board = recomB.board
+  let token = getCookie('token')
+  formData.append("id", id)
+  formData.append("board", board)
+  formData.append("token", token)
+  formData.append("key", "recom")
+  xhr.send(formData)
+}
+
+function xmllikeB(likeB){
+  var url = '/xmlrecomlike'
+  var xhr = new XMLHttpRequest()
+  var formData = new FormData()
+  xhr.open('POST', url, true)
+  xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest')
+
+  xhr.addEventListener("load", function(event){
+    let response = event.srcElement.responseText
+    if( response == "noname"){alert("로그인 하세요!")}
+    //if( response == "value1"){likeB.value="1"; likeB.innerText="추천함";}
+    //if( response == "value0"){likeB.value="0"; likeB.innerText="추천";}
+    if( response<9999 ){likeB.innerText= "좋아("+response+")"}
+  } )
+
+  let id = likeB.no
+  let board = likeB.board
+  let token = getCookie('token')
+  formData.append("id", id)
+  formData.append("board", board)
+  formData.append("token", token)
+  formData.append("key", "like")
+  xhr.send(formData)
+}
+
+
+
+function addcommloadB(box,no,board){
+  let commloadB = document.createElement('button')
+  commloadB.type = 'button'
+  commloadB.className = 'commloadB'
+  commloadB.innerText = '댓글로드'
+  commloadB.no = no
+  commloadB.board= board
+
+  //commloadB.id = "commloadB_"+no
+  //commloadB.name = ""
+  //commloadB.value = ""
+  //commloadB.pressed = false
+  commloadB.addEventListener('click', function(e){fetchcommloadB(commloadB)} )
+  box.appendChild(commloadB)
+}
+function fetchcommloadB(commloadB){
+  let url = window.location.href.split(window.location.pathname)[0]
+  //let fetchurl = url+'/fetchlogin'
+  let fetchurl = '/fetchcommload'
+
+  let id = commloadB.no
+  let board = commloadB.board
+  let token = getCookie('token')
+  let params = { 'id': id, 'board': board,'token': token }
+  fetch(fetchurl,
+  {
+    method: 'POST', // or 'PUT'
+    body: JSON.stringify(params), // data can be `string` or {object}!
+    headers:{
+      'Content-Type': 'application/json'
+    }
+  })
+  .then( response => response.json() )
+  .then( function(myJson){
+    let commarea = commloadB.parentElement
+    let commtext = commarea.getElementsByClassName("commtext")[0]
+    commtext.innerHTML=""
+
+    for( var idx of Object.keys(myJson) ){
+      let d = myJson[idx]
+      let li = document.createElement("li")
+      li.idx = idx
+
+      li.innerText = d["내용"]
+
+      li.time = d["시간"]
+      li.user = d["유저"]
+      li.see = d["보기"]
+      //these 3 are inner value.. may not seen..fine.
+
+      let loginname = document.getElementById("username").value
+      let userlevel = document.getElementById("userlevel").value
+
+      if(loginname == li.user || userlevel == "manager"){
+      let delB = document.createElement("button")
+      delB.innerText = "X"
+      delB.addEventListener( "click", function(e){xmldelcomm(board,id,li.idx,token, commloadB)}  )
+      li.appendChild(delB)
+      }
+
+      commtext.appendChild(li)
+    }
+
+  })
+
+}
+
+function xmldelcomm(board,id,idx,token ,commloadB){
+  if(confirm("삭제?")==false){return false}
+  var url = '/xmldelcomm'
+  var xhr = new XMLHttpRequest()
+  var formData = new FormData()
+  xhr.open('POST', url, true)
+  xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest')
+
+  xhr.addEventListener("load", function(event){
+    let response = event.srcElement.responseText
+    if( response == "noname"){alert("안된다")}
+    if( response == "done" ){
+      commloadB.click()
+    }
+  } )
+
+  formData.append("board", board)
+  formData.append("id", id)
+  formData.append("idx", idx)
+  formData.append("token", token)
+  xhr.send(formData)
+}
+
+
+
+
+function addcommarea(box,no,board){
+  let commarea = document.createElement('div')
+  commarea.className = "commarea"
+  commarea.appendChild(document.createElement('br'))
+  addcommloadB(commarea,no,board)
+
+  let commtext = document.createElement('div')
+  commtext.className = "commtext"
+  commarea.appendChild(commtext)
+
+  let comminput = document.createElement('input')
+  comminput.type = "text"
+  comminput.size = "15"
+  comminput.maxlength = "80"
+
+  comminput.addEventListener('keypress', function (e) {
+    if (e.key === 'Enter') {
+      commsend.click()
+    }
+  })
+  commarea.appendChild(comminput)
+
+  let commsend = document.createElement('button')
+  commsend.type = "button"
+  commsend.innerText = "등록"
+
+  commsend.addEventListener('click', function(e){
+    let text = comminput.value
+    xmlcommsend(no,board,text,comminput)
+  } )
+
+  commarea.appendChild(commsend)
+
+  box.appendChild(commarea)
+}
+
+function xmlcommsend(no,board,text,comminput){
+  var url = '/xmlcomm'
+  var xhr = new XMLHttpRequest()
+  var formData = new FormData()
+  xhr.open('POST', url, true)
+  xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest')
+
+  xhr.addEventListener("load", function(event){
+    let response = event.srcElement.responseText
+    if( response == "noname"){alert("로그인 하세요!")}
+    //if( response == "value1"){likeB.value="1"; likeB.innerText="추천함";}
+    //if( response == "value0"){likeB.value="0"; likeB.innerText="추천";}
+    if( response == "done" ){
+      comminput.value=""
+      comminput.parentElement.getElementsByClassName("commloadB")[0].click()
+    }
+  } )
+
+  let token = getCookie('token')
+  formData.append("id", no)
+  formData.append("board", board)
+  formData.append("token", token)
+  formData.append("text", text)
+  xhr.send(formData)
+}
+
+
+
+
+
+
+
+
+
+function addtagarea(box,no,board){
+    let commarea = document.createElement('div')
+    commarea.className = "tagarea"
+    commarea.appendChild(document.createElement('br'))
+    addtagloadB(commarea,no,board)
+
+    let commtext = document.createElement('div')
+    commtext.className = "tagtext"
+    commarea.appendChild(commtext)
+
+    let comminput = document.createElement('input')
+    comminput.type = "text"
+    comminput.size = "15"
+    comminput.maxlength = "80"
+
+    comminput.addEventListener('keypress', function (e) {
+      if (e.key === 'Enter') {
+        commsend.click()
+      }
+    })
+    commarea.appendChild(comminput)
+
+    let commsend = document.createElement('button')
+    commsend.type = "button"
+    commsend.innerText = "등록"
+
+    commsend.addEventListener('click', function(e){
+      let text = comminput.value
+      xmltagsend(no,board,text,comminput)
+    } )
+
+    commarea.appendChild(commsend)
+
+    box.appendChild(commarea)
+  }
+function xmltagsend(no,board,text,comminput){
+    var url = '/xmltag'
+    var xhr = new XMLHttpRequest()
+    var formData = new FormData()
+    xhr.open('POST', url, true)
+    xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest')
+
+    xhr.addEventListener("load", function(event){
+      let response = event.srcElement.responseText
+      if( response == "noname"){alert("로그인 하세요!")}
+      //if( response == "value1"){likeB.value="1"; likeB.innerText="추천함";}
+      //if( response == "value0"){likeB.value="0"; likeB.innerText="추천";}
+      if( response == "done" ){
+        comminput.value=""
+        comminput.parentElement.getElementsByClassName("tagloadB")[0].click()
+      }
+    } )
+
+    let token = getCookie('token')
+    formData.append("id", no)
+    formData.append("board", board)
+    formData.append("token", token)
+    formData.append("text", text)
+    xhr.send(formData)
+  }
+
+
+
+
+  function addtagloadB(box,no,board){
+    let commloadB = document.createElement('button')
+    commloadB.type = 'button'
+    commloadB.className = 'tagloadB'
+    commloadB.innerText = '태그로드'
+    commloadB.no = no
+    commloadB.board= board
+
+    //commloadB.id = "commloadB_"+no
+    //commloadB.name = ""
+    //commloadB.value = ""
+    //commloadB.pressed = false
+    commloadB.addEventListener('click', function(e){fetchtagloadB(commloadB)} )
+    box.appendChild(commloadB)
+  }
+  function fetchtagloadB(commloadB){
+    let url = window.location.href.split(window.location.pathname)[0]
+    //let fetchurl = url+'/fetchlogin'
+    let fetchurl = '/fetchtagload'
+
+    let id = commloadB.no
+    let board = commloadB.board
+    let token = getCookie('token')
+    let params = { 'id': id, 'board': board,'token': token }
+    fetch(fetchurl,
+    {
+      method: 'POST', // or 'PUT'
+      body: JSON.stringify(params), // data can be `string` or {object}!
+      headers:{
+        'Content-Type': 'application/json'
+      }
+    })
+    .then( response => response.json() )
+    .then( function(myJson){
+      let commarea = commloadB.parentElement
+      let commtext = commarea.getElementsByClassName("tagtext")[0]
+      commtext.innerHTML=""
+
+      for( var idx of Object.keys(myJson) ){
+        let d = myJson[idx]
+        let li = document.createElement("li")
+        li.idx = idx
+
+        li.innerText = d["내용"]
+
+        li.time = d["시간"]
+        li.user = d["유저"]
+        li.see = d["보기"]
+        //these 3 are inner value.. may not seen..fine.
+
+        let loginname = document.getElementById("username").value
+        let userlevel = document.getElementById("userlevel").value
+
+        if(loginname == li.user || userlevel == "manager"){
+        let delB = document.createElement("button")
+        delB.innerText = "X"
+        delB.addEventListener( "click", function(e){xmldeltag(board,id,li.idx,token, commloadB)}  )
+        li.appendChild(delB)
+        }
+
+        commtext.appendChild(li)
+      }
+    })
+
+  }
+
+  function xmldeltag(board,id,idx,token ,commloadB){
+    if(confirm("삭제?")==false){return false}
+    var url = '/xmldeltag'
+    var xhr = new XMLHttpRequest()
+    var formData = new FormData()
+    xhr.open('POST', url, true)
+    xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest')
+
+    xhr.addEventListener("load", function(event){
+      let response = event.srcElement.responseText
+      if( response == "noname"){alert("안된다")}
+      if( response == "done" ){
+        commloadB.click()
+      }
+    } )
+
+    formData.append("board", board)
+    formData.append("id", id)
+    formData.append("idx", idx)
+    formData.append("token", token)
+    xhr.send(formData)
+  }
+
+
+
+
+  function eventDownload(id, board){
+    let origin = "false"
+    if(confirm("고화질원본으로 다운할까요?")==true){
+      origin = "true"
+    }
+
+    var url = '/xmldownlist'
+    var xhr = new XMLHttpRequest()
+    var formData = new FormData()
+    xhr.open('POST', url, true)
+    xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest')
+
+
+    xhr.addEventListener("load", function(event){
+      let response = event.srcElement.responseText
+      let filelist = response.split(" ")
+      downlist(id,board,origin, filelist)
+    } )
+
+    formData.append("board", board)
+    formData.append("id", id)
+    formData.append("origin", origin)
+    xhr.send(formData)
+  }
+
+  function downlist(id,board,origin, filelist){
+    let timey = 100
+    for( var file of filelist){
+      if (file==""){return false}
+      let url = "/multidown?board="+board+"&id="+id+"&origin="+origin+"&file="+file
+
+      let r = document.createElement("a")
+      r.href=url
+
+      setTimeout( function(){r.click()} ,timey)
+      timey+=2000
+
+      /*setTimeout( function(){
+        //window.open( url )
+        console.log(url)
+      }, timey)
+      timey+=2000*/
+    }
+  }

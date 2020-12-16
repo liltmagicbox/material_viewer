@@ -54,12 +54,12 @@ function tagQueryInter(datas,noList,queryList ){
 
   for ( var query of queryList){
     for ( key of tagList) {
-      if( fluid[key] !=undefined){
-        if( datas[key]['캐릭터태그'].includes(query) ){
+      //if( fluid[key] !=undefined){
+        if( datas[key]['주연'].includes(query) ){
           if( !tmpList.includes(key) ){ tmpList.push( key )
           }
         }
-      }
+      //}
     }
     tagList = tmpList
     tmpList = []
