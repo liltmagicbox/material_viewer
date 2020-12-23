@@ -28,89 +28,122 @@ uploadtime_key = "업로드시"
 uploader_key = "업로더"
 
 #------------------------------temp board info list
-characterList = {}
-unitDict = {}
-artistList = {}
+artistList={}
+characterList={}
+unitDict={}
+def newtaginfo(board):
+    artistList[board]=[]
+    characterList[board]=[]
+    unitDict[board]={}
 
-
-
-에리="에리"
-노조미="노조미"
-우미="우미"
-니코="니코"
-마키="마키"
-호노카="호노카"
-코토리="코토리"
-하나요="하나요"
-린="린"
-characterList["게시판1"] = [호노카,우미,코토리,린,하나요,마키,노조미,에리,니코]
-
-unitDict["게시판1"] = {
-"뮤즈":[코토리,우미,호노카,마키,린,하나요,노조미,에리,니코],
-
-"에리" :[에리],
-"노조미":[노조미],
-"우미" :[우미],
-"니코" :[니코],
-"마키" :[마키],
-"호노카":[호노카],
-"코토리":[코토리],
-"하나요":[하나요],
-"린":[린],
-
-"1학년":[린,하나요,마키],
-"2학년":[우미,코토리,호노카],
-"3학년":[노조미,에리,니코],
-
-"비비":[니코,마키,에리],
-"릴화":[노조미,우미,린],
-"쁘랭땅":[코토리,호노카,하나요],
-
-"노조에리":[노조미,에리],
-"니코마키":[니코,마키],
-"린파나":[린,하나요],
-"코토우미":[코토리,우미],
-
-"니코린파나":[니코,린,하나요],
-"린마키":[린,마키],
-"에리우미":[에리,우미],
-"코토파나":[코토리,하나요],
-"노조니코":[노조미,니코],
-
-"호노린":[호노카,린],
-"솔겜조":[에리,우미,마키],
-
-}
-
-artistList["게시판1"] = ["reonardo",
-"あさかわさん",
-"うる",
-"う・ω・る",
-"みぃ",
-"ガリアブス",
-"ナカム",
-"天翔幻獣",
-"黒潮",]
+def deltaginfo(board):
+    try:
+        del artistList[board]
+        del characterList[board]
+        del unitDict[board]
+    except:
+        pass
+#
+# 에리="에리"
+# 노조미="노조미"
+# 우미="우미"
+# 니코="니코"
+# 마키="마키"
+# 호노카="호노카"
+# 코토리="코토리"
+# 하나요="하나요"
+# 린="린"
+# characterList["게시판1"] = [호노카,우미,코토리,린,하나요,마키,노조미,에리,니코]
+#
+# unitDict["게시판1"] = {
+# "뮤즈":[코토리,우미,호노카,마키,린,하나요,노조미,에리,니코],
+#
+# "에리" :[에리],
+# "노조미":[노조미],
+# "우미" :[우미],
+# "니코" :[니코],
+# "마키" :[마키],
+# "호노카":[호노카],
+# "코토리":[코토리],
+# "하나요":[하나요],
+# "린":[린],
+#
+# "1학년":[린,하나요,마키],
+# "2학년":[우미,코토리,호노카],
+# "3학년":[노조미,에리,니코],
+#
+# "비비":[니코,마키,에리],
+# "릴화":[노조미,우미,린],
+# "쁘랭땅":[코토리,호노카,하나요],
+#
+# "노조에리":[노조미,에리],
+# "니코마키":[니코,마키],
+# "린파나":[린,하나요],
+# "코토우미":[코토리,우미],
+#
+# "니코린파나":[니코,린,하나요],
+# "린마키":[린,마키],
+# "에리우미":[에리,우미],
+# "코토파나":[코토리,하나요],
+# "노조니코":[노조미,니코],
+#
+# "호노린":[호노카,린],
+# "솔겜조":[에리,우미,마키],
+#
+# }
+#
+# artistList["게시판1"] = ["reonardo",
+# "あさかわさん",
+# "うる",
+# "う・ω・る",
+# "みぃ",
+# "ガリアブス",
+# "ナカム",
+# "天翔幻獣",
+# "黒潮",]
 #---------------------------------
 
 
 db={}
 
+
+
 def newboard(name):
     if db.get(name) == None:
         db[name] ={}
+        newtaginfo(name)
         backup()
-        headcheck(name)
         return True
     return False
 
 def backup():
-    saveJson(db,"db.json")
+    #saveJson(db,"db.json")
+    # global db
+    # global taginfo
+    tmp ={"artistList":artistList,"characterList":characterList,"unitDict":unitDict, "db":db}
+    saveJson(tmp,"data.json")
+
+    boardList = list( db.keys() )
+    for board in boardList:
+        headcheck(board)
     return True
 
 def backdown():
     global db
-    db = loadJson("db.json")
+    #db = loadJson("db.json")
+    global artistList
+    global characterList
+    global unitDict
+    data = loadJson("data.json")
+    db = data["db"]
+
+    artistList = data["artistList"]
+    characterList = data["characterList"]
+    unitDict = data["unitDict"]
+
+    boardList = list( db.keys() )
+    for board in boardList:
+        headcheck(board)
     return True
 
 #time may be defaulted. if need, it will be updated.
@@ -138,7 +171,6 @@ def trasharticle(board,id,):
 
 # concern write speed.
 def after_newarticle(board):
-    headcheck(board)
     backup()
 
 # userinfo not need? time here and user,text is only need? and if see, want.
@@ -233,7 +265,7 @@ def headcheck(board):
         dataspath = "./static/head_{}.json".format(board)
         saveVarjson( head[board][1] , dataspath )
 
-
+#gethead is dead.
 def gethead(board,head_ver):
     headcheck(board)
     global head
@@ -280,9 +312,10 @@ def scan_head(board):
         #         tmpdict[thumbkey].append( i.split(id)[1] )
 
         #added for tag sort legacy.
-        tmpdict[hero_key] =[]
-        for i in db[board][id][hero_key]:
-            tmpdict[hero_key].append( i )
+        #del 2020.12.23.
+        # tmpdict[hero_key] =[]
+        # for i in db[board][id][hero_key]:
+        #     tmpdict[hero_key].append( i )
 
         tempdict[id] = tmpdict
 
@@ -358,9 +391,6 @@ def bodyload(board,id):
 #---------------when loading, load before.
 try:
     backdown()
-    boardList = list( db.keys() )
-    for board in boardList:
-        headcheck(board)
     print("db backup loaded")
 except:
     print("db backup not")

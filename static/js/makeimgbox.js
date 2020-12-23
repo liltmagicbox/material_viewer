@@ -139,6 +139,35 @@ function makeImgbox(datas, no, outFrame,boxColor=0,miniLoad = 0){
   downB.addEventListener('click', function(e){eventDownload(box.no, box.board)} )
   box.appendChild(downB)
 
+
+
+  if( getCookie("userlevel")=="manager"){
+    let delB = document.createElement('button')
+    delB.type = 'button' // if want submit, change. see mdn button
+    delB.className = 'delB'
+    delB.innerText = '글삭제'
+    delB.addEventListener('click', function(e){
+      let token = getCookie("token")
+      xmldelarticle(board,no,token)
+    })
+    box.appendChild(delB)
+
+    let modB = document.createElement('button')
+    modB.type = 'button' // if want submit, change. see mdn button
+    modB.className = 'modB'
+    modB.innerText = '제목수정'
+    modB.addEventListener('click', function(e){
+      let token = getCookie("token")
+      //xmldelarticle(board,no,token)
+      let newtitle = prompt("최대30자)제목수정: "+titleText,titleText)
+      if(newtitle!=null){xmlmodtitle(board,no,token,newtitle.substr(0,30))}
+    })
+    box.appendChild(modB)
+  }
+
+
+
+
   //다운로드버튼이다. 누르면 zip으로다운해준다. ...필요한가??일단미작성.
   /*
   let downB = document.createElement('button')
@@ -619,9 +648,7 @@ function fetchcommloadB(commloadB){
       //these 3 are inner value.. may not seen..fine.
 
       let loginname = document.getElementById("username").value
-      let userlevel = document.getElementById("userlevel").value
-
-      if(loginname == li.user || userlevel == "manager"){
+      if(loginname == li.user || getCookie("userlevel")=="manager"){
       let delB = document.createElement("button")
       delB.innerText = "X"
       delB.addEventListener( "click", function(e){xmldelcomm(board,id,li.idx,token, commloadB)}  )
@@ -846,9 +873,7 @@ function xmltagsend(no,board,text,comminput){
         //these 3 are inner value.. may not seen..fine.
 
         let loginname = document.getElementById("username").value
-        let userlevel = document.getElementById("userlevel").value
-
-        if(loginname == li.user || userlevel == "manager"){
+        if(loginname == li.user || getCookie("userlevel")=="manager"){
         let delB = document.createElement("button")
         delB.innerText = "X"
         delB.addEventListener( "click", function(e){xmldeltag(board,id,li.idx,token, commloadB)}  )
@@ -922,7 +947,7 @@ function xmltagsend(no,board,text,comminput){
       r.href=url
 
       setTimeout( function(){r.click()} ,timey)
-      timey+=2000
+      timey+=1100
 
       /*setTimeout( function(){
         //window.open( url )

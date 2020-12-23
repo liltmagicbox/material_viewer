@@ -37,7 +37,15 @@ function tagOpen(tagFrame){
   })
 }
 
-function loadUsertag(tagFrame,userTagdict){
+function loadUsertag(tagFrame,pre_userTagdict){
+
+  let userTagdict = {}
+  Object.keys(pre_userTagdict).sort( function(a,b){
+    return (pre_userTagdict[a].length<pre_userTagdict[b].length)*2-1
+  }).forEach(function(key){
+    userTagdict[key]=pre_userTagdict[key]
+  })
+  console.log(userTagdict)
   tagFrame.innerHTML =""
 
   //global var characterList by html maker... also unitList

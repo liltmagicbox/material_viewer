@@ -152,7 +152,8 @@ def getJar(preventSet={}):
             if len(parsedDict) != len(parseKeys):
                 parsedDict[title_key] = noFolder
                 #parsedDict[id_key] = '_'+sha256( parsedDict[title_key].encode() ).hexdigest()[:10]
-                parsedDict[id_key] = '_'+str(uuid4())[:13]
+                #parsedDict[id_key] = '_'+str(uuid4())[:13]
+            parsedDict[id_key] = str(uuid4())[:13]
             #----------------- txt file parser
 
 

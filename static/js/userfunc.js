@@ -42,8 +42,9 @@ function fetchlogin(){
 function realfetchlogin( username, sha){
 
   let params = { 'username': username, 'sha': sha,}
-  let url = window.location.href.split(window.location.pathname)[0]
-  let fetchurl = url+'/fetchlogin'
+  //let url = window.location.href.split(window.location.pathname)[0]
+  //let fetchurl = url+'/fetchlogin'
+  let fetchurl = '/fetchlogin'
 
 //fetch(fetchurl, {method: 'POST', body: JSON.stringify( params )} )
 fetch(fetchurl,
@@ -72,6 +73,7 @@ fetch(fetchurl,
     document.cookie = "token="+token
     document.cookie = "username="+username
     document.cookie = "sha="+sha
+    document.cookie = "userlevel="+userlevel
     document.getElementById("username").value = username
     document.getElementById("sha").value = '로그인성공'
     document.getElementById("userlevel").value = userlevel
@@ -215,4 +217,45 @@ function initlogin(){
     //document.cookie = "username=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
     //document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
     //document.cookie = "sha=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+}
+
+
+
+//-----below imported functions.
+
+function xmldelarticle(board,id,token){
+  var url = '/xmldelarticle'
+  var xhr = new XMLHttpRequest()
+  var formData = new FormData()
+  xhr.open('POST', url, true)// true means async.
+  xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest')
+
+  xhr.addEventListener("load", function(e){
+    //Fshowarticles()
+    ( e.srcElement.status==200 ? alert(e.srcElement.responseText) : alert("fail..") )
+  })
+
+  formData.append("board", board  )
+  formData.append("id", id  )
+  formData.append("token", token  )
+  xhr.send(formData)
+}
+
+function xmlmodtitle(board,id,token,newtitle){
+  var url = '/xmlmodtitle'
+  var xhr = new XMLHttpRequest()
+  var formData = new FormData()
+  xhr.open('POST', url, true)// true means async.
+  xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest')
+
+  xhr.addEventListener("load", function(e){
+    //Fshowarticles()
+    ( e.srcElement.status==200 ? alert(e.srcElement.responseText) : alert("fail..") )
+  })
+
+  formData.append("board", board  )
+  formData.append("id", id  )
+  formData.append("token", token  )
+  formData.append("newtitle", newtitle  )
+  xhr.send(formData)
 }

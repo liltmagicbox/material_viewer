@@ -24,6 +24,7 @@
       <span> / </span>
       <span> {{ item.uploader }} </span>
       <span> {{ item.uploadtime }} </span>
+      <span> {{ item.text }} </span>
       <button id = {{item.id}} type = "button"  onclick="delarticle(event)">삭제</button>
     </li>
     {% endfor %}
@@ -31,6 +32,8 @@
   </body>
 
 
+
+  <script type="text/javascript" src="/static/js/userfunc.js"> </script>
 
   <script type="text/javascript">
     function delarticle(event){
@@ -43,41 +46,41 @@
       xmldelarticle(board,id,token)
     }
 
-    function xmldelarticle(board,id,token){
-      var url = '/xmldelarticle'
-      var xhr = new XMLHttpRequest()
-      var formData = new FormData()
-      xhr.open('POST', url, true)// true means async.
-      xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest')
+    // function xmldelarticle(board,id,token){
+    //   var url = '/xmldelarticle'
+    //   var xhr = new XMLHttpRequest()
+    //   var formData = new FormData()
+    //   xhr.open('POST', url, true)// true means async.
+    //   xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest')
+    //
+    //   xhr.addEventListener("load", function(e){
+    //     //Fshowarticles()
+    //     ( e.srcElement.status==200 ? alert(e.srcElement.responseText) : alert("fail..") )
+    //   })
+    //
+    //   formData.append("board", board  )
+    //   formData.append("id", id  )
+    //   formData.append("token", token  )
+    //   xhr.send(formData)
+    // }
 
-      xhr.addEventListener("load", function(e){
-        //Fshowarticles()
-        ( e.srcElement.status==200 ? alert(e.srcElement.responseText) : alert("fail..") )
-      })
 
-      formData.append("board", board  )
-      formData.append("id", id  )
-      formData.append("token", token  )
-      xhr.send(formData)
-    }
-
-
-
-    function getCookie(cname) {
-      var name = cname + "=";
-      var decodedCookie = decodeURIComponent(document.cookie);
-      var ca = decodedCookie.split(';');
-      for(var i = 0; i <ca.length; i++) {
-        var c = ca[i];
-        while (c.charAt(0) == ' ') {
-          c = c.substring(1);
-        }
-        if (c.indexOf(name) == 0) {
-          return c.substring(name.length, c.length);
-        }
-      }
-      return "";
-    }
+    //we import it!
+    // function getCookie(cname) {
+    //   var name = cname + "=";
+    //   var decodedCookie = decodeURIComponent(document.cookie);
+    //   var ca = decodedCookie.split(';');
+    //   for(var i = 0; i <ca.length; i++) {
+    //     var c = ca[i];
+    //     while (c.charAt(0) == ' ') {
+    //       c = c.substring(1);
+    //     }
+    //     if (c.indexOf(name) == 0) {
+    //       return c.substring(name.length, c.length);
+    //     }
+    //   }
+    //   return "";
+    // }
 
 
   </script>

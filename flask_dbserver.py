@@ -39,9 +39,9 @@ def viewmain():
 
         headver = newdb.head[board][0]# .json script version.
 
+        artistList = newdb.artistList[board]
         characterList = newdb.characterList[board]
         unitDict = newdb.unitDict[board]
-        artistList = newdb.artistList[board]
     return render_template('rocketbox.html', boardList=boardList, board = board, headver = headver,
     artistList=artistList, characterList=characterList, unitDict=unitDict )
 
@@ -573,13 +573,13 @@ def createboard():
 #         boardList = list(newdb.db.keys())
 #     #return render_template('articleboard.html' ,dataList = dataList, boardList = boardList)
 
-@app.route('/boardmanager' )
+@app.route('/manageboard' )
 def boardmanager():
     boardList = list(newdb.db.keys())
-    return render_template('boardmanager.html' , boardList = boardList)
+    return render_template('manageboard.html' , boardList = boardList)
 
-@app.route('/xmlboardinfos', methods=[ 'POST'])
-def boardinfos():
+@app.route('/xmltaginfos', methods=[ 'POST'])
+def xmltaginfos():
     if request.method == 'POST':
         boardname = request.form['boardname']
         d={}
@@ -588,8 +588,8 @@ def boardinfos():
         d["unitDict"]=newdb.unitDict[boardname]
         return jsonify(d)
 
-@app.route('/xmladdboardinfo', methods=[ 'POST'])
-def xmladdboardinfo():
+@app.route('/xmladdtaginfo', methods=[ 'POST'])
+def xmladdtaginfo():
     if request.method == 'POST':
         artists = request.form['artists']
         characters = request.form['characters']
@@ -608,37 +608,143 @@ def xmladdboardinfo():
             return "you can not make it!"
 
         unitdict = json.loads(unitjson)
+        for i in unitdict:
+            unitdict[i] = unitdict[i].split()
+
         newdb.artistList[board].extend(artists.split())
         newdb.characterList[board].extend(characters.split())
+        newdb.artistList[board] = list(set( newdb.artistList[board] ))
+        newdb.characterList[board] = list(set( newdb.characterList[board] ))
+
         newdb.unitDict[board].update(unitdict)
         newdb.backup()
+        return "ok"
 
-        return "man"
+@app.route('/xmldeltaginfo' , methods = ['POST'] )
+def xmldeltaginfo():
+    listname = request.form['listname']
+    board = request.form['board']
+    tagname = request.form['tagname']
+
+    token = request.form['token']
+    username = userdb.getname(token)
+    if username == "noname":
+        return "noname"
+
+    if userdb.ismanager(username) or userdb.ismaster(username):
+        pass
+    else:
+        return "noname"
+
+    if listname == "artistList":
+        for i in newdb.artistList[board]:
+            if i == tagname:
+                newdb.artistList[board].remove(i)
+    if listname == "characterList":
+        for i in newdb.characterList[board]:
+            if i == tagname:
+                newdb.characterList[board].remove(i)
+
+    if listname == "unitDict":
+        del newdb.unitDict[board][tagname]
+    newdb.backup()
+    return "done"
 
 
 @app.route('/articleboard' )
 def articleboard():
     boardList = list(newdb.db.keys())
-    return render_template('articleboard.html' , boardList = boardList)
+    userList = list(userdb.user.keys())
+    return render_template('articleboard.html', boardList = boardList, userList = userList)
 
-@app.route('/articleview/<path:input>' )
-def articleview(input):
-    board = input
+@app.route('/articleview' , methods=['GET'])
+def articleview():
+    board = request.args.get('board')
+    user = request.args.get('user')
+    key = request.args.get('key')
+
     dataList=[]
-    for id in newdb.db[board]:
-        item = {}
-        item["id"] = newdb.db[board][id][newdb.id_key]
-        item["title"] = newdb.db[board][id][newdb.title_key]
-        item["writer"] = newdb.db[board][id][newdb.writer_key]
-        item["date"] = newdb.db[board][id][newdb.date_key]
+    if user =="모든유저" and key == "글":
+        for id in newdb.db[board]:
+            item = {}
+            item["id"] = newdb.db[board][id][newdb.id_key]
+            item["title"] = newdb.db[board][id][newdb.title_key]
+            item["writer"] = newdb.db[board][id][newdb.writer_key]
+            item["date"] = newdb.db[board][id][newdb.date_key]
 
-        item["uploadtime"] = newdb.db[board][id].get(newdb.uploadtime_key)
-        item["uploader"] = newdb.db[board][id].get(newdb.uploader_key)
+            item["uploadtime"] = newdb.db[board][id].get(newdb.uploadtime_key)
+            item["uploader"] = newdb.db[board][id].get(newdb.uploader_key)
 
-        dataList.append( item )
+            dataList.append( item )
+
+    elif user !="모든유저" and key == "글":
+        for id in newdb.db[board]:
+            if newdb.db[board][id].get(newdb.uploader_key)== user:
+                item = {}
+                item["id"] = newdb.db[board][id][newdb.id_key]
+                item["title"] = newdb.db[board][id][newdb.title_key]
+                item["writer"] = newdb.db[board][id][newdb.writer_key]
+                item["date"] = newdb.db[board][id][newdb.date_key]
+                item["uploadtime"] = newdb.db[board][id].get(newdb.uploadtime_key)
+                item["uploader"] = newdb.db[board][id].get(newdb.uploader_key)
+                dataList.append( item )
+    elif user !="모든유저" and key == "좋아":
+        for id in newdb.db[board]:
+            for i in newdb.db[board][id][newdb.like_key]:
+                if newdb.db[board][id][newdb.like_key][i][newdb.user_key] == user:
+                    print('haha')
+                    item = {}
+                    item["id"] = newdb.db[board][id][newdb.id_key]
+                    item["title"] = newdb.db[board][id][newdb.title_key]
+                    item["writer"] = newdb.db[board][id][newdb.writer_key]
+                    item["date"] = newdb.db[board][id][newdb.date_key]
+                    item["uploadtime"] = newdb.db[board][id].get(newdb.uploadtime_key)
+                    item["uploader"] = newdb.db[board][id].get(newdb.uploader_key)
+                    dataList.append( item )
+    elif user !="모든유저" and key == "추천":
+        for id in newdb.db[board]:
+            for i in newdb.db[board][id][newdb.recom_key]:
+                if newdb.db[board][id][newdb.recom_key][i][newdb.user_key] == user:
+                    item = {}
+                    item["id"] = newdb.db[board][id][newdb.id_key]
+                    item["title"] = newdb.db[board][id][newdb.title_key]
+                    item["writer"] = newdb.db[board][id][newdb.writer_key]
+                    item["date"] = newdb.db[board][id][newdb.date_key]
+                    item["uploadtime"] = newdb.db[board][id].get(newdb.uploadtime_key)
+                    item["uploader"] = newdb.db[board][id].get(newdb.uploader_key)
+                    dataList.append( item )
+
+    elif user !="모든유저" and key == "태그":
+        for id in newdb.db[board]:
+            for i in newdb.db[board][id][newdb.tag_key]:
+                if newdb.db[board][id][newdb.tag_key][i][newdb.user_key] == user:
+                    item = {}
+                    item["id"] = newdb.db[board][id][newdb.id_key]
+                    item["title"] = newdb.db[board][id][newdb.title_key]
+                    item["writer"] = newdb.db[board][id][newdb.writer_key]
+                    item["date"] = newdb.db[board][id][newdb.date_key]
+                    item["uploadtime"] = newdb.db[board][id].get(newdb.uploadtime_key)
+                    item["uploader"] = newdb.db[board][id].get(newdb.uploader_key)
+                    item["text"] = newdb.db[board][id][newdb.comm_key][i][newdb.text_key]
+                    dataList.append( item )
+    elif user !="모든유저" and key == "댓글":
+        for id in newdb.db[board]:
+            for i in newdb.db[board][id][newdb.comm_key]:
+                if newdb.db[board][id][newdb.comm_key][i][newdb.user_key] == user:
+                    item = {}
+                    item["id"] = newdb.db[board][id][newdb.id_key]
+                    item["title"] = newdb.db[board][id][newdb.title_key]
+                    item["writer"] = newdb.db[board][id][newdb.writer_key]
+                    item["date"] = newdb.db[board][id][newdb.date_key]
+                    item["uploadtime"] = newdb.db[board][id].get(newdb.uploadtime_key)
+                    item["uploader"] = newdb.db[board][id].get(newdb.uploader_key)
+                    item["text"] = newdb.db[board][id][newdb.comm_key][i][newdb.text_key]
+                    dataList.append( item )
+
 
     sortedList = sorted( dataList , key= lambda k: k["uploadtime"]  ,reverse = True)#higher first
     return render_template('articleviewer.html' , boardname = board, itemList = sortedList)
+
 
 # @app.route('/Fshowarticles' , methods = ['POST'] )
 # def Fshowarticles():
@@ -677,6 +783,7 @@ def xmldelarticle():
 
     if subarticle(board,id) == True:
         text = "del success!"
+        newdb.backup()
     else:
         text = "del fail.."
     return text
@@ -693,6 +800,24 @@ def fetchdelarticle():
     data={"text" : text}
     return jsonify(data)
 
+@app.route('/xmlmodtitle' , methods = ['POST'] )
+def xmlmodtitle():
+    board = request.form['board']
+    id = request.form['id']
+    token = request.form['token']
+    newtitle = request.form['newtitle']
+
+    username = userdb.getname(token)
+
+    if userdb.ismanager(username) or userdb.ismaster(username):
+        pass
+    else:
+        return "you can not delete!"
+
+    newdb.db[board][id][newdb.title_key] = newtitle
+    text = "mod success!"
+    newdb.backup()
+    return text
 
 #x버튼에연계, post로 들어오면,제거하기.?
 def subarticle(board,id):
@@ -702,13 +827,46 @@ def subarticle(board,id):
 
 def subimgs(id):
     try:
-        rmtree( jimgtower_dir, id)
+        rmtree( join(imgtower_dir, id) )
     except FileNotFoundError:
         pass
 
 # too tricky, even imgtower. we do not prevent from now.!
 #def getpreventset():
 #    newdb.db[board][id]
+
+@app.route('/delboard' )
+def delboard():
+    boardList = list(newdb.db.keys())
+    return render_template('delboard.html' , boardList = boardList)
+
+@app.route('/delboardname' ,methods = ["POST"])
+def delboardname():
+    board = request.form['board']
+    token = request.form['token']
+
+    username = userdb.getname(token)
+    if username == "noname":
+        return "you can not make it!"
+    if userdb.ismanager(username) or userdb.ismaster(username):
+        pass
+    else:
+        return "you can not make it!"
+
+    if delboard(board) == True:
+        newdb.backup()
+        return "del board done : {}".format(board)
+    else:
+        return " error.. anyway."
+
+def delboard(board):
+    if newdb.db.get(board) != None:
+        for id in newdb.db[board]:
+            rmtree(join(imgtower_dir, id))
+        del newdb.db[board]
+        newdb.deltaginfo(board)
+        return True
+    return False
 
 #--------------------------user methods
 
@@ -965,7 +1123,8 @@ def multidown():
         imgdir = "resized"
 
     filepath = join(imgtower_dir,id,imgdir,file)
-    return send_file( filename_or_fp = filepath ,as_attachment = True)
+    filename = newdb.db[board][id][newdb.title_key][:10] + splitext(filepath)[1]
+    return send_file( filename_or_fp = filepath ,as_attachment = True, attachment_filename=filename)
 
 
 @app.route("/getPlotCSV")
