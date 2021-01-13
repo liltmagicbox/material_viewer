@@ -39,7 +39,6 @@ input[type=submit] {
 }
 #myInput{
   width: 50em;
-  background-color: #f1c1c1;
 }
 
 .autocomplete-items {
@@ -93,11 +92,9 @@ img{
   width: 1900px;
 }
 #tagtext {
+
   background-color: white;
   color:red;
-}
-.tagtext{
-  display: flex;
 }
 p{
 
@@ -129,12 +126,9 @@ p{
 
 </div>
 
-<select id = "board" name="board" required>
-  {% for board in boardList %}
-  <option value= {{board}}> {{board}} </option>
-  {% endfor %}
-</select>
-<button id="viewarticleB" onclick="Fshowarticles(event)">열람</button>
+<div class="imgFrame" id = "imgFrame">
+
+</div>
 
 <!--Make sure the form has the autocomplete function switched off:-->
 <form autocomplete="on" action="#">
@@ -152,22 +146,15 @@ p{
 
   <!--input  type="submit"-->
 </form>
-<button type="button" id='subsub' name="button">엔터로입력</button>
-<input type="text" id='tagtext' placeholder="입력한태그" hidden>
+<button type="button" id='subsub' name="button">입력</button>
+<input type="text" id='tagtext' placeholder="입력한태그">
 <!--a href="/backup">backup</a-->
 <br>
-<button id="fetchtagB" type="button" name="button" hidden></button>
+
 <div id="tagserver">
-  <div class="tagtext">
-
-  </div>
-</div>
-
-<h2 id="idxnow">0</h2>
-
-<div class="imgFrame" id = "imgFrame">
 
 </div>
+
 
 <script>
 function autocomplete(inp, arr) {
@@ -272,7 +259,6 @@ function autocomplete(inp, arr) {
       else if (e.keyCode == 37) {
         idx-=1
         console.log(idx)
-        showidx(idx)
         let outFrame = document.getElementById(outFrameid)
         let ta = document.getElementById('myInput')
         ta.value=''
@@ -285,20 +271,19 @@ function autocomplete(inp, arr) {
         myInput = document.getElementById('myInput')
         //tagtext.placeholder = '태그를입력하자'
         //tagtext.placeholder = tagdone[idx]
-        gettagtext(viewList[idx])
+        gettagtext()
 
       }
       else if (e.keyCode == 39) {//right
         idx+=1
         console.log(idx)
-        showidx(idx)
         //let outFrame = document.getElementById(outFrameid)
         let ta = document.getElementById('myInput')
         ta.value=''
         outFrame.innerHTML=''
         maketagviewbox(datas,viewList[idx],outFrame)
         tagtext = document.getElementById('tagtext')
-        gettagtext(viewList[idx])
+        gettagtext()
         //tagtext.placeholder = '입력된태그'
         //tagtext.placeholder = tagdone[idx]
       }
@@ -336,10 +321,10 @@ function autocomplete(inp, arr) {
 }
 
 /*An array containing all the country names in the world:*/
-//var countries = ["코토리","우미","니코","노조미","에리","호노카","하나요","린","마키"];
+var countries = ["코토리","우미","니코","노조미","에리","호노카","하나요","린","마키"];
 
 /*initiate the autocomplete function on the "myInput" element, and pass along the countries array as possible autocomplete values:*/
-//autocomplete(document.getElementById("myInput"), countries);
+autocomplete(document.getElementById("myInput"), countries);
 </script>
 
 <script type="text/javascript">
@@ -482,12 +467,10 @@ function sendsend(){
 
 
     idx+=1
-    showidx(idx)
     console.log(idx)
     ta.value=''
     outFrame.innerHTML=''
     maketagviewbox(datas,viewList[idx],outFrame)
-    gettagtext(viewList[idx])
 
 
 
@@ -499,44 +482,6 @@ function sendsend(){
 
 }
 
-
-function gettagtext(no){
-  let tagtext = document.getElementById('tagtext')
-  tagtext.innerHTML=""
-  let box = document.getElementById("tagserver")
-  //let board = document.getElementById("board").value
-  let board = decodeURI( window.location.search.split("board=")[1].split("&")[0] )
-
-  let commloadB = document.createElement('button')
-  commloadB.no = no
-  commloadB.board= board
-  commloadB.hidden = true
-  box.appendChild(commloadB)
-  fetchtagloadB(commloadB)
-}
-
-function showidx(idx){
-  document.getElementById("idxnow").innerText=idx
-}
-
-function Fshowarticles(){
-  let boardname = document.getElementById("board").value
-  let url = "/taginput?board=boardname".replace("boardname",boardname)
-  window.location.href=url
-}
-
-var characterList = []
-{%for key in characterList %}
-  characterList.push( "{{key}}" )
-{%endfor%}
-
-var unitList = []
-{%for key in unitDict.keys() %}
-  unitList.push( "{{key}}" )
-{%endfor%}
-//note ordered unit list works good.. for auto compl.
-var countries = unitList
-autocomplete(document.getElementById("myInput"), countries);
 
 </script>
 
@@ -550,7 +495,7 @@ autocomplete(document.getElementById("myInput"), countries);
 <script>
   let box = document.getElementById("tagserver")
   let no = document.getElementsByClassName("imgBox")[0].no
-  //tagtext
+  tagtext
 </script>
 
 </html>

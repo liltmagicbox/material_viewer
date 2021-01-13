@@ -215,8 +215,98 @@ nav ul li a{
 
 
 
+  /*------------------------------ character tag button ------------*/
+
+  .tagB_character{
+    border-radius: 50%;
+    padding: 0px;
+    margin: 2px 4px;
+    width: 50px;
+    height: 50px;
+
+    background-color: #ffffff;
+    border-style: outset;
+    border-width: thick;
+    color: black;
+  }
+
+  .tagB_character[value = '0']{
+    border-style: dotted;
+    color: grey;
+  }
+  .tagB_character[value = '2']{
+    border-style: inset;
+    color: grey;
+  }
+
+  :root {
+    /*https://developer.mozilla.org/ko/docs/Web/CSS/Using_CSS_custom_properties*/
+    --main-bg-린: #FAFF54;
+    --main-bg-하나요: #9EFF4C;
+    --main-bg-마키: #FF3434;
+    --main-bg-호노카: #FFB85D;
+    --main-bg-코토리: #C3C3C3;
+    --main-bg-우미: #3B53FF;
+    --main-bg-니코: #FF59E8;
+    --main-bg-에리: #59FAFF;
+    --main-bg-노조미: #BB59FF;
+  }
 
 
+  .tagB_character[name ='린'][value ='2']{
+    background-color: var(--main-bg-린);
+  }
+  .tagB_character[name ='린']{
+    border-color: var(--main-bg-린);
+  }
+  .tagB_character[name ='하나요'][value ='2']{
+    background-color: var(--main-bg-하나요);
+  }
+  .tagB_character[name ='하나요']{
+    border-color: var(--main-bg-하나요);
+  }
+  .tagB_character[name ='마키'][value ='2']{
+    background-color: var(--main-bg-마키);
+  }
+  .tagB_character[name ='마키']{
+    border-color: var(--main-bg-마키);
+  }
+  .tagB_character[name ='호노카'][value ='2']{
+    background-color: var(--main-bg-호노카);
+  }
+  .tagB_character[name ='호노카']{
+    border-color: var(--main-bg-호노카);
+  }
+  .tagB_character[name ='코토리'][value ='2']{
+    background-color: var(--main-bg-코토리);
+  }
+  .tagB_character[name ='코토리']{
+    border-color: var(--main-bg-코토리);
+  }
+  .tagB_character[name ='우미'][value ='2']{
+    background-color: var(--main-bg-우미);
+  }
+  .tagB_character[name ='우미']{
+    border-color: var(--main-bg-우미);
+  }
+  .tagB_character[name ='니코'][value ='2']{
+    background-color: var(--main-bg-니코);
+  }
+  .tagB_character[name ='니코']{
+    border-color: var(--main-bg-니코);
+  }
+  .tagB_character[name ='에리'][value ='2']{
+    background-color: var(--main-bg-에리);
+  }
+  .tagB_character[name ='에리']{
+    border-color: var(--main-bg-에리);
+  }
+  .tagB_character[name ='노조미'][value ='2']{
+    background-color: var(--main-bg-노조미);
+  }
+  .tagB_character[name ='노조미']{
+    border-color: var(--main-bg-노조미);
+  }
 
 
 
@@ -227,7 +317,7 @@ nav ul li a{
 
   /*------------------------------ tag button ------------*/
 #userTagbox{
-  max-width: 540px;
+  max-width: 500px;
   padding: 5px;
 
   /*border-style: groove;
@@ -366,29 +456,6 @@ nav ul li a{
 
 
 
-/*------------------------------ character tag button ------------*/
-
-/* .tagB_character{
-  border-radius: 50%;
-  padding: 0px;
-  margin: 2px 4px;
-  width: 50px;
-  height: 50px;
-
-  background-color: #ffffff;
-  border-style: outset;
-  border-width: thick;
-  color: black;
-}
-
-.tagB_character[value = '0']{
-  border-style: dotted;
-  color: grey;
-}
-.tagB_character[value = '2']{
-  border-style: inset;
-  color: grey;
-} */
 
 /*--------------------------- img frame colors------ */
 
@@ -399,9 +466,21 @@ nav ul li a{
     justify-content: center;
   } */
 
+  :root {
+  --린: #F9FF85;
+  --하: #ADFF85;
+  --마: #FF6868;
+  --호: #FFB85D;
+  --코: #C3C3C3;
+  --우: #859BFF;
+  --니: #FFA7E5;
+  --에: #ADFFFF;
+  --노: #E089FF;
+}
 
-/* .tagB_big {
+.tagB_big {
   height: 40px;
+  background-color: gold;
 }
 .tagB_inter{
   background-color: blue;
@@ -411,7 +490,47 @@ nav ul li a{
 }
 .tagB_exclude{
   background-color: red;
-} */
+}
+.imgFrame .imgBox[color ='뮤즈']{background: linear-gradient(112deg,
+  var(--린) 11%,
+  var(--하) 22%,
+  var(--마) 33%,
+  var(--호) 44%,
+  var(--코) 55%,
+  var(--우) 66%,
+  var(--니) 77%,
+  var(--에) 88%,
+  var(--노) 99%
+  );}
+
+.imgFrame .imgBox[color ='린']{background-color: var(--린)}
+.imgFrame .imgBox[color ='하나요']{background-color: var(--하)}
+.imgFrame .imgBox[color ='마키']{background-color: var(--마)}
+.imgFrame .imgBox[color ='호노카']{background-color: var(--호)}
+.imgFrame .imgBox[color ='코토리']{background-color: var(--코)}
+.imgFrame .imgBox[color ='우미']{background-color: var(--우)}
+.imgFrame .imgBox[color ='니코']{background-color: var(--니)}
+.imgFrame .imgBox[color ='에리']{background-color: var(--에)}
+.imgFrame .imgBox[color ='노조미']{background-color: var(--노)}
+
+.imgFrame .imgBox[color ='비비']{background: linear-gradient(112deg, var(--니) 10%, var(--마) 50%, var(--에) 80%);}
+.imgFrame .imgBox[color ='릴화']{background: linear-gradient(112deg, var(--린) 10%, var(--노) 50%, var(--우) 80%);}
+.imgFrame .imgBox[color ='쁘랭땅']{background: linear-gradient(112deg, var(--코) 10%, var(--호) 50%, var(--하) 80%);}
+.imgFrame .imgBox[color ='1학년']{background: linear-gradient(112deg, var(--하) 10%, var(--린) 50%, var(--마) 80%);}
+.imgFrame .imgBox[color ='2학년']{background: linear-gradient(112deg, var(--우) 10%, var(--호) 50%, var(--코) 80%);}
+.imgFrame .imgBox[color ='3학년']{background: linear-gradient(112deg, var(--니) 10%, var(--노) 50%, var(--에) 80%);}
+.imgFrame .imgBox[color ='솔겜조']{background: linear-gradient(112deg, var(--에) 10%, var(--우) 50%, var(--마) 80%);}
+.imgFrame .imgBox[color ='니코린파나']{background: linear-gradient(112deg, var(--니) 10%, var(--린) 50%, var(--하) 80%);}
+
+.imgFrame .imgBox[color ='노조에리']{background: linear-gradient(112deg, var(--노) 23%, var(--에) 77%);}
+.imgFrame .imgBox[color ='니코마키']{background: linear-gradient(112deg, var(--니) 23%, var(--마) 77%);}
+.imgFrame .imgBox[color ='린파나']{background: linear-gradient(112deg, var(--린) 23%, var(--하) 77%);}
+.imgFrame .imgBox[color ='코토우미']{background: linear-gradient(112deg, var(--코) 23%, var(--우) 77%);}
+.imgFrame .imgBox[color ='린마키']{background: linear-gradient(112deg, var(--린) 23%, var(--마) 77%);}
+.imgFrame .imgBox[color ='에리우미']{background: linear-gradient(112deg, var(--에) 23%, var(--우) 77%);}
+.imgFrame .imgBox[color ='코토파나']{background: linear-gradient(112deg, var(--코) 23%, var(--하) 77%);}
+.imgFrame .imgBox[color ='노조니코']{background: linear-gradient(112deg, var(--노) 23%, var(--니) 77%);}
+.imgFrame .imgBox[color ='호노린']{background: linear-gradient(112deg, var(--호) 23%, var(--린) 77%);}
 
 
 

@@ -3,6 +3,7 @@
   <head>
     <meta charset="utf-8">
     <title></title>
+
   </head>
   <body>
 
@@ -25,12 +26,11 @@
       <span> {{ item.uploader }} </span>
       <span> {{ item.uploadtime }} </span>
       <span> {{ item.text }} </span>
-      <button id = {{item.id}} type = "button"  onclick="delarticle(event)">삭제</button>
+      <button deltarget = {{ item.type }} idx = {{ item.idx }} id = {{item.id}} type = "button"  onclick="delarticle(event)">삭제</button>
     </li>
     {% endfor %}
 
   </body>
-
 
 
   <script type="text/javascript" src="/static/js/userfunc.js"> </script>
@@ -42,8 +42,17 @@
       let board = document.getElementsByTagName('h2')[0].innerText
       let id = event.currentTarget.id
       let token = getCookie("token")
+
+      //why get?? anyway . is not working..
+      let idx = event.currentTarget.getAttribute("idx")
+      let deltarget = event.currentTarget.getAttribute("deltarget")
+      //let rbutton = document.getElementById("viewarticleB")
+      let rbutton = null
+      //console.log(deltarget)
+      if(deltarget=="태그"){xmldeltag(board,id,idx,token, rbutton)}
+      else if(deltarget=="댓글"){xmldelcomm(board,id,idx,token, rbutton)}
       //console.log(token)
-      xmldelarticle(board,id,token)
+      else{xmldelarticle(board,id,token)}
     }
 
     // function xmldelarticle(board,id,token){

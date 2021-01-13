@@ -48,11 +48,16 @@ def viewmain():
 @app.route('/taginput')
 def taginput():
     if request.method == "GET":
+        boardList = list(newdb.db.keys())
         board = request.args.get('board')
         if board == None:
-            return redirect( "/taginput?board=뉴보드5" )
+            board = boardList[0]
+            return redirect( "/taginput?board={}".format(board) )
         headver = newdb.head[board][0]# .json script version.
-    return render_template('highspeedtag.html' , board = board, headver = headver)
+
+        characterList = newdb.characterList[board]
+        unitDict = newdb.unitDict[board]
+    return render_template('highspeedtag.html' , board = board, headver = headver, boardList=boardList, characterList=characterList, unitDict=unitDict)
 
 @app.route('/server_info')
 def hello_json():
@@ -172,7 +177,9 @@ def fetchtag():
     board = requestdict['board']
     id = requestdict['id']
     taglist = requestdict['taglist']
-
+    #print(requestdict)
+    #print(taglist)
+    #print('seenow')
 
     # token = request.args.get('token')
     # board = request.args.get('board')
@@ -182,26 +189,20 @@ def fetchtag():
     #tdict[id]=taglist
     #taglist = list(set(taglist))
 
-    if taglist[0]=='뮤즈':
-        taglist=['호노카','코토리','우미','마키','린','하나요','에리','니코','노조미']
-
-
-
     id=str(id)
     username = userdb.getname(token)
     if username == "noname":
         abort(403)#403 Forbidden
 
     time = datestr()
-    key = newdb.hero_key
-    newdb.db[board][id][key] = {}
+    key = newdb.tag_key
+    #newdb.db[board][id][key] = {}
 
-    if taglist[0]=='':
-        pass
-    else:
-        for text in taglist:
-            userinfo = newdb.setuserinfo(time,username,text, see = newdb.see_default)
-            newdb.add(board,id,key,userinfo)
+    for text in taglist:
+        if text == "":
+            pass
+        userinfo = newdb.setuserinfo(time,username,text, see = newdb.see_default)
+        newdb.add(board,id,key,userinfo)
 
     # if fluiddb.fluidset(no) == True:#made this time.
     #     for text in taglist:
@@ -725,7 +726,9 @@ def articleview():
                     item["date"] = newdb.db[board][id][newdb.date_key]
                     item["uploadtime"] = newdb.db[board][id].get(newdb.uploadtime_key)
                     item["uploader"] = newdb.db[board][id].get(newdb.uploader_key)
-                    item["text"] = newdb.db[board][id][newdb.comm_key][i][newdb.text_key]
+                    item["text"] = newdb.db[board][id][newdb.tag_key][i][newdb.text_key]
+                    item["idx"] = i
+                    item["type"] = "태그"
                     dataList.append( item )
     elif user !="모든유저" and key == "댓글":
         for id in newdb.db[board]:
@@ -739,6 +742,8 @@ def articleview():
                     item["uploadtime"] = newdb.db[board][id].get(newdb.uploadtime_key)
                     item["uploader"] = newdb.db[board][id].get(newdb.uploader_key)
                     item["text"] = newdb.db[board][id][newdb.comm_key][i][newdb.text_key]
+                    item["idx"] = i
+                    item["type"] = "댓글"
                     dataList.append( item )
 
 
@@ -776,10 +781,12 @@ def xmldelarticle():
 
     username = userdb.getname(token)
 
-    if userdb.ismanager(username) or userdb.ismaster(username):
-        pass
-    else:
-        return "you can not delete!"
+    writer = newdb.db[board][id][newdb.writer_key]
+    if username != writer:
+        if userdb.ismanager(username) or userdb.ismaster(username):
+            pass
+        else:
+            return "noname"
 
     if subarticle(board,id) == True:
         text = "del success!"
@@ -996,6 +1003,8 @@ def xmldelcomm():
         return "noname"
 
     writer = newdb.db[board][id][newdb.comm_key][idx][newdb.user_key]
+    print(username)
+    print(writer)
     if username != writer:
         if userdb.ismanager(username) or userdb.ismaster(username):
             pass

@@ -119,6 +119,7 @@ function fetchlogout(){
   document.cookie = "username=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
   document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
   document.cookie = "sha=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+  document.cookie = "userlevel=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
   window.location.reload()
 }
 
@@ -257,5 +258,51 @@ function xmlmodtitle(board,id,token,newtitle){
   formData.append("id", id  )
   formData.append("token", token  )
   formData.append("newtitle", newtitle  )
+  xhr.send(formData)
+}
+
+function xmldelcomm(board,id,idx,token ,commloadB=null){
+  if(confirm("삭제?")==false){return false}
+  var url = '/xmldelcomm'
+  var xhr = new XMLHttpRequest()
+  var formData = new FormData()
+  xhr.open('POST', url, true)
+  xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest')
+
+  xhr.addEventListener("load", function(event){
+    let response = event.srcElement.responseText
+    if( response == "noname"){alert("안된다")}
+    if( response == "done" ){
+      if(commloadB!=null){commloadB.click()}
+    }
+  } )
+
+  formData.append("board", board)
+  formData.append("id", id)
+  formData.append("idx", idx)
+  formData.append("token", token)
+  xhr.send(formData)
+}
+
+function xmldeltag(board,id,idx,token ,commloadB=null){
+  if(confirm("삭제?")==false){return false}
+  var url = '/xmldeltag'
+  var xhr = new XMLHttpRequest()
+  var formData = new FormData()
+  xhr.open('POST', url, true)
+  xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest')
+
+  xhr.addEventListener("load", function(event){
+    let response = event.srcElement.responseText
+    if( response == "noname"){alert("안된다")}
+    if( response == "done" ){
+      if(commloadB!=null){commloadB.click()}
+    }
+  } )
+
+  formData.append("board", board)
+  formData.append("id", id)
+  formData.append("idx", idx)
+  formData.append("token", token)
   xhr.send(formData)
 }

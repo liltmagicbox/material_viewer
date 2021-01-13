@@ -662,28 +662,29 @@ function fetchcommloadB(commloadB){
 
 }
 
-function xmldelcomm(board,id,idx,token ,commloadB){
-  if(confirm("삭제?")==false){return false}
-  var url = '/xmldelcomm'
-  var xhr = new XMLHttpRequest()
-  var formData = new FormData()
-  xhr.open('POST', url, true)
-  xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest')
-
-  xhr.addEventListener("load", function(event){
-    let response = event.srcElement.responseText
-    if( response == "noname"){alert("안된다")}
-    if( response == "done" ){
-      commloadB.click()
-    }
-  } )
-
-  formData.append("board", board)
-  formData.append("id", id)
-  formData.append("idx", idx)
-  formData.append("token", token)
-  xhr.send(formData)
-}
+//moved to userfunc..
+// function xmldelcomm(board,id,idx,token ,commloadB){
+//   if(confirm("삭제?")==false){return false}
+//   var url = '/xmldelcomm'
+//   var xhr = new XMLHttpRequest()
+//   var formData = new FormData()
+//   xhr.open('POST', url, true)
+//   xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest')
+//
+//   xhr.addEventListener("load", function(event){
+//     let response = event.srcElement.responseText
+//     if( response == "noname"){alert("안된다")}
+//     if( response == "done" ){
+//       commloadB.click()
+//     }
+//   } )
+//
+//   formData.append("board", board)
+//   formData.append("id", id)
+//   formData.append("idx", idx)
+//   formData.append("token", token)
+//   xhr.send(formData)
+// }
 
 
 
@@ -886,28 +887,30 @@ function xmltagsend(no,board,text,comminput){
 
   }
 
-  function xmldeltag(board,id,idx,token ,commloadB){
-    if(confirm("삭제?")==false){return false}
-    var url = '/xmldeltag'
-    var xhr = new XMLHttpRequest()
-    var formData = new FormData()
-    xhr.open('POST', url, true)
-    xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest')
+//moved to userfunc..
 
-    xhr.addEventListener("load", function(event){
-      let response = event.srcElement.responseText
-      if( response == "noname"){alert("안된다")}
-      if( response == "done" ){
-        commloadB.click()
-      }
-    } )
-
-    formData.append("board", board)
-    formData.append("id", id)
-    formData.append("idx", idx)
-    formData.append("token", token)
-    xhr.send(formData)
-  }
+  // function xmldeltag(board,id,idx,token ,commloadB){
+  //   if(confirm("삭제?")==false){return false}
+  //   var url = '/xmldeltag'
+  //   var xhr = new XMLHttpRequest()
+  //   var formData = new FormData()
+  //   xhr.open('POST', url, true)
+  //   xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest')
+  //
+  //   xhr.addEventListener("load", function(event){
+  //     let response = event.srcElement.responseText
+  //     if( response == "noname"){alert("안된다")}
+  //     if( response == "done" ){
+  //       commloadB.click()
+  //     }
+  //   } )
+  //
+  //   formData.append("board", board)
+  //   formData.append("id", id)
+  //   formData.append("idx", idx)
+  //   formData.append("token", token)
+  //   xhr.send(formData)
+  // }
 
 
 
