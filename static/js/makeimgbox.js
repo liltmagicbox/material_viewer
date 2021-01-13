@@ -147,6 +147,11 @@ function makeImgbox(datas, no, outFrame,boxColor=0,miniLoad = 0){
     delB.className = 'delB'
     delB.innerText = '글삭제'
     delB.addEventListener('click', function(e){
+      if(confirm("글을 삭제합니다?")==true){
+        1
+      }
+      else{return false}
+
       let token = getCookie("token")
       xmldelarticle(board,no,token)
     })
@@ -601,15 +606,18 @@ function addcommloadB(box,no,board){
   let commloadB = document.createElement('button')
   commloadB.type = 'button'
   commloadB.className = 'commloadB'
-  commloadB.innerText = '댓글로드'
+  commloadB.innerText = '로드'
   commloadB.no = no
   commloadB.board= board
+  commloadB.value = 0
 
   //commloadB.id = "commloadB_"+no
   //commloadB.name = ""
   //commloadB.value = ""
   //commloadB.pressed = false
-  commloadB.addEventListener('click', function(e){fetchcommloadB(commloadB)} )
+  commloadB.addEventListener('click', function(e){
+    commloadB.value = 1
+    fetchcommloadB(commloadB)} )
   box.appendChild(commloadB)
 }
 function fetchcommloadB(commloadB){
@@ -640,7 +648,7 @@ function fetchcommloadB(commloadB){
       let li = document.createElement("li")
       li.idx = idx
 
-      li.innerText = d["내용"]
+      li.innerText = d["내용"] +' -'+d["유저"]
 
       li.time = d["시간"]
       li.user = d["유저"]
@@ -692,8 +700,9 @@ function fetchcommloadB(commloadB){
 function addcommarea(box,no,board){
   let commarea = document.createElement('div')
   commarea.className = "commarea"
+
   commarea.appendChild(document.createElement('br'))
-  addcommloadB(commarea,no,board)
+  //addcommloadB(commarea,no,board)
 
   let commtext = document.createElement('div')
   commtext.className = "commtext"
@@ -703,6 +712,7 @@ function addcommarea(box,no,board){
   comminput.type = "text"
   comminput.size = "15"
   comminput.maxlength = "80"
+  comminput.placeholder = "댓글쓰기"
 
   comminput.addEventListener('keypress', function (e) {
     if (e.key === 'Enter') {
@@ -721,6 +731,8 @@ function addcommarea(box,no,board){
   } )
 
   commarea.appendChild(commsend)
+
+  addcommloadB(commarea,no,board)
 
   box.appendChild(commarea)
 }
@@ -763,7 +775,7 @@ function addtagarea(box,no,board){
     let commarea = document.createElement('div')
     commarea.className = "tagarea"
     commarea.appendChild(document.createElement('br'))
-    addtagloadB(commarea,no,board)
+    //addtagloadB(commarea,no,board)
 
     let commtext = document.createElement('div')
     commtext.className = "tagtext"
@@ -773,6 +785,7 @@ function addtagarea(box,no,board){
     comminput.type = "text"
     comminput.size = "15"
     comminput.maxlength = "80"
+    comminput.placeholder = "태그추가"
 
     comminput.addEventListener('keypress', function (e) {
       if (e.key === 'Enter') {
@@ -791,6 +804,8 @@ function addtagarea(box,no,board){
     } )
 
     commarea.appendChild(commsend)
+
+    addtagloadB(commarea,no,board)
 
     box.appendChild(commarea)
   }
@@ -827,15 +842,18 @@ function xmltagsend(no,board,text,comminput){
     let commloadB = document.createElement('button')
     commloadB.type = 'button'
     commloadB.className = 'tagloadB'
-    commloadB.innerText = '태그로드'
+    commloadB.innerText = '로드'
     commloadB.no = no
     commloadB.board= board
+    commloadB.value = 0
 
     //commloadB.id = "commloadB_"+no
     //commloadB.name = ""
     //commloadB.value = ""
     //commloadB.pressed = false
-    commloadB.addEventListener('click', function(e){fetchtagloadB(commloadB)} )
+    commloadB.addEventListener('click', function(e){
+      commloadB.value = 1
+      fetchtagloadB(commloadB)} )
     box.appendChild(commloadB)
   }
   function fetchtagloadB(commloadB){
@@ -916,6 +934,10 @@ function xmltagsend(no,board,text,comminput){
 
 
   function eventDownload(id, board){
+    if(confirm("다운로드 할까요?")==false){
+      return false
+    }
+
     let origin = "false"
     if(confirm("고화질원본으로 다운할까요?")==true){
       origin = "true"

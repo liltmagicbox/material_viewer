@@ -65,10 +65,11 @@ function initSortB(){
   let sortFrame = "sortFrame"
   let sortbList = ['랜덤',
   '날짜',
+  '제목',
   '조회',
   '추천',
   '댓글',
-  '제목','길게']
+  '길게']
   frame = document.getElementById(sortFrame)
 
   for(var sorttext of sortbList){
@@ -87,10 +88,11 @@ function initSortB(){
       sortB.addEventListener('click', sortRand)
     }
     if (sorttext == "날짜"){ sortB.addEventListener('click', sortDate) }
+    else if (sorttext == "제목"){ sortB.addEventListener('click', sortTitle) }
+
     else if (sorttext == "조회"){ sortB.addEventListener('click', sortView) }
     else if (sorttext == "추천"){ sortB.addEventListener('click', sortRecom) }
     else if (sorttext == "댓글"){ sortB.addEventListener('click', sortComment) }
-    else if (sorttext == "제목"){ sortB.addEventListener('click', sortTitle) }
 
     else if (sorttext == "길게"){
       sortB.className = "thumbONB"
@@ -110,10 +112,12 @@ function sortBReset(){
     else if (tagB.innerText.includes("최신") ){ tagB.innerText = "날짜" }
     else if (tagB.innerText.includes("과거") ){ tagB.innerText = "날짜" }
 
+    else if (tagB.innerText.includes("제목") ){ tagB.innerText = "제목" }
+
     else if (tagB.innerText.includes("조회") ){ tagB.innerText = "조회" }
     else if (tagB.innerText.includes("추천") ){ tagB.innerText = "추천" }
     else if (tagB.innerText.includes("댓글") ){ tagB.innerText = "댓글" }
-    else if (tagB.innerText.includes("제목") ){ tagB.innerText = "제목" }
+
   }
 }
 
@@ -143,6 +147,21 @@ function sortDate(){
 
   fillNewlist(viewList)
 }
+function sortTitle(){
+  let value = parseInt( event.currentTarget.value ) +1
+  if(value>2){ value = 1 }
+  event.currentTarget.value = value
+
+  if (event.currentTarget.value==1) {
+    viewList = sortNolist(datas,viewList,'atoz')
+    //event.currentTarget.innerText = event.currentTarget.innerText.slice(0,-1)+"+"
+  }
+  else{
+    viewList = sortNolist(datas,viewList,'ztoa')
+    //event.currentTarget.innerText = event.currentTarget.innerText.slice(0,-1)+"-"
+  }
+  fillNewlist(viewList)
+}
 
 function sortView(){
   let value = parseInt( event.currentTarget.value ) +1
@@ -157,7 +176,6 @@ function sortView(){
   }
   fillNewlist(viewList)
 }
-
 function sortRecom(){
   let value = parseInt( event.currentTarget.value ) +1
   if(value>2){ value = 1 }
@@ -171,7 +189,6 @@ function sortRecom(){
   }
   fillNewlist(viewList)
 }
-
 function sortComment(){
   let value = parseInt( event.currentTarget.value ) +1
   if(value>2){ value = 1 }
@@ -185,27 +202,17 @@ function sortComment(){
   }
   fillNewlist(viewList)
 }
-function sortTitle(){
-  let value = parseInt( event.currentTarget.value ) +1
-  if(value>2){ value = 1 }
-  event.currentTarget.value = value
 
-  if (event.currentTarget.value==1) {
-    //event.currentTarget.innerText = event.currentTarget.innerText.slice(0,-1)+"+"
-  }
-  else{
-    //event.currentTarget.innerText = event.currentTarget.innerText.slice(0,-1)+"-"
-  }
-  fillNewlist(viewList)
-}
 
 function thumbON(){
   event.currentTarget.value = (1-event.currentTarget.value)
   if (event.currentTarget.value==1) {
     //event.currentTarget.innerText = event.currentTarget.innerText.slice(0,-1)+"+"
+    event.currentTarget.innerText = "짧게"
   }
   else{
     //event.currentTarget.innerText = event.currentTarget.innerText.slice(0,-1)+"-"
+    event.currentTarget.innerText = "길게"
   }
 
   fillNewlist(viewList)

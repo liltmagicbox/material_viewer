@@ -511,6 +511,22 @@ nav ul li a{
   height: 70px;
 }
 
+.commtext {
+  font-size : 0.9rem;
+  list-style-type: decimal;
+  border-bottom: groove;
+  text-align-last: right
+}
+
+.tagtext{
+  /*list-style-type: lower-greek;
+  https://hi098123.tistory.com/280
+  */
+  list-style-type: circle;
+  font-size : 0.9rem;
+}
+/*-------------------mobile---------------*/
+
   @media screen and (max-width: 600px) {
     .imgArea{
       width: 100%;

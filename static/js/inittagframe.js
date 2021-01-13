@@ -13,7 +13,7 @@ function makeTagopenB(tagFrame){
   let tagB = document.createElement('button')
   tagB.type = 'button' // if want submit, change. see mdn button
   tagB.className = 'tagOpenB'
-  tagB.innerText = '추가 태그 로드'
+  tagB.innerText = '태그 로드'
   tagB.setAttribute('value','0')
   tagB.addEventListener('click', function(){tagOpen(tagFrame)} )
   tagFrame.appendChild(tagB)

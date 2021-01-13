@@ -1049,6 +1049,12 @@ def xmltag():
     #return str(len(newdb.db[board][id][dbkey]))
 
     #print(text,id,board,username,time)# works great.
+
+    #dont if already.
+    for body in newdb.db[board][id][newdb.tag_key].values():
+        if body[newdb.text_key] == text:
+            return "done"#simple escape lol
+
     for t in text.split():
         userinfo = newdb.setuserinfo(time,username,t, see = newdb.see_default)
         newdb.add(board,id,key,userinfo)
