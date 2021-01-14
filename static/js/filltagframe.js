@@ -1,5 +1,5 @@
 
-function fillTagframe(tagFrame, tagtext,tagNumber=0, tagclassList ){
+function fillTagframe(tagFrame, tagtext,tagNumber=0, tagclassList, shownumber=true ){
     let tagB = document.createElement('button')
     tagB.type = 'button'
     tagB.name = tagtext
@@ -7,7 +7,9 @@ function fillTagframe(tagFrame, tagtext,tagNumber=0, tagclassList ){
 
     let taginnertext = tagtext
     // if( taginnertext.indexOf("작가:") != -1){ taginnertext = taginnertext.split("작가:")[1] }
-    tagB.innerText = taginnertext+'('+tagNumber+')'
+    if(shownumber){tagB.innerText = taginnertext+'('+tagNumber+')'}
+    else{tagB.innerText = taginnertext}
+
 
     for( var className of tagclassList){
       tagB.classList.add(className)

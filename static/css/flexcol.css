@@ -515,7 +515,7 @@ nav ul li a{
   font-size : 0.9rem;
   list-style-type: decimal;
   border-bottom: groove;
-  text-align-last: right
+  /*too right! text-align-last: right*/
 }
 
 .tagtext{

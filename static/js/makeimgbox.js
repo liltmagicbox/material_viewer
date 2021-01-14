@@ -648,7 +648,7 @@ function fetchcommloadB(commloadB){
       let li = document.createElement("li")
       li.idx = idx
 
-      li.innerText = d["내용"] +' -'+d["유저"]
+      li.innerText = d["내용"] +' -'+d["유저"].slice(0,10)
 
       li.time = d["시간"]
       li.user = d["유저"]
@@ -884,7 +884,7 @@ function xmltagsend(no,board,text,comminput){
         let li = document.createElement("li")
         li.idx = idx
 
-        li.innerText = d["내용"]
+        li.innerText = d["내용"] +' -'+d["유저"].slice(0,10)
 
         li.time = d["시간"]
         li.user = d["유저"]

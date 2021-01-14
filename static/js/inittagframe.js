@@ -52,18 +52,21 @@ function loadUsertag(tagFrame,pre_userTagdict){
   for( var text in userTagdict){
     tagclassList = ['tagB',"tagB_big","tagB_character"]
     if(characterList.includes(text)){
-      fillTagframe(tagFrame, text, tagNumber=userTagdict[text].length, tagclassList)
+      /*fillTagframe(tagFrame, text, tagNumber=userTagdict[text].length, tagclassList)*/
+      fillTagframe(tagFrame, text, tagNumber=userTagdict[text].length, tagclassList, shownumber=false)
     }
   }
   for( var text in userTagdict){
     if(unitList.includes(text) && !characterList.includes(text) ){
-      tagclassList = ['tagB',"tagB_big","tagB_unit"]
+      /*tagclassList = ['tagB',"tagB_big","tagB_unit"]*/
+      tagclassList = ['tagB',"tagB_unit"]
       fillTagframe(tagFrame, text, tagNumber=userTagdict[text].length, tagclassList)
     }
   }
   for( var text in userTagdict){
     if(artistList.includes(text)){
-      tagclassList = ['tagB',"tagB_big","tagB_artist"]
+      /*tagclassList = ['tagB',"tagB_big","tagB_artist"]*/
+      tagclassList = ['tagB',"tagB_artist"]
       fillTagframe(tagFrame, text, tagNumber=userTagdict[text].length, tagclassList)
     }
   }
@@ -75,9 +78,13 @@ function loadUsertag(tagFrame,pre_userTagdict){
     }
   }
 
-  makeResetB(tagFrame)
-  makebigThrebar(tagFrame)
-  makeviewListN(tagFrame)
+
+  let utildiv = document.createElement('div')
+  makeviewListN(utildiv)
+  makeResetB(utildiv)
+  makebigThrebar(utildiv)
+  maketagshowbar(utildiv)
+  tagFrame.appendChild(utildiv)
 }
 
 
@@ -128,6 +135,7 @@ function makebigThrebar(tagFrame){
 
   let partisan = document.createElement('div')
   partisan.style.float = "right"
+  partisan.style.display = "none"/*not use it.. just 10.*/
   let valval = document.createElement('span')
   valval.id = 'bigThretext'
   valval.innerHTML = tagB.value
@@ -141,6 +149,52 @@ function makebigThrebar(tagFrame){
 
 
 
+function maketagshowbar(tagFrame){
+  var lala = document.getElementsByClassName('tagB').length
+  var csl = document.getElementsByClassName('tagB_character').length
+
+  let tagB = document.createElement('input')
+  tagB.type = 'range'
+  tagB.className = 'bigThrebar'
+  tagB.id = 'bigThrebar'
+  tagB.min = "0"
+  tagB.max = lala-csl
+  tagB.setAttribute('value',15)
+  //value jnot working
+  //tagB.oninput = 'getNewbigguy(this.value)'
+  tagB.addEventListener('input', gettagshowtext )
+  tagB.addEventListener('change', tagBReset )// simple.! could be click()..
+
+
+  let partisan = document.createElement('div')
+  partisan.style.float = "right"
+  let valval = document.createElement('span')
+  valval.id = 'tagshowtext'
+  valval.innerHTML = tagB.value
+
+  //partisan.appendChild(document.createElement('span').innerText='|')
+  partisan.appendChild(tagB)
+  partisan.appendChild(valval)
+  tagFrame.appendChild(partisan)
+
+}
+function gettagshowtext(){
+  var tex = document.getElementById('tagshowtext')
+  var shownumber = event.currentTarget.value
+  tex.innerHTML = shownumber
+
+  var bs = document.getElementsByClassName('tagB')
+  var shown = 0
+  for(b of bs){
+    if(! b.classList.value.includes('tagB_character')){
+      if(shown<shownumber){b.hidden = false; shown+=1;}
+      else{b.hidden = true}
+    }
+
+  }
+}
+
+
 /*
 function resetBigguy(){//as reset..failed. for reset, simply, click.
   document.getElementById('bigThrebar').value = 10
@@ -150,7 +204,7 @@ function resetBigguy(){//as reset..failed. for reset, simply, click.
 }*/
 
 function getNewtext(){//as reset..failed. for reset, simply, click.
-  tex = document.getElementById('bigThretext')
+  tex = document.getElementById('tagshowtext')
   tex.innerHTML = event.currentTarget.value
   //setBigguy( parseInt(event.currentTarget.value) )
   setBigguy()
@@ -173,7 +227,7 @@ function setBigguy(){
 
 
 function makeviewListN(tagFrame){
-  let viewListN = document.createElement('p')
+  let viewListN = document.createElement('span')
   viewListN.className = 'viewListN'
   viewListN.id = 'viewListN'
   viewListN.innerText = viewList.length

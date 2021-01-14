@@ -32,42 +32,56 @@
     <script type="text/javascript" src="./static/js/userfunc.js"> </script>
 
     <style media="screen">
-    .tagB_character{
+    .tagB{
+      background-color: #ffffff;
+      border-style: dashed;
+      border-width: thin;
+    }
+    .tagB_big {
+      border-radius: 15%;
+      border-style: dotted;
+      border-width: medium;
+      margin: 4px;
+    }
+    .tagB_big.tagB_character{
       border-radius: 50%;
       padding: 0px;
       margin: 2px 4px;
-      width: 50px;
+      /*width: 50px;*/
+      min-width: 50px;
       height: 50px;
-
-      background-color: #ffffff;
+      border-style: dashed;
+      /*color: black;*/
+    }
+    .tagB_character.tagB_inter{
       border-style: outset;
-      border-width: thick;
-      color: black;
-    }
-
-    .tagB_character[value = '0']{
-      border-style: dotted;
-      color: grey;
-    }
-    .tagB_character[value = '2']{
-      border-style: inset;
-      color: grey;
-    }
-
-    .tagB_big {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
     }
     .tagB_inter{
-      background-color: blue;
+      border-color: dodgerblue;
+      border-width: thick;
+      border-style: outset;
     }
     .tagB_union{
-      background-color: green;
+      border-color: lightskyblue;
+      border-width: medium;
+      border-style: outset;
     }
     .tagB_exclude{
-      background-color: red;
+      border-style: none;
+      background-color: #ff5555;
     }
+
+
+
+        .tagB_character[value = '0']{
+          border-style: dotted;
+          color: grey;
+        }
+        .tagB_character[value = '2']{
+          border-style: inset;
+          color: grey;
+        }
+
     </style>
 
   </head>
