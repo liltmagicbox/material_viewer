@@ -298,9 +298,9 @@ function overLayview(){
 overclickn = 0
 function overoff(){
   overclickn +=1
-  setTimeout( function(){overclickn=0}, 500)//350 for doubleclick.
+  setTimeout( function(){overclickn=0}, 350)//350 for doubleclick. 500 for triple
 
-  if(overclickn >2){
+  if(overclickn >1){//2 to triple
     overclickn=0
     document.body.classList.remove("stop_scroll")
     document.getElementById('overviewer').remove()

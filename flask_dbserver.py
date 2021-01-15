@@ -897,7 +897,9 @@ def delboardname():
     username = userdb.getname(token)
     if username == "noname":
         return "you can not make it!"
-    if userdb.ismanager(username) or userdb.ismaster(username):
+    #if userdb.ismanager(username) or userdb.ismaster(username):
+    #only master can del!
+    if userdb.ismaster(username):
         pass
     else:
         return "you can not make it!"

@@ -7,6 +7,8 @@ a = hashlib.sha256( 'mas'.encode() )
 #print( a.hexdigest() )
 #a = hashlib.sha256( '언젠가는말하고싶언s'.encode() ).hexdigest()[:10] easy 10 id.
 
+import random
+
 """
 계쩡에 업로드 로그 남기기. 파워레벨과 순차 용량증가로 2기가트롤링 방지.
 그외요청은뭐있나? 아.소트. 토큰만들때 랜덤샤로 토큰만들자. 토큰에 랜뎜샤+비번할까싶다.?
@@ -27,9 +29,12 @@ def newuser(username,sha):
     if len(username)==0:
         return 'too short username'
     if user.get(username) == None:
-        salt = username
-        tsalt = 'nosaltfrenchfries'
-        user[username] = { "sha" : shasha(sha+salt) ,"token":shasha(username+tsalt), "salt" : salt ,  "tsalt" : tsalt  }
+        #salt = username
+        salt = str(random.randint(1,100000000)+random.randint(1,100000000))
+        #tsalt = 'nosaltfrenchfries'
+        tsalt = str(random.randint(1,100000000)+random.randint(1,100000000))
+        #user[username] = { "sha" : shasha(sha+salt) ,"token":shasha(username+tsalt), "salt" : salt ,  "tsalt" : tsalt  }
+        user[username] = { "sha" : shasha(sha+salt) ,"token":shasha(username+tsalt), "salt" : salt , }
         tokens[ user[username]["token"] ] = username
         backup()
         return 'new account!'
@@ -91,6 +96,30 @@ def ismaster(username):
 def ismanager(username):
     return username in managers
 
+
+def normaluser(username):
+    if username in user and username in managers:
+        managers.pop(managers.index(username))
+    if username in user and username in masters:
+        masters.pop(masters.index(username))
+
+        backup()
+        return "normal user :{}".format(username)
+    else:
+        return "no"
+
+def deluser(username):
+    if username in user and username in managers:
+        managers.pop(managers.index(username))
+    if username in user and username in masters:
+        masters.pop(masters.index(username))
+    if username in user:
+        del user[username]
+
+        backup()
+        return "delete user :{}".format(username)
+    else:
+        return "no"
 
 #----------------
 from jsonio import *

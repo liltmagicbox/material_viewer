@@ -47,11 +47,13 @@
       min-width: 50px;
       height: 50px;
 
+      border-style: dashed;
       border-width: medium;
       margin: 4px;
     }
     .tagB_character.tagB_inter{
       border-width: thick;
+      border-style: outset;
     }
 
     .tagB_unit{
@@ -173,8 +175,10 @@
 
       <div class="writearea">
         <button type="button" id='writeB'  class="managermenu" style="display : {{allwriter}}">글쓰기</button>
+        <span> </span>
+        <button type="button" id='likeviewB'>좋아요 보기</button>
       </div>
-      <button type="button" id='likeviewB'>좋아요 모아보기</button>
+
 
       <br>
       <hr>
@@ -203,11 +207,34 @@
     <script type="text/javascript">
       likeviewB = document.getElementById("likeviewB")
       likeviewB.addEventListener('click', likeview)
-      function likeview(){
-        var board = getParameterByName('board')
-        var token = 't'
+
         //xml, noname or jsonfyied[id,id].to viewlist.
+      function likeview(){
+        var url = '/likeview'
+        var xhr = new XMLHttpRequest()
+        var formData = new FormData()
+        xhr.open('POST', url, true)
+        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest')
+
+        xhr.addEventListener("load", function(event){
+          let response = event.srcElement.responseText
+          if( response == "noname"){alert("로그인 하세요!")}
+          else{
+            resList = JSON.parse(response)
+            //viewList = resList
+            viewList = JSON.parse(JSON.stringify(resList))
+            fillNewlist(viewList)
+          }
+
+        } )
+
+        var board = getParameterByName('board')
+        let token = getCookie('token')
+        formData.append("token", token)
+        formData.append("board", board)
+        xhr.send(formData)
       }
+
     </script>
 
     <script type="text/javascript">

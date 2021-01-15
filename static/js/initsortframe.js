@@ -191,7 +191,7 @@ sortcommentList = []
 
 function sortview(){
   if(sortviewList.length==0){get_sortlist('view')
-  return False  }
+  return 1  }
 
   let value = parseInt( event.currentTarget.value ) +1
   if(value>2){ value = 1 }
@@ -204,7 +204,7 @@ function sortview(){
 }
 function sortrecom(){
   if(sortrecomList.length==0){get_sortlist('recom')
-    return False  }
+    return 1  }
 
   let value = parseInt( event.currentTarget.value ) +1
   if(value>2){ value = 1 }
@@ -217,7 +217,7 @@ function sortrecom(){
 }
 function sortcomment(){
   if(sortcommentList.length==0){get_sortlist('comment')
-    return False  }
+    return 1  }
 
   let value = parseInt( event.currentTarget.value ) +1
   if(value>2){ value = 1 }
