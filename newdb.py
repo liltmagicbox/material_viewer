@@ -217,6 +217,11 @@ def press_recomlike(board,id, time,user, key):
     add(board,id,key,userinfo)
     return 1
 
+def add_view(board,id, time, user):
+    key = view_key
+    userinfo = setuserinfo(time,user,text="",see=see_default)
+    add(board,id,key,userinfo)
+    return 1
 
 #def iswriter()
 def isuser(board,id,key, userinfo):

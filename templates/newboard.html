@@ -9,18 +9,27 @@
 
     </div>
 
+    --- 이름이 !로 시작하면 비공개, @면 누구나글쓰기됨 예)!내부공지, @아무나게시판---
     <form class="newboard" action="/createboard" method="post">
       <input id="token" type="text" name="token" hidden = True ><br>
 
       게시판 이름: <input  id="boardname" type="text" name="name"><br>
+
+      <!--div>글쓰기권한:
+      <input type="radio" id="manager" name="writer" value="manager">
+      <label for="manager">manager</label>
+      <input type="radio" id="all" name="writer" value="all">
+      <label for="all">all</label><br>
+      </div-->
+
       <button id="submitB" type="submit" name="button" >등록</button>
     </form>
 
 
   </body>
 
-  <script type="text/javascript" src="./static/js/shasha.js"> </script>
-  <script type="text/javascript" src="./static/js/userfunc.js"> </script>
+  <script type="text/javascript" src="/static/js/shasha.js"> </script>
+  <script type="text/javascript" src="/static/js/userfunc.js"> </script>
 
     <script type="text/javascript">
       frame = document.getElementById("loginbox")

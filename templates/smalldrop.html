@@ -55,7 +55,7 @@ order: 999;
 }
 label.button {
   display: inline-block;
-  padding: 10px;
+  padding: 2px;
   background: #ccc;
   cursor: pointer;
   border-radius: 5px;
@@ -106,20 +106,11 @@ label.button:hover {
   </head>
   <body>
 
-    <div id = "loginbox">
-
-    </div>
-
-
-
     <!------------------------------------------------------------------------->
-    <hr>
 
-    <h1>그냥글쓰기</h1>
-    <br>
     <article class="">
-      이미지를 아래 영역에 끌어다 놓거나 파일을 선택하세요(각 20MB제한)
-      순서를바꾸려면 이미지를 클릭.
+      이미지를 끌어놓거나 선택하기(개별최대20MB)
+      클릭해서순서바꾸기.
     </article>
 
     <div id="view_zone" ondrop="dropHandler(event);" ondragover="dragOverHandler(event);">
@@ -133,14 +124,14 @@ label.button:hover {
             삭제하기
       </div>
     </div>
-    <br>
     <input type="file" id="fileElem" multiple accept="image/*" onchange="handleFiles(event);">
     <label class="button" for="fileElem">이미지파일선택</label>
-    <br>
     <p>-----------------</p>
 
 
     <select id = "writeboard" name="writeboard" >
+      <option value="">게시판</option>
+
       {% for gallery in galleryList %}
       <option value="{{gallery}}">{{gallery}}</option>
       {% endfor %}
@@ -149,11 +140,10 @@ label.button:hover {
     <br>
 
     제목:<input type="text" name="titletext"  placeholder="최대30자" maxlength="30"><br>
-      내용:<textarea name="bodytext" rows="5" cols="40"></textarea><br>
+      내용:<textarea name="bodytext" rows="3" cols="25"></textarea><br>
       <!--input type="text" name="bodytext" ><br-->
 
       <!--input type=file multiple name=charts accept="image/*"-->
-      <br>
       <br>
       <!--button id = "uploadbutton" type = "button" onclick="uploadFiles()">안보이는업로드버튼 </button-->
       <button id = "submitbutton" type = "button" onclick="uploadFiles_pre()">눌러서 처리하기 </button>
@@ -166,61 +156,10 @@ label.button:hover {
 
 
 
-
-      <!------------------------------------------------------------------------->
-      <hr>
-      <h1>zip파일업로드</h1>
-      <br>
-      <!--form method = "POST" action = "/zipfileup" enctype = "multipart/form-data"-->
-
-        <!--input type="radio" id="board" name="board" value="gallery">
-        <label for="board">보드명.변수입력이필요함.</label><br-->
-
-        <!--input type="radio" id="만화" name="boardtype" value="만화">
-        <label for="만화">만화</label><br>
-        <input type="radio" id="소설" name="boardtype" value="소설">
-        <label for="소설">소설</label><br-->
-
-        <select id = "zipboard" name="board" required>
-          <!--option value="">게시판</option-->
-          {% for gallery in galleryList %}
-          <option value="{{gallery}}">{{gallery}}</option>
-          {% endfor %}
-        </select>
-        <br>
-        <br>
-
-        <select id = "ziptype" name="ziptype" required>
-          <option value="">zip파일 종류</option>
-          <option value="단일만화">단일만화</option>
-          <option value="여러개묶음">여러개묶음</option>
-        </select>
-        <br>
-        <br>
-        <br>
-
-           zip파일:<input id = "zipinput" type = "file" name = "file" accept=".zip" >
-           <!--label class="button" for="zipinput">zip파일선택</label-->
-
-           <progress id="progress-bar" max=100 value=0></progress>
-           <br>
-           <br>
-           <button type = "button"  onclick="uploadzip_pre()">투고하기</button>
-           <br>
-
-      <article class="">
-        <p>단일만화 : zip파일명의 폴더가 생성되고, 그 안에 압축해제됨. 제목은 zip 파일.</p>
-        <p>여러개묶음 : zip 안의 파일들 각각에 해당하는 폴더가 생성됨. 제목은 각 파일,폴더 명.</p>
-        <p>본문 넣고 싶으면, 각 폴더 안에 텍스트파일을 단! 하나! 넣으면 됨.</p>
-        <p>처리 시간은, 대략 10메가당 30초. 100메가면, 300초,5분정도걸린다고보임.</p>
-      </article>
-
-
-
   </body>
 
-  <script type="text/javascript" src="/static/js/shasha.js"> </script>
-  <script type="text/javascript" src="/static/js/userfunc.js"> </script>
+  <script type="text/javascript" src="./static/js/shasha.js"> </script>
+  <script type="text/javascript" src="./static/js/userfunc.js"> </script>
   <script type="text/javascript">
     frame = document.getElementById("loginbox")
     makeloginbox(frame)
@@ -235,7 +174,7 @@ label.button:hover {
   var writefillmsg = "이미지를 업로드 하거나, 내용을 채워주세요"
   var selectfillmsg = "게시판 , zip파일 타입을 선택하세요"
   var attachfilemsg = "zip파일을 첨부 하세요"
-  var over2gbmsg = "too large: 500MB"
+  var over2gbmsg = "too large: 2GB"
 
   var gallfillmsg = "게시판을 선택해주세요"
 
@@ -352,7 +291,7 @@ function uploadzip() {
 
   file = document.getElementById("zipinput").files[0]
   zipsize = file.size/1024/1024
-  if( zipsize>500){
+  if( zipsize>2000){
     alert(over2gbmsg)
     return ""
   }

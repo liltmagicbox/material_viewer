@@ -112,6 +112,54 @@ label.button:hover {
 
 
 
+    <hr>
+    <h1>zip파일업로드</h1>
+    <br>
+    <!--form method = "POST" action = "/zipfileup" enctype = "multipart/form-data"-->
+
+      <!--input type="radio" id="board" name="board" value="gallery">
+      <label for="board">보드명.변수입력이필요함.</label><br-->
+
+      <!--input type="radio" id="만화" name="boardtype" value="만화">
+      <label for="만화">만화</label><br>
+      <input type="radio" id="소설" name="boardtype" value="소설">
+      <label for="소설">소설</label><br-->
+
+      <select id = "zipboard" name="board" required>
+        {% for gallery in galleryList %}
+        <option value="{{gallery}}">{{gallery}}</option>
+        {% endfor %}
+      </select>
+      <br>
+      <br>
+
+      <select id = "ziptype" name="ziptype" required>
+        <option value="">zip파일 종류</option>
+        <option value="단일만화">단일만화</option>
+        <option value="여러개묶음">여러개묶음</option>
+      </select>
+      <br>
+      <br>
+      <br>
+
+         zip파일:<input id = "zipinput" type = "file" name = "file" accept=".zip" >
+         <!--label class="button" for="zipinput">zip파일선택</label-->
+
+         <progress id="progress-bar" max=100 value=0></progress>
+         <br>
+         <br>
+         <button type = "button"  onclick="uploadzip_pre()">투고하기</button>
+         <br>
+
+    <article class="">
+      <p>단일만화 : zip파일명의 폴더가 생성되고, 그 안에 압축해제됨. 제목은 zip 파일.</p>
+      <p>여러개묶음 : zip 안의 파일들 각각에 해당하는 폴더가 생성됨. 제목은 각 파일,폴더 명.</p>
+      <p>본문 넣고 싶으면, 각 폴더 안에 텍스트파일을 단! 하나! 넣으면 됨.</p>
+      <p>처리 시간은, 대략 10메가당 30초. 100메가면, 300초,5분정도걸린다고보임.</p>
+    </article>
+
+
+
     <!------------------------------------------------------------------------->
     <hr>
 
@@ -141,6 +189,8 @@ label.button:hover {
 
 
     <select id = "writeboard" name="writeboard" >
+      <option value="">게시판</option>
+
       {% for gallery in galleryList %}
       <option value="{{gallery}}">{{gallery}}</option>
       {% endfor %}
@@ -166,61 +216,10 @@ label.button:hover {
 
 
 
-
-      <!------------------------------------------------------------------------->
-      <hr>
-      <h1>zip파일업로드</h1>
-      <br>
-      <!--form method = "POST" action = "/zipfileup" enctype = "multipart/form-data"-->
-
-        <!--input type="radio" id="board" name="board" value="gallery">
-        <label for="board">보드명.변수입력이필요함.</label><br-->
-
-        <!--input type="radio" id="만화" name="boardtype" value="만화">
-        <label for="만화">만화</label><br>
-        <input type="radio" id="소설" name="boardtype" value="소설">
-        <label for="소설">소설</label><br-->
-
-        <select id = "zipboard" name="board" required>
-          <!--option value="">게시판</option-->
-          {% for gallery in galleryList %}
-          <option value="{{gallery}}">{{gallery}}</option>
-          {% endfor %}
-        </select>
-        <br>
-        <br>
-
-        <select id = "ziptype" name="ziptype" required>
-          <option value="">zip파일 종류</option>
-          <option value="단일만화">단일만화</option>
-          <option value="여러개묶음">여러개묶음</option>
-        </select>
-        <br>
-        <br>
-        <br>
-
-           zip파일:<input id = "zipinput" type = "file" name = "file" accept=".zip" >
-           <!--label class="button" for="zipinput">zip파일선택</label-->
-
-           <progress id="progress-bar" max=100 value=0></progress>
-           <br>
-           <br>
-           <button type = "button"  onclick="uploadzip_pre()">투고하기</button>
-           <br>
-
-      <article class="">
-        <p>단일만화 : zip파일명의 폴더가 생성되고, 그 안에 압축해제됨. 제목은 zip 파일.</p>
-        <p>여러개묶음 : zip 안의 파일들 각각에 해당하는 폴더가 생성됨. 제목은 각 파일,폴더 명.</p>
-        <p>본문 넣고 싶으면, 각 폴더 안에 텍스트파일을 단! 하나! 넣으면 됨.</p>
-        <p>처리 시간은, 대략 10메가당 30초. 100메가면, 300초,5분정도걸린다고보임.</p>
-      </article>
-
-
-
   </body>
 
-  <script type="text/javascript" src="/static/js/shasha.js"> </script>
-  <script type="text/javascript" src="/static/js/userfunc.js"> </script>
+  <script type="text/javascript" src="./static/js/shasha.js"> </script>
+  <script type="text/javascript" src="./static/js/userfunc.js"> </script>
   <script type="text/javascript">
     frame = document.getElementById("loginbox")
     makeloginbox(frame)

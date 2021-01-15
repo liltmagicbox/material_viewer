@@ -9,6 +9,8 @@ function initTagframe(){
   makeTagopenB(userTagbox)
 }
 
+
+
 function makeTagopenB(tagFrame){
   let tagB = document.createElement('button')
   tagB.type = 'button' // if want submit, change. see mdn button

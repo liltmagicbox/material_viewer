@@ -525,6 +525,44 @@ nav ul li a{
   list-style-type: circle;
   font-size : 0.9rem;
 }
+
+/*******************button icons********/
+/*
+bad-est.
+.tagsendB{
+  background: url( "/static/resource/sendB.png" ) no-repeat;
+  border: none;
+  width: 25px;
+  height: 25px;
+  cursor: pointer;
+  content-visibility: hidden;
+}
+.commsendB{
+  background: url( "/static/resource/sendB.png" ) no-repeat;
+  border: none;
+  width: 25px;
+  height: 25px;
+  cursor: pointer;
+  content-visibility: hidden;
+}
+.commloadB{
+  background: url( "/static/resource/loadB.png" ) no-repeat;
+  border: none;
+  width: 25px;
+  height: 25px;
+  cursor: pointer;
+  content-visibility: hidden;
+}
+.tagloadB{
+  background: url( "/static/resource/loadB.png" ) no-repeat;
+  border: none;
+  width: 25px;
+  height: 25px;
+  cursor: pointer;
+  content-visibility: hidden;
+}
+*/
+
 /*-------------------mobile---------------*/
 
   @media screen and (max-width: 600px) {

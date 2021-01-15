@@ -16,20 +16,20 @@
     <link rel="stylesheet" type="text/css" href="./static/css/flexcol.css">
     <link rel="stylesheet" type="text/css" href="./static/css/unitcolor.css">
 
-    <script type="text/javascript" src="./static/head_{{board}}.json?{{headver}}"> </script>
+    <script type="text/javascript" src="/static/head_{{board}}.json?{{headver}}"> </script>
     <!--script type="text/javascript" src="./static/fluiddict.json"> </script-->
 
-    <script type="text/javascript" src="./static/js/sortnolist.js"> </script>
-    <script type="text/javascript" src="./static/js/tagquery.js"> </script>
+    <script type="text/javascript" src="/static/js/sortnolist.js"> </script>
+    <script type="text/javascript" src="/static/js/tagquery.js"> </script>
 
-    <script type="text/javascript" src="./static/js/filltagframe.js"> </script>
-    <script type="text/javascript" src="./static/js/makeimgbox.js"> </script>
-    <script type="text/javascript" src="./static/js/inittagframe.js"> </script>
-    <script type="text/javascript" src="./static/js/initimgframe.js"> </script>
-    <script type="text/javascript" src="./static/js/initsortframe.js"> </script>
+    <script type="text/javascript" src="/static/js/filltagframe.js"> </script>
+    <script type="text/javascript" src="/static/js/makeimgbox.js"> </script>
+    <script type="text/javascript" src="/static/js/inittagframe.js"> </script>
+    <script type="text/javascript" src="/static/js/initimgframe.js"> </script>
+    <script type="text/javascript" src="/static/js/initsortframe.js"> </script>
 
-    <script type="text/javascript" src="./static/js/shasha.js"> </script>
-    <script type="text/javascript" src="./static/js/userfunc.js"> </script>
+    <script type="text/javascript" src="/static/js/shasha.js"> </script>
+    <script type="text/javascript" src="/static/js/userfunc.js"> </script>
 
     <style media="screen">
     .tagB{
@@ -38,7 +38,7 @@
       border-width: thin;
     }
     .tagB_big {
-      border-radius: 15%;
+      border-radius: 5px;
       border-style: dotted;
       border-width: medium;
       margin: 4px;
@@ -110,17 +110,20 @@
           {% for board in boardList %}
           <li><a href="?board={{board}}" title="{{board}}">{{board}}</a></li>
           {% endfor %}
+          {% for board in hiddenboardList %}
+          <li><a href="?board={{board}}" title="{{board}}" class="managermenu" style="display : none">{{board}}</a></li>
+          {% endfor %}
         </ul>
 
         <hr>
         <!--a href="#">내 업로드 보기</a-->
-        <a href="/upload">업로드 하기</a>
+        <!--a href="/upload">업로드 하기</a-->
         <a href="/taginput">고속태그입력</a>
 
-        <a href="/articleboard" class="managermenu" style="display : none">게시판 관리</a>
+        <a href="/manageboard" class="managermenu" style="display : none">게시판 태그 관리</a>
+        <a href="/articleboard" class="managermenu" style="display : none">게시판 내부 관리</a>
         <a href="/newboard" class="managermenu" style="display : none">새 게시판</a>
         <a href="/delboard" class="managermenu" style="display : none">게시판 삭제</a>
-        <a href="/manageboard" class="managermenu" style="display : none">게시판 태그 관리</a>
         <a href="/assignuser" class="managermenu" style="display : none">계정 권한 부여</a>
 
 
@@ -160,7 +163,9 @@
       </div>
 
 
-
+      <div class="writearea">
+        <button type="button" name="button" id='writeB'>글쓰기</button>
+      </div>
 
       <br>
       <hr>
@@ -185,6 +190,27 @@
     <footer id='foot'>
       <p> 2020 lovelive gallery </p>
     </footer>
+
+
+    <script type="text/javascript">
+      writeB = document.getElementById("writeB")
+      writeB.addEventListener('click', writeupload)
+      function writeupload(){
+        var boardname = getParameterByName('board')
+        window.location.href = "/upload/"+boardname
+        //https://stackoverflow.com/questions/28164479/window-open-should-open-the-link-in-same-tab/28164552
+      }
+
+      //https://mine-it-record.tistory.com/278
+      function getParameterByName(name) {
+        name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+        var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+                results = regex.exec(window.location.search);
+        return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+    }
+
+    </script>
+
 
     <script type="text/javascript">
 

@@ -21,8 +21,9 @@ app = Flask(__name__)
 @app.route('/')
 def hello():
     #http://localhost:12800/newboard
-    #return redirect( "/view?board="+boardList[0] )
-    return 'hello'
+    boardList = list(newdb.db.keys())
+    return redirect( "/view?board="+boardList[0] )
+    #return 'hello'
 
 
 @app.route('/view')
@@ -31,6 +32,11 @@ def viewmain():
         board = request.args.get('board')
         #print(board)works great!!!
         boardList = list(newdb.db.keys())
+        hiddenboardList = []
+        for b in boardList:
+            if b.find('숨김') != -1:
+                hiddenboardList.append( boardList.pop( boardList.index(b) ) )
+
         if board == None:
             board = boardList[0]
             headver = newdb.head[board][0]# .json script version.
@@ -43,6 +49,7 @@ def viewmain():
         characterList = newdb.characterList[board]
         unitDict = newdb.unitDict[board]
     return render_template('rocketbox.html', boardList=boardList, board = board, headver = headver,
+    hiddenboardList=hiddenboardList,
     artistList=artistList, characterList=characterList, unitDict=unitDict )
 
 @app.route('/taginput')
@@ -149,7 +156,8 @@ def heavyfetchParse():
 def fetchbodytext():
     board = request.args.get('board')
     no = request.args.get('no')
-    key = request.args.get('key')
+    #key = request.args.get('key')
+    key = newdb.body_key#more specific.
 
     #request.query_string
     ##print(no,key)
@@ -158,6 +166,10 @@ def fetchbodytext():
     #return( valueText )
     #data = {'server_name' : '0.0.0.0', 'server_port' : '8080'}# it! works!
     #return valueText
+
+    time = datestr()
+    newdb.add_view(board,no, time, 'noname')#fine view ++ button may abuse.
+
 
     data = { 'bodytext':valueText }
     return jsonify(data)
@@ -263,7 +275,7 @@ def unlockjar():
 
 def jaraddtime(size):
     global jarinfo
-    jarinfo[2] += int(float(size)*3) #1000MB, 2000sec... to 3.
+    jarinfo[2] += int(float(size)*3.4) #1000MB, 2000sec... to 3...to 3.4
 
 def keycheck(uploadkey):
     return jarinfo[3]==uploadkey
@@ -322,10 +334,20 @@ import zipfile
 import zipfileuni
 from werkzeug.utils import secure_filename
 #업로드 HTML 렌더링
-@app.route('/upload')
-def render_file():
-    boardList = list(newdb.db.keys())
-    return render_template('filedrop.html', galleryList = boardList )
+# @app.route('/upload')
+# def render_file():
+#     boardList = list(newdb.db.keys())
+#     return render_template('filedrop.html', galleryList = boardList )
+
+@app.route('/upload/<path:boardname>', methods=['GET'])
+def render_file(boardname):
+    galleryList = [boardname]
+    return render_template('filedrop.html', galleryList = galleryList )
+
+# @app.route('/smallupload')
+# def render_file_small():
+#     boardList = list(newdb.db.keys())
+#     return render_template('smalldrop.html', galleryList = boardList )
 
 #파일 업로드 처리
 #https://flask.palletsprojects.com/en/1.1.x/patterns/fileuploads/
@@ -444,6 +466,13 @@ def zipfileup():
 @app.route("/xmliterimg", methods=['POST'])
 def xmliterimg():
     f = request.files['file']
+    #js cuts 20MB, but if 100MB comes, can't block!
+    # pointer gose end, cant save img!
+    blob = f.read()
+    fsize = len(blob)
+    print(fsize)
+    if fsize < 25014825:#25MB,8digits.
+        f.seek(0)
     iter = request.form['iter']
     #print(f)
     #print(iter)
@@ -462,7 +491,7 @@ def xmliterimg():
     sname =  iter+ext
     #sname = secure_filename(f.filename)
     filepath = join(unzipdir,sname)
-    jaraddtime(5)
+    jaraddtime(7)#5 to 7.. if 10mb.
     f.save( filepath )
     return "imgup"#it's key to tell success! see filedrop.html
 
@@ -534,7 +563,6 @@ def newboard():
 @app.route('/createboard', methods=['GET', 'POST'])
 def createboard():
     if request.method == 'POST':
-        name = request.form['name']
         token = request.form['token']
         username = userdb.getname(token)
         if username == "noname":
@@ -543,6 +571,11 @@ def createboard():
             pass
         else:
             return "you can not make it!"
+
+        name = request.form['name']
+        #----------json save * error. why??
+        if name.find('*') != -1:
+            name = 'x'.join( name.split('*') )
 
         #boardtype = request.form['boardtype']
         #heros = request.form['heros']2020.12.07.
@@ -879,16 +912,32 @@ def delboard(board):
 
 @app.route('/assignuser' )
 def assignuser():
-    return render_template('assignuser.html')
+    masterList = userdb.masters
+    managerList = userdb.managers
+    userList = list(userdb.user.keys())
+    return render_template('assignuser.html', masterList=masterList, managerList=managerList, userList = userList)
 
 @app.route('/assignauth', methods = [ 'POST'] )
 def assignauth():
+    token = request.form['token']
+    username = userdb.getname(token)
+    if username == "noname":
+        return "noname"
+    if userdb.ismaster(username):
+        pass
+    else:
+        return "noauth"
+
     name = request.form['name']
     auth = request.form['auth']
     if auth == "master":
         return userdb.newmaster(name)
     elif auth == "manager":
         return userdb.newmanager(name)
+    elif auth == "user":
+        return userdb.normaluser(name)
+    elif auth == "delete":
+        return userdb.deluser(name)
     return "badgateway"
 
 
@@ -945,6 +994,7 @@ def fetchnewuser():
 #-----------------------button value change
 @app.route('/xmlrecomlike' , methods = ['POST'] )
 def xmlrecomlike():
+
     key = request.form['key']
     if key == "recom":
         dbkey = newdb.recom_key
@@ -956,7 +1006,8 @@ def xmlrecomlike():
     token = request.form['token']
     username = userdb.getname(token)
     if username == "noname":
-        return "noname"
+        return str(len(newdb.db[board][id][dbkey]))
+        #return "noname"
     time = datestr()
     # if newdb.press_recom( board, id, time, username) == 1:
     #     return "value1"
@@ -965,6 +1016,16 @@ def xmlrecomlike():
     newdb.press_recomlike( board, id, time, username, dbkey )
     return str(len(newdb.db[board][id][dbkey]))
 
+@app.route('/xmlview' , methods = ['POST'] )
+def xmlview():
+    board = request.form['board']
+    id = request.form['id']
+    dbkey = newdb.view_key
+
+    time = datestr()
+    newdb.add_view(board,id, time, 'noname')#fine view ++ button may abuse.
+
+    return str(len(newdb.db[board][id][dbkey]))
 
 @app.route('/xmlcomm' , methods = ['POST'] )
 def xmlcomm():

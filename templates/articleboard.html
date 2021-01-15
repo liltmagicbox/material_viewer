@@ -61,7 +61,7 @@
 
     let articlearea = document.getElementById('articlearea')
     articlearea.innerHTML = ""
-    let frame = '<iframe src="./articleview?board=boardname&key=type&user=targetuser" width="800" height="600"></iframe>'
+    let frame = '<iframe src="/articleview?board=boardname&key=type&user=targetuser" width="800" height="600"></iframe>'
     frame = frame.replace("boardname",boardname)
     frame = frame.replace("type",type)
     frame = frame.replace("targetuser",targetuser)

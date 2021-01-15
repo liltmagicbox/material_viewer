@@ -97,7 +97,7 @@ img{
   color:red;
 }
 .tagtext{
-  display: flex;
+  /*display: flex;*/
 }
 p{
 
@@ -105,26 +105,27 @@ p{
 </style>
 
 <!--script type="text/javascript" src="./static/headdict.json"> </script-->
-<script type="text/javascript" src="./static/head_{{board}}.json?{{headver}}"> </script>
+<script type="text/javascript" src="/static/head_{{board}}.json?{{headver}}"> </script>
 
-<script type="text/javascript" src="./static/js/sortnolist.js"> </script>
-<script type="text/javascript" src="./static/js/tagquery.js"> </script>
+<script type="text/javascript" src="/static/js/sortnolist.js"> </script>
+<script type="text/javascript" src="/static/js/tagquery.js"> </script>
 
-<script type="text/javascript" src="./static/js/filltagframe.js"> </script>
-<script type="text/javascript" src="./static/js/makeimgbox.js"> </script>
-<script type="text/javascript" src="./static/js/inittagframe.js"> </script>
-<script type="text/javascript" src="./static/js/initimgframe.js"> </script>
-<script type="text/javascript" src="./static/js/initsortframe.js"> </script>
+<script type="text/javascript" src="/static/js/filltagframe.js"> </script>
+<script type="text/javascript" src="/static/js/makeimgbox.js"> </script>
+<script type="text/javascript" src="/static/js/inittagframe.js"> </script>
+<script type="text/javascript" src="/static/js/initimgframe.js"> </script>
+<script type="text/javascript" src="/static/js/initsortframe.js"> </script>
 
-<script type="text/javascript" src="./static/js/shasha.js"> </script>
-<script type="text/javascript" src="./static/js/userfunc.js"> </script>
+<script type="text/javascript" src="/static/js/shasha.js"> </script>
+<script type="text/javascript" src="/static/js/userfunc.js"> </script>
 
 
 </head>
 <body>
 
 <!--h2>고속태그입력모드</h2-->
-<p>PC사용이 권장됨, 키보드,스페이스로구분(2번 이상 띄워져도됨), 이미있는건 스페이스로 자동완성, 없는건 직접치자. 엔터로 입력확정.</p>
+<p>설명은아래에</p>
+
 <div id="loginbox">
 
 </div>
@@ -168,6 +169,8 @@ p{
 <div class="imgFrame" id = "imgFrame">
 
 </div>
+
+
 
 <script>
 function autocomplete(inp, arr) {
@@ -539,6 +542,15 @@ var countries = unitList
 autocomplete(document.getElementById("myInput"), countries);
 
 </script>
+
+
+<p>PC사용이 권장됨</p>
+  <p>매니저부터입력가능</p>
+  <p>1.빨간색 태그를입력하자 클릭</p>
+  <p>2.방향키로 글이동하고 태그입력후 엔터.</p>
+  <p>태그는 스페이스로 구분해서 우르르입력됨(2번 이상 띄워져도됨)</p>
+  <p>이미있는 유닛명은 스페이스로 자동완성됨.</p>
+  <p>태그관리에서 개별 캐릭터도 유닛명으로 입력해놓자.</p>
 
 </body>
 

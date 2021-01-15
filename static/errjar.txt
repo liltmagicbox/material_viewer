@@ -1,2 +1,8 @@
 resizer:no img!
 resizer:no img!
+resizer:no img!
+resizer:no img!
+resizer:no img!
+resizer:21fecc97-e804_1:cannot identify image file 'jar\\dz\\1.gif'
+resizer:d099eff2-2c4a_1:cannot identify image file 'jar\\ddd\\1.jpg'
+resizer:455e7b59-aaa5_1:cannot identify image file 'jar\\dgasdg\\1.gif'

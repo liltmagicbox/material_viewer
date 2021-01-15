@@ -295,9 +295,16 @@ function overLayview(){
 
 }
 
+overclickn = 0
 function overoff(){
-  document.body.classList.remove("stop_scroll")
-  document.getElementById('overviewer').remove()
+  overclickn +=1
+  setTimeout( function(){overclickn=0}, 500)//350 for doubleclick.
+
+  if(overclickn >2){
+    overclickn=0
+    document.body.classList.remove("stop_scroll")
+    document.getElementById('overviewer').remove()
+  }
 }
 
 
@@ -506,6 +513,7 @@ function eventBodyload(event){
 
   addrecomB(box,no,board)
   addlikeB(box,no,board)
+  addviewB(box,no,board)
 
   addcommarea(box,no,board)
 
@@ -518,6 +526,19 @@ function scrollup(){
 }
 
 
+function addviewB(box,no,board){
+  let recomB = document.createElement('button')
+  recomB.type = 'button'
+  recomB.className = 'viewB'
+  recomB.classList.add( 'loadB' )
+  recomB.innerText = '조회'
+  recomB.value = "0"
+  recomB.no = no
+  recomB.board= board
+
+  recomB.addEventListener('click', function(e){xmlviewB(recomB)} )
+  box.appendChild(recomB)
+}
 function addrecomB(box,no,board){
   let recomB = document.createElement('button')
   recomB.type = 'button'
@@ -549,6 +570,25 @@ function addlikeB(box,no,board){
   //likeB.pressed = false
   likeB.addEventListener('click', function(e){xmllikeB(likeB)} )
   box.appendChild(likeB)
+}
+
+function xmlviewB(recomB){
+  var url = '/xmlview'
+  var xhr = new XMLHttpRequest()
+  var formData = new FormData()
+  xhr.open('POST', url, true)
+  xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest')
+
+  xhr.addEventListener("load", function(event){
+    let response = event.srcElement.responseText
+    if( response<9999 ){recomB.innerText= "조회("+response+")"}
+  } )
+
+  let id = recomB.no
+  let board = recomB.board
+  formData.append("id", id)
+  formData.append("board", board)
+  xhr.send(formData)
 }
 function xmlrecomB(recomB){
   var url = '/xmlrecomlike'
@@ -723,6 +763,7 @@ function addcommarea(box,no,board){
 
   let commsend = document.createElement('button')
   commsend.type = "button"
+  commsend.className = 'commsendB'
   commsend.innerText = "등록"
 
   commsend.addEventListener('click', function(e){
@@ -796,6 +837,7 @@ function addtagarea(box,no,board){
 
     let commsend = document.createElement('button')
     commsend.type = "button"
+    commsend.className = 'tagsendB'
     commsend.innerText = "등록"
 
     commsend.addEventListener('click', function(e){

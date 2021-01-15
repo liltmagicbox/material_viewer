@@ -3,23 +3,59 @@
   <head>
     <meta charset="utf-8">
     <title>유저 권한 추가</title>
-    <script type="text/javascript" src="./static/js/shasha.js"> </script>
-    <script type="text/javascript" src="./static/js/userfunc.js"> </script>
+    <script type="text/javascript" src="/static/js/shasha.js"> </script>
+    <script type="text/javascript" src="/static/js/userfunc.js"> </script>
   </head>
   <body>
 
     <div class = "loginBox" id = "loginBox">
 
     </div>
+      <p>-----------------------------</p>
+      <p>여기서는 마스터만 권한부여가능!</p>
 
     <form action="/assignauth" method="post">
+      <input type="text" id="token" name="token" hidden=true>
+
       <span>닉네임 : </span><input type="text" name="name"><br>
+
       <input type="radio" id="master" name="auth" value="master">
       <label for="master">master</label><br>
+
       <input type="radio" id="manager" name="auth" value="manager">
       <label for="manager">manager</label><br>
+
+      <input type="radio" id="user" name="auth" value="user">
+      <label for="user">user</label><br>
+
+      <input type="radio" id="delete" name="auth" value="delete">
+      <label for="delete">delete</label><br>
+
       <button type="submit" name="button">부여하기</button>
     </form>
+
+
+    <p>-----------------------------</p>
+    <div class="masters">
+      <h3>masters</h3>
+      {% for master in masterList %}
+      <p> {{master}} </p>
+      {% endfor %}
+    </div>
+    <p>-----------------------------</p>
+    <div class="managers">
+      <h3>managers</h3>
+      {% for manager in managerList %}
+      <p> {{manager}} </p>
+      {% endfor %}
+    </div>
+    <p>-----------------------------</p>
+    <div class="users">
+      <h3>users</h3>
+      {% for user in userList %}
+      <p> {{user}} </p>
+      {% endfor %}
+    </div>
 
   </body>
   <script type="text/javascript">
@@ -29,6 +65,6 @@
 
     //fetchnewuserB = document.getElementById("fetchnewuserB")
     //fetchnewuserB.addEventListener('click', fetchnewuser)
-
+    filltoken()
   </script>
 </html>
