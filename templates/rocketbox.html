@@ -163,8 +163,9 @@
       </div>
 
 
+
       <div class="writearea">
-        <button type="button" name="button" id='writeB'>글쓰기</button>
+        <button type="button" id='writeB'  class="managermenu" style="display : {{allwriter}}">글쓰기</button>        
       </div>
 
       <br>
@@ -197,7 +198,8 @@
       writeB.addEventListener('click', writeupload)
       function writeupload(){
         var boardname = getParameterByName('board')
-        window.location.href = "/upload/"+boardname
+
+        window.location.href = "/upload?boardname="+boardname
         //https://stackoverflow.com/questions/28164479/window-open-should-open-the-link-in-same-tab/28164552
       }
 

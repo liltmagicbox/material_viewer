@@ -116,10 +116,11 @@ function fetchlogout(){
   //document.cookie = "username=no"
   //document.cookie = "token=no"
   //document.cookie = "sha=no"
-  document.cookie = "username=; expires=Thu, 01 Jan 1970 00:00:00 UTC; ";
-  document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; ";
-  document.cookie = "sha=; expires=Thu, 01 Jan 1970 00:00:00 UTC; ";
-  document.cookie = "userlevel=; expires=Thu, 01 Jan 1970 00:00:00 UTC; ";
+  //NOTE : path/path2/path3 .. problem. if so, del path.
+  document.cookie = "username=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+  document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+  document.cookie = "sha=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+  document.cookie = "userlevel=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
   window.location.reload()
 }
 

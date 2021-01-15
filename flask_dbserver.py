@@ -32,9 +32,11 @@ def viewmain():
         board = request.args.get('board')
         #print(board)works great!!!
         boardList = list(newdb.db.keys())
+
+        allwriter = "none"
         hiddenboardList = []
         for b in boardList:
-            if b.find('숨김') != -1:
+            if b.find('!') == 0:
                 hiddenboardList.append( boardList.pop( boardList.index(b) ) )
 
         if board == None:
@@ -42,6 +44,9 @@ def viewmain():
             headver = newdb.head[board][0]# .json script version.
             #board = "뉴보드5"#default view.
             return redirect( "/view?board="+board )
+        else:
+            if board.find('@') == 0:
+                allwriter = "initial"
 
         headver = newdb.head[board][0]# .json script version.
 
@@ -49,7 +54,7 @@ def viewmain():
         characterList = newdb.characterList[board]
         unitDict = newdb.unitDict[board]
     return render_template('rocketbox.html', boardList=boardList, board = board, headver = headver,
-    hiddenboardList=hiddenboardList,
+    hiddenboardList=hiddenboardList, allwriter=allwriter,
     artistList=artistList, characterList=characterList, unitDict=unitDict )
 
 @app.route('/taginput')
@@ -339,8 +344,12 @@ from werkzeug.utils import secure_filename
 #     boardList = list(newdb.db.keys())
 #     return render_template('filedrop.html', galleryList = boardList )
 
-@app.route('/upload/<path:boardname>', methods=['GET'])
-def render_file(boardname):
+
+#@app.route('/upload/<path:boardname>', methods=['GET'])
+@app.route('/upload', methods=['GET'])
+def render_file():
+    boardname = request.args.get('boardname')
+    print(boardname)
     galleryList = [boardname]
     return render_template('filedrop.html', galleryList = galleryList )
 
