@@ -46,6 +46,32 @@ function sortNolist(datas,noList,sortby){
     for (var d of c) {  noList.push( d[0] )  }
   }
 
+//-----------------------------view list
+  else if( sortby == 'view+'){
+    console.log('++')
+    var c=[]
+    for (var key of noList) {  c.push( [ key , datas[key]['제목']   ]  )    }
+    //c.sort( function(a,b){ return a[1] < b[1]; }  )
+    c.sort(function(a, b){
+    if(a[1] < b[1]) { return -1; }
+    if(a[1] > b[1]) { return 1; }
+    return 0;
+    })
+    noList = []
+    for (var d of c) {  noList.push( d[0] )  }
+  }
+  else if( sortby == 'view-'){
+    console.log('--')
+    var c=[]
+    for (var key of noList) {  c.push( [ key , datas[key]['제목']   ]  )    }
+    c.sort(function(a, b){
+    if(a[1] > b[1]) { return -1; }
+    if(a[1] < b[1]) { return 1; }
+    return 0;
+    })
+    noList = []
+    for (var d of c) {  noList.push( d[0] )  }
+  }
 
   return noList
 }

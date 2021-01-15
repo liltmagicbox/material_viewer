@@ -32,39 +32,53 @@
     <script type="text/javascript" src="/static/js/userfunc.js"> </script>
 
     <style media="screen">
+
     .tagB{
       background-color: #ffffff;
-      border-style: dashed;
+      border-style: outset;
       border-width: thin;
+      border-color: azure;
     }
-    .tagB_big {
-      border-radius: 5px;
-      border-style: dotted;
-      border-width: medium;
-      margin: 4px;
-    }
-    .tagB_big.tagB_character{
+    .tagB.tagB_character{
       border-radius: 50%;
       padding: 0px;
       margin: 2px 4px;
       /*width: 50px;*/
       min-width: 50px;
       height: 50px;
-      border-style: dashed;
-      /*color: black;*/
+
+      border-width: medium;
+      margin: 4px;
     }
     .tagB_character.tagB_inter{
-      border-style: outset;
-    }
-    .tagB_inter{
-      border-color: dodgerblue;
       border-width: thick;
-      border-style: outset;
+    }
+
+    .tagB_unit{
+      border-radius: 5px;
+      margin: 2px 4px;
+      /*background-color: lightcyan;*/
+    }
+    .tagB_artist{
+      border-radius: 5px;
+      margin: 2px 4px;
+      /*background-color: lavender;*/
+    }
+
+    .tagB_big {
+      border-width: thick;
+      border-radius: 5px;
+      margin: 2px 4px;
+    }
+
+    .tagB_inter{
+      border-color: royalblue;
+      border-width: thick;
     }
     .tagB_union{
-      border-color: lightskyblue;
-      border-width: medium;
-      border-style: outset;
+      border-color: lightblue;
+      /*border-width: thick;*/
+      background-color: lightblue;
     }
     .tagB_exclude{
       border-style: none;
@@ -73,14 +87,7 @@
 
 
 
-        .tagB_character[value = '0']{
-          border-style: dotted;
-          color: grey;
-        }
-        .tagB_character[value = '2']{
-          border-style: inset;
-          color: grey;
-        }
+
 
     </style>
 
@@ -165,8 +172,9 @@
 
 
       <div class="writearea">
-        <button type="button" id='writeB'  class="managermenu" style="display : {{allwriter}}">글쓰기</button>        
+        <button type="button" id='writeB'  class="managermenu" style="display : {{allwriter}}">글쓰기</button>
       </div>
+      <button type="button" id='likeviewB'>좋아요 모아보기</button>
 
       <br>
       <hr>
@@ -192,6 +200,15 @@
       <p> 2020 lovelive gallery </p>
     </footer>
 
+    <script type="text/javascript">
+      likeviewB = document.getElementById("likeviewB")
+      likeviewB.addEventListener('click', likeview)
+      function likeview(){
+        var board = getParameterByName('board')
+        var token = 't'
+        //xml, noname or jsonfyied[id,id].to viewlist.
+      }
+    </script>
 
     <script type="text/javascript">
       writeB = document.getElementById("writeB")
@@ -202,14 +219,6 @@
         window.location.href = "/upload?boardname="+boardname
         //https://stackoverflow.com/questions/28164479/window-open-should-open-the-link-in-same-tab/28164552
       }
-
-      //https://mine-it-record.tistory.com/278
-      function getParameterByName(name) {
-        name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
-        var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
-                results = regex.exec(window.location.search);
-        return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
-    }
 
     </script>
 

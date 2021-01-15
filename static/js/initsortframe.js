@@ -90,9 +90,9 @@ function initSortB(){
     if (sorttext == "날짜"){ sortB.addEventListener('click', sortDate) }
     else if (sorttext == "제목"){ sortB.addEventListener('click', sortTitle) }
 
-    else if (sorttext == "조회"){ sortB.addEventListener('click', sortView) }
-    else if (sorttext == "추천"){ sortB.addEventListener('click', sortRecom) }
-    else if (sorttext == "댓글"){ sortB.addEventListener('click', sortComment) }
+    else if (sorttext == "조회"){ sortB.addEventListener('click', sortview) }
+    else if (sorttext == "추천"){ sortB.addEventListener('click', sortrecom) }
+    else if (sorttext == "댓글"){ sortB.addEventListener('click', sortcomment) }
 
     else if (sorttext == "길게"){
       sortB.className = "thumbONB"
@@ -163,45 +163,72 @@ function sortTitle(){
   fillNewlist(viewList)
 }
 
-function sortView(){
+function get_sortlist(target){
+  var url = '/getsortlist'
+  var xhr = new XMLHttpRequest()
+  var formData = new FormData()
+  xhr.open('POST', url, true)
+  xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest')
+
+  xhr.addEventListener("load", function(event){
+    let response = event.srcElement.responseText
+    resList = JSON.parse(response)
+    if(target=="view"){sortviewList=resList}
+    else if(target=="recom"){sortrecomList=resList}
+    else if(target=="comment"){sortcommentList=resList}
+
+  } )
+
+  let board = getParameterByName('board')
+  formData.append("target", target)
+  formData.append("board", board)
+  xhr.send(formData)
+}
+
+sortviewList = []
+sortrecomList = []
+sortcommentList = []
+
+function sortview(){
+  if(sortviewList.length==0){get_sortlist('view')
+  return False  }
+
   let value = parseInt( event.currentTarget.value ) +1
   if(value>2){ value = 1 }
   event.currentTarget.value = value
 
-  if (event.currentTarget.value==1) {
-    //event.currentTarget.innerText = event.currentTarget.innerText.slice(0,-1)+"+"
-  }
-  else{
-    //event.currentTarget.innerText = event.currentTarget.innerText.slice(0,-1)+"-"
-  }
+  viewList = JSON.parse(JSON.stringify(sortviewList))
+  if (event.currentTarget.value==1) {1}
+  else{ viewList.reverse() }
   fillNewlist(viewList)
 }
-function sortRecom(){
+function sortrecom(){
+  if(sortrecomList.length==0){get_sortlist('recom')
+    return False  }
+
   let value = parseInt( event.currentTarget.value ) +1
   if(value>2){ value = 1 }
   event.currentTarget.value = value
 
-  if (event.currentTarget.value==1) {
-    //event.currentTarget.innerText = event.currentTarget.innerText.slice(0,-1)+"+"
-  }
-  else{
-    //event.currentTarget.innerText = event.currentTarget.innerText.slice(0,-1)+"-"
-  }
+  viewList = JSON.parse(JSON.stringify(sortrecomList))
+  if (event.currentTarget.value==1) {1}
+  else{ viewList.reverse()}
   fillNewlist(viewList)
 }
-function sortComment(){
+function sortcomment(){
+  if(sortcommentList.length==0){get_sortlist('comment')
+    return False  }
+
   let value = parseInt( event.currentTarget.value ) +1
   if(value>2){ value = 1 }
   event.currentTarget.value = value
 
-  if (event.currentTarget.value==1) {
-    //event.currentTarget.innerText = event.currentTarget.innerText.slice(0,-1)+"+"
-  }
-  else{
-    //event.currentTarget.innerText = event.currentTarget.innerText.slice(0,-1)+"-"
-  }
+  viewList = JSON.parse(JSON.stringify(sortcommentList))
+  if (event.currentTarget.value==1) { 1 }
+  else{ viewList.reverse() }
   fillNewlist(viewList)
 }
+
 
 
 function thumbON(){

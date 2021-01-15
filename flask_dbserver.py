@@ -735,7 +735,7 @@ def articleview():
         for id in newdb.db[board]:
             for i in newdb.db[board][id][newdb.like_key]:
                 if newdb.db[board][id][newdb.like_key][i][newdb.user_key] == user:
-                    print('haha')
+                    #print('haha')
                     item = {}
                     item["id"] = newdb.db[board][id][newdb.id_key]
                     item["title"] = newdb.db[board][id][newdb.title_key]
@@ -1174,6 +1174,41 @@ def fetchtaglist():
     #dict gone unordered in js.
     return jsonify(data)
 
+#-------------------------sort
+@app.route('/getsortlist', methods=[ 'POST'])
+def getsortlist():
+    if request.method == 'POST':
+        board = request.form['board']
+        target = request.form['target']
+        #newdb.db[board]
+        #d=[1,2,3]
+        if target == "view":
+            d = newdb.lensort(board,newdb.view_key)
+        elif target == "recom":
+            d = newdb.lensort(board,newdb.recom_key)
+        elif target == "comment":
+            d = newdb.lensort(board,newdb.comm_key)
+        #lensort(board,recom_key)
+        #lensort(board,like_key)
+        #lensort(board,comm_key)
+        return jsonify(d)
+
+@app.route('/likeview', methods=[ 'POST'])
+def likeview():
+    if request.method == 'POST':
+        board = request.form['board']
+        token = request.form['token']
+        username = userdb.getname(token)
+        if username == "noname":
+            return "noname"
+
+        user = username
+        idList=[]
+        for id in newdb.db[board]:
+            for i in newdb.db[board][id][newdb.like_key]:
+                if newdb.db[board][id][newdb.like_key][i][newdb.user_key] == user:
+                    idList.append( id )
+        return jsonify(idList)
 
 #-------------------downalod origin imgs
 @app.route('/xmldownlist', methods=['POST'])

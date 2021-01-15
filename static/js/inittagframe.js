@@ -58,6 +58,7 @@ function loadUsertag(tagFrame,pre_userTagdict){
       fillTagframe(tagFrame, text, tagNumber=userTagdict[text].length, tagclassList, shownumber=false)
     }
   }
+  tagFrame.appendChild(document.createElement('br'))
   for( var text in userTagdict){
     if(unitList.includes(text) && !characterList.includes(text) ){
       /*tagclassList = ['tagB',"tagB_big","tagB_unit"]*/
@@ -65,6 +66,7 @@ function loadUsertag(tagFrame,pre_userTagdict){
       fillTagframe(tagFrame, text, tagNumber=userTagdict[text].length, tagclassList)
     }
   }
+  tagFrame.appendChild(document.createElement('br'))
   for( var text in userTagdict){
     if(artistList.includes(text)){
       /*tagclassList = ['tagB',"tagB_big","tagB_artist"]*/
@@ -72,6 +74,7 @@ function loadUsertag(tagFrame,pre_userTagdict){
       fillTagframe(tagFrame, text, tagNumber=userTagdict[text].length, tagclassList)
     }
   }
+  tagFrame.appendChild(document.createElement('br'))
 
   for( var text in userTagdict){
     if(!characterList.includes(text) && !unitList.includes(text) && !artistList.includes(text) ){
@@ -79,7 +82,7 @@ function loadUsertag(tagFrame,pre_userTagdict){
       fillTagframe(tagFrame, text, tagNumber=userTagdict[text].length, tagclassList)
     }
   }
-
+  tagFrame.appendChild(document.createElement('br'))
 
   let utildiv = document.createElement('div')
   makeviewListN(utildiv)
@@ -137,7 +140,7 @@ function makebigThrebar(tagFrame){
 
   let partisan = document.createElement('div')
   partisan.style.float = "right"
-  partisan.style.display = "none"/*not use it.. just 10.*/
+  //partisan.style.display = "none"/*not use it.. just 10.*/
   let valval = document.createElement('span')
   valval.id = 'bigThretext'
   valval.innerHTML = tagB.value
@@ -157,8 +160,8 @@ function maketagshowbar(tagFrame){
 
   let tagB = document.createElement('input')
   tagB.type = 'range'
-  tagB.className = 'bigThrebar'
-  tagB.id = 'bigThrebar'
+  tagB.className = 'tagshowbar'
+  tagB.id = 'tagshowbar'
   tagB.min = "0"
   tagB.max = lala-csl
   tagB.setAttribute('value',15)
@@ -206,7 +209,7 @@ function resetBigguy(){//as reset..failed. for reset, simply, click.
 }*/
 
 function getNewtext(){//as reset..failed. for reset, simply, click.
-  tex = document.getElementById('tagshowtext')
+  tex = document.getElementById('bigThretext')
   tex.innerHTML = event.currentTarget.value
   //setBigguy( parseInt(event.currentTarget.value) )
   setBigguy()
