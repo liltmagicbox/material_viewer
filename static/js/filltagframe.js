@@ -116,15 +116,17 @@ function tagsetSort(inter_Set, union_Set, exclude_Set){
     set1 = unionout(set1,set2)
   }
 
+  //this caused only exclude to all.
+  if(inter_Set.size==0 && union_Set.size ==0 ){
+    set1 = allset
+  }
+
   for( var name of exclude_Set){
     var set2 = new Set(tagDict[name])
     set1 = differout(set1,set2)
   }
 
-  //this caused only exclude to all.
-  if(inter_Set.size==0 && union_Set.size ==0 ){
-    set1 = allset
-  }
+
   return Array.from(set1)
 }
 
