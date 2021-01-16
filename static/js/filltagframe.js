@@ -121,6 +121,7 @@ function tagsetSort(inter_Set, union_Set, exclude_Set){
     set1 = differout(set1,set2)
   }
 
+  //this caused only exclude to all.
   if(inter_Set.size==0 && union_Set.size ==0 ){
     set1 = allset
   }
@@ -140,14 +141,15 @@ function differout(set1,set2){
 
 //need: only unit, not char. but scan char also. not only units.
 function setBanner(inter_Set){
-  let thisunit = "undefined"
+  let thisunit = "default"
 
   for(var key of Object.keys(unitDict)){
     let unit = unitDict[key]
     if(issameset(inter_Set,unit)==true){ thisunit = key }
   }
 
-  document.getElementsByClassName("bannerImg")[0].src = "/static/resource/banner/"+thisunit+".jpg"
+  var boardname = getParameterByName('board')
+  document.getElementsByClassName("bannerImg")[0].src = "/static/banner/board/unit.png".replace('unit',thisunit).replace('board',boardname)
   document.getElementsByClassName("bannerImg")[0].alt = thisunit
 }
 
@@ -156,7 +158,7 @@ function setColor(){
   let inter_Class = document.getElementsByClassName("tagB_inter")
   for(var button of inter_Class){ inter_Set.add(button.name)}
 
-  let thisunit = "undefined"
+  let thisunit = "default"//better, default.
 
   for(var key of Object.keys(unitDict)){
     let unit = unitDict[key]
