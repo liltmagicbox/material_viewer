@@ -12,6 +12,7 @@ import json
 from flask import send_from_directory, send_file, Response
 from flask import Flask, render_template, request, jsonify, abort, redirect
 
+from resizer import justresize
 app = Flask(__name__)
 
 
@@ -583,8 +584,10 @@ def createboard():
 
         name = request.form['name']
         #----------json save * error. why??
-        if name.find('*') != -1:
-            name = 'x'.join( name.split('*') )
+        #if name.find('*') != -1:
+        #    name = 'x'.join( name.split('*') )
+        #for dir headjson, banner error.
+        name = tidyname(name)
 
         #boardtype = request.form['boardtype']
         #heros = request.form['heros']2020.12.07.
@@ -693,6 +696,35 @@ def xmldeltaginfo():
     newdb.backup()
     return "done"
 
+
+@app.route('/xmlbannerup' , methods = ['POST'] )
+def xmlbannerup():
+    f = request.files['img']
+    board = request.form['board']
+    unitname = request.form['unitname']
+
+    token = request.form['token']
+    username = userdb.getname(token)
+    if username == "noname":
+        return "noname"
+
+    if userdb.ismanager(username) or userdb.ismaster(username):
+        pass
+    else:
+        return "noname"
+
+    board = tidyName(board)
+    unitname = tidyName(unitname)
+
+    dirpath = join('static','banner',board)
+    makedirs(dirpath, exist_ok=True)
+
+    unitname= unitname+'.png'
+    filepath = join(dirpath,unitname)
+    f.save( filepath )
+    w,h = (640,360)
+    if justresize(filepath,w,h):
+        return "done"
 
 @app.route('/articleboard' )
 def articleboard():

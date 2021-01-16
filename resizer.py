@@ -21,7 +21,7 @@ ndirs = [origin_dir,resized_dir,thumb_dir]
 
 imgExt = {'.jpg','.jpeg','.png','.gif','.webp','.bmp', '.jfif',}
 
-def resizeDir( targetDir, resizew=700,thumbw=300 ,imgname = None):
+def resizeDir( targetDir, resizew=720,thumbw=300 ,imgname = None):
     errlist=[]
 
     indir = listdir( targetDir )
@@ -143,3 +143,16 @@ def resizeDir( targetDir, resizew=700,thumbw=300 ,imgname = None):
 
     returnList=[originList,resizedList,thumbList]
     return returnList,errlist
+
+
+def justresize(isrc,w,h):
+    try:
+        im = Image.open(isrc)
+        iname = im.filename
+        # imw,imh = im.size
+        # if imh>h:
+        #     imh = h
+        im.resize((w,h),Image.LANCZOS).convert('RGB').save(iname)
+        return True
+    except Exception as e:
+        return False

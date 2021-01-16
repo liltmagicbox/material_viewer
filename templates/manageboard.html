@@ -18,6 +18,10 @@
     <button id="boardinfoB">로드하기</button>
     <hr>
 
+    <span>유닛간판이미지:16:9비율로. 640*360으로변환됨.</span>
+    <br>
+    <span>보기 누르면 뜨는 새창에서, 새로고침 해야 바뀐걸로보입니다.</span>
+
     <br>
     <div id="charBarea">
       캐릭터:
@@ -95,16 +99,79 @@
   }
 
   function fillbuttondict(n,intext,targetarea,listname) {
+    let boardname = document.getElementById("board").value
+    let udiv=document.createElement("div")
+
     let b=document.createElement("button")
     b.innerText = n
     b.listname = listname
     b.addEventListener("click",function(){xmldeltaginfo(b)})
-    targetarea.appendChild(b)
+    udiv.appendChild(b)
+
     let s=document.createElement("span")
-    s.innerText = intext
-    targetarea.appendChild(s)
-    let br=document.createElement("br")
-    targetarea.appendChild(br)
+    s.innerText = intext+"--------"
+    udiv.appendChild(s)
+
+    //----------file upload and see
+    let finput=document.createElement("input")
+    finput.id = "file"+n
+    finput.type = "file"
+    finput.accept = "image/*"
+    udiv.appendChild(finput)
+
+    let fsub=document.createElement("button")
+    fsub.innerText = "업로드"
+    fsub.addEventListener("click", function(){xmlbannerup(n)} )
+    udiv.appendChild(fsub)
+
+    let fsee=document.createElement("a")
+    fsee.innerText = '간판보기'
+    fsee.href = "/static/banner/board/xxx.png".replace('xxx',n).replace('board',boardname)
+    fsee.target = "_blank"
+    udiv.appendChild(fsee)
+
+    let hr=document.createElement("hr")
+    udiv.appendChild(hr)
+
+    targetarea.appendChild(udiv)
+  }
+  function xmlbannerup(unitname){
+    let inputs = document.getElementById("file"+unitname)
+    if(inputs.files.length==0){
+      return 1//show nothing. easy to see.
+    }
+    //20mb over.
+    if(inputs.files[0].size>20000000){
+      alert('over 20mb!')
+      return 1
+    }
+
+
+    let img = inputs.files[0]
+
+    let msg = "업로드? "+unitname
+    if(confirm(msg)==false){return false}
+
+    var url = '/xmlbannerup'
+    var xhr = new XMLHttpRequest()
+    var formData = new FormData()
+    xhr.open('POST', url, true)
+    xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest')
+
+    xhr.addEventListener("load", function(event){
+      let response = event.srcElement.responseText
+      if( response == "noname"){alert("안된다")}
+      if( response == "done" ){alert("되었다")}
+    } )
+
+    let board = document.getElementById("board").value
+    let token = getCookie("token")
+    //unitname
+    formData.append("img", img)
+    formData.append("unitname", unitname)
+    formData.append("board", board)
+    formData.append("token", token)
+    xhr.send(formData)
   }
 
 
