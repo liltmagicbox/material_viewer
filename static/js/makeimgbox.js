@@ -141,7 +141,16 @@ function makeImgbox(datas, no, outFrame,boxColor=0,miniLoad = 0){
 
 
 
+
   if( getCookie("userlevel")=="manager"){
+
+    let zipdownB = document.createElement('button')
+    zipdownB.type = 'button' // if want submit, change. see mdn button
+    zipdownB.className = 'zipdownB'
+    zipdownB.innerText = 'zip다운'
+    zipdownB.addEventListener('click', function(e){eventDownloadzip(box.no, box.board)} )
+    box.appendChild(zipdownB)
+
     let delB = document.createElement('button')
     delB.type = 'button' // if want submit, change. see mdn button
     delB.className = 'delB'
@@ -298,7 +307,7 @@ function overLayview(){
 overclickn = 0
 function overoff(){
   overclickn +=1
-  setTimeout( function(){overclickn=0}, 350)//350 for doubleclick. 500 for triple
+  setTimeout( function(){overclickn=0}, 700)//350 for doubleclick. 500 for triple
 
   if(overclickn >1){//2 to triple
     overclickn=0
@@ -972,7 +981,29 @@ function xmltagsend(no,board,text,comminput){
   //   xhr.send(formData)
   // }
 
+  function eventDownloadzip(id, board){
+    if(confirm("글의사본을다운로드?")==false){
+      return false
+    }
+    var url = '/xmldownzip'
+    var xhr = new XMLHttpRequest()
+    var formData = new FormData()
+    xhr.open('POST', url, true)
+    xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest')
 
+    xhr.addEventListener("load", function(event){
+      let response = event.srcElement.responseText
+      let r = document.createElement("a")
+        r.href = response
+        r.target = "_blank"
+        r.click()
+
+    } )
+
+    formData.append("board", board)
+    formData.append("id", id)
+    xhr.send(formData)
+  }
 
 
   function eventDownload(id, board){

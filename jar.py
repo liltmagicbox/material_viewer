@@ -18,7 +18,7 @@ from resizer import resizeDir
 
 jar_dir = 'jar' #not to ./ . it's to attached.
 errlog_dir = 'static'
-imgtower_dir = 'static/imgtower'
+imgtower_dir = 'static\\imgtower'
 formakedirs = [jar_dir, errlog_dir, imgtower_dir]
 
 jarerrname = "errjar.txt"

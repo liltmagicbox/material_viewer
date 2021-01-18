@@ -3,6 +3,7 @@ from jar import parseKeys, imgKeys
 id_key, title_key, writer_key, date_key, body_key = parseKeys
 originkey,resizedkey,thumbkey = imgKeys
 
+lastbackuptime = 0
 
 dberrname = "errdb.txt"
 
@@ -31,6 +32,7 @@ uploader_key = "업로더"
 artistList={}
 characterList={}
 unitDict={}
+
 def newtaginfo(board):
     artistList[board]=[]
     characterList[board]=[]
@@ -106,11 +108,14 @@ def deltaginfo(board):
 
 db={}
 
-
+charC={}
+unitC={}
 
 def newboard(name):
     if db.get(name) == None:
         db[name] ={}
+        charC[name] ={}
+        unitC[name] ={}
         newtaginfo(name)
         backup()
         return True
@@ -120,7 +125,7 @@ def backup():
     #saveJson(db,"db.json")
     # global db
     # global taginfo
-    tmp ={"artistList":artistList,"characterList":characterList,"unitDict":unitDict, "db":db}
+    tmp ={"unitC":unitC,"charC":charC,"artistList":artistList,"characterList":characterList,"unitDict":unitDict, "db":db}
     saveJson(tmp,"data.json")
 
     boardList = list( db.keys() )
@@ -134,12 +139,16 @@ def backdown():
     global artistList
     global characterList
     global unitDict
+    global charC
+    global unitC
     data = loadJson("data.json")
     db = data["db"]
 
     artistList = data["artistList"]
     characterList = data["characterList"]
     unitDict = data["unitDict"]
+    charC = data["charC"]
+    unitC = data["unitC"]
 
     boardList = list( db.keys() )
     for board in boardList:

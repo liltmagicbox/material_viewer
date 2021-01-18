@@ -1,14 +1,26 @@
 <!DOCTYPE html>
 <html lang="kr" dir="ltr">
   <head>
+    <META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+    <META HTTP-EQUIV="Expires" CONTENT="-1">
+
     <meta charset="utf-8">
     <title>모든글보기</title>
+    <link rel="stylesheet" type="text/css" href="/static/css/flexcol.css">
+    <style media="screen">
+      .colorbox{
+        width:50px;
+        height:50px;
+      }
+    </style>
   </head>
   <body>
 
     <div id="loginbox">
 
     </div>
+    <hr>
+
 
     <select id = "board" name="board" required>
       {% for board in boardList %}
@@ -16,11 +28,85 @@
       {% endfor %}
     </select>
     <button id="boardinfoB">로드하기</button>
+
+    <br>
+
+    <select id = "boardoverwrite" name="board" required>
+      {% for board in boardList %}
+      <option value= {{board}}> {{board}} </option>
+      {% endfor %}
+    </select>
+    -에 위의 "로드하기"한 게시판의
+    <button id="boardoverwriteB">색설정덮어쓰기</button>
+    /
+    <button id="boardtagoverwriteB">태그,배너를 덮어쓰기</button>
+
+    <div class="boardloadarea">
+    </div>
+    배너교체시새로고침해야보임
+
+    <hr>
+    각 입력은 띄어쓰기로 구분됩니다. 예)[캐릭터1 캐릭터2 캐릭터3]입력가능 <br>
+    캐릭터 추가시엔, 캐릭터:캐릭터 로 구성된 조합도 추가 해 주세요.
+    <br>
+    <br>
+
+    작가 목록: <input  id="artists" type="text" name="artists"><br>
+      캐릭터 목록: <input  id="characters" type="text" name="characters"><br>
+      조합 목록: <input  id="units" type="text" name="units"><br>
+    조합 안의 캐릭터 목록:
+    <div id="unitmember">
+    </div>
+
+    <button id="submitB" type="button" >제출</button>
+    <br>
+
+
+    <hr>
+    <span>조합별 배너이미지:16:9비율의 500*281픽셀로 강제변환됨.</span>
+    <br>
+    <span>배너 보기시, 새로고침해야 갱신 됨!</span>
+    <br>
+    <div class=""  style=" display: flex;">
+
+
+        <div class="colorpreview" >
+          <button type="button" id="changeB" class="tagB tagB_big tagB_character" style="border-color: rgb(128, 128, 128)">캐릭터</button>
+          <button type="button" id="changeB2" class="tagB tagB_big tagB_inter tagB_character" style="border-color: rgb(128, 128, 128)">캐릭터</button>
+
+        </div>
+        <div class="colorpicker">
+          <input oninput="changeRed(this.value)" onchange="changeRed(this.value)" type="range" id="slideRed" name="slideRed" min="0" max="255">
+          <span id="valRed">128</span>
+          <br>
+          <input oninput="changeGreen(this.value)" onchange="changeGreen(this.value)" type="range" id="slideGreen" name="slideGreen" min="0" max="255">
+          <span id="valGreen">128</span>
+          <br>
+          <input oninput="changeBlue(this.value)" onchange="changeBlue(this.value)" type="range" id="slideBlue" name="slideBlue" min="0" max="255">
+          <span id="valBlue">128</span>
+          <br>
+        </div>
+
+    </div>
+
+
+        <br>
+        <span id="valhex">rgb(0,0,0)</span>
+
+        <select id = "colorsettarget" name="board" required>
+          <option value= "버튼"> 버튼 </option>
+        </select>
+
+        <select id = "colorsetval" name="board" required>
+          <!--option value= >  </option-->
+        </select>
+
+        <button type="button" name="button" id="colorsetB">적용</button>
+
+        <button type="button" name="button" id="charCshootB">캐릭터버튼색설정저장</button>
+
     <hr>
 
-    <span>유닛간판이미지:16:9비율로. 640*360으로변환됨.</span>
-    <br>
-    <span>보기 누르면 뜨는 새창에서, 새로고침 해야 바뀐걸로보입니다.</span>
 
     <br>
     <div id="charBarea">
@@ -28,7 +114,7 @@
     </div>
     <br>
     <div id="unitBarea">
-      유닛:
+      조합:
     </div>
     <br>
     <div id="artBarea">
@@ -37,26 +123,273 @@
     <br>
 
     <hr>
-    입력은 띄어쓰기로 구분해주세요. <br>
-    <br>
+    <div class=""  style=" display: flex;">
 
 
-    작가 목록: <input  id="artists" type="text" name="artists"><br>
-      캐릭터 목록: <input  id="characters" type="text" name="characters"><br>
-      유닛 목록: <input  id="units" type="text" name="units"><br>
-    유닛 안의 캐릭터 목록:
-    <div id="unitmember">
+        <div class="colorpreview" >
+          <button id="changeBB" class="colorbox"style="background-color: rgb(128, 128, 128);">배경</button>
+
+        </div>
+        <div class="colorpicker">
+          <input oninput="changeRedBB(this.value)" onchange="changeRedBB(this.value)" type="range" id="slideRed" name="slideRed" min="0" max="255">
+          <span id="valRedBB">128</span>
+          <br>
+          <input oninput="changeGreenBB(this.value)" onchange="changeGreenBB(this.value)" type="range" id="slideGreen" name="slideGreen" min="0" max="255">
+          <span id="valGreenBB">128</span>
+          <br>
+          <input oninput="changeBlueBB(this.value)" onchange="changeBlueBB(this.value)" type="range" id="slideBlue" name="slideBlue" min="0" max="255">
+          <span id="valBlueBB">128</span>
+          <br>
+        </div>
+
     </div>
 
-    <button id="submitB" type="button" >제출</button>
+    <span id="valhexBB">rgb(0,0,0)</span>
+
+    <select id = "colorsettargetBB" name="board" required>
+      <option value= "배경"> 배경 </option>
+    </select>
+
+    <select id = "colorsetvalBB" name="board" required>
+      <!--option value= >  </option-->
+    </select>
+
+    <button type="button" name="button" id="colorsetBB">적용</button>
+
+    <button type="button" name="button" id="charCshootBB">캐릭터배경색설정저장</button>
+
+
+
+
+    <!--
+    <hr>
+    css파일: 캐릭터별 버튼,배경 컬러 지정     <br>
+    게시판공통이니 기존의 것을 지우지 않도록! <br>
+    위의 전체버튼설정저장 했으면 그게그거.<br>
+    <a href="/static/css/unitcolor.css" download>기존css파일다운</a>
+    <input id="cssinput" type="file" accept=".css">
+    <button id="cssupload" onclick="xmlcssup()">업로드</button>
+    -->
 
   </body>
+
+  <script type="text/javascript">
+    document.getElementById("boardoverwriteB").addEventListener( "click", function(){overwrite()} )
+    function overwrite(){
+      charCshoot('B',"boardoverwrite")
+      charCshoot('BB',"boardoverwrite")
+      /*for(var B of document.getElementsByClassName('charB')){
+        B.innerText
+      }
+      document.getElementsByClassName('unitnameB')[0].innerText
+      document.getElementsByClassName('artistB')[0].innerText*/
+    }
+    document.getElementById("boardtagoverwriteB").addEventListener( "click", tagcopy )
+    function tagcopy(){
+      let msg = "게시판 배너가 설정되어있나요?"
+      if(confirm(msg)==false){return false}
+
+      var url = '/xmltagcopy'
+      var xhr = new XMLHttpRequest()
+      var formData = new FormData()
+      xhr.open('POST', url )// true means async.
+      xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest')
+
+      xhr.addEventListener("load", function(event){
+        let response = event.srcElement.responseText
+        if( response == "noname"){alert("안된다")}
+        if( response == "done" ){alert("되었다")}
+      } )
+
+      let board = document.getElementById("board").value
+      let newboard = document.getElementById("boardoverwrite").value
+      formData.append("board", board)
+      formData.append("newboard", newboard)
+      let token = getCookie("token")
+      formData.append("token", token)
+      xhr.send(formData)
+    }
+
+  </script>
+
+  <script type="text/javascript">
+    var colorsetB = document.getElementById("colorsetB")
+    colorsetB.addEventListener("click", colorsetfunc )
+    var colorsetBB = document.getElementById("colorsetBB")
+    colorsetBB.addEventListener("click", colorsetfuncBB )
+
+    function colorsetfunc(){
+      var colorsettarget = document.getElementById("colorsettarget").value
+      var colorsetval = document.getElementById("colorsetval").value
+      var valhex = document.getElementById("valhex").innerHTML
+        var serchidB = "colorvalB"+colorsetval
+        document.getElementById(serchidB).style = "border-color:"+valhex
+
+      var serchval = "colorval"+colorsetval
+      var valval = document.getElementById(serchval)
+      valval.value = valhex
+    }
+    function colorsetfuncBB(){
+      var colorsettarget = document.getElementById("colorsettargetBB").value
+      var colorsetval = document.getElementById("colorsetvalBB").value
+      var valhex = document.getElementById("valhexBB").innerHTML
+
+        var serchidB = "colorvalboxB"+colorsetval
+        document.getElementById(serchidB).style.backgroundColor = valhex
+
+      var serchval = "colorvalbox"+colorsetval
+      var valval = document.getElementById(serchval)
+      valval.value = valhex
+    }
+
+
+    var charCshootB = document.getElementById("charCshootB")
+    charCshootB.addEventListener("click", function(){charCshoot('B')} )
+    var charCshootBB = document.getElementById("charCshootBB")
+    charCshootBB.addEventListener("click", function(){charCshoot('BB')} )
+
+    function charCshoot(bstate,boardvalueid = "board"){
+
+      chardict = {}
+
+      if(bstate=="B"){
+      var chardivs = document.getElementsByClassName("chardivs")
+      for(var chardiv of chardivs){
+        var charvalue = chardiv.getElementsByClassName("charB")[0].innerText
+          var charvalueB = chardiv.getElementsByClassName("charBI")[0].value
+          chardict[charvalue]= charvalueB
+      }
+      }
+      else if(bstate=="BB"){
+      var chardivs = document.getElementsByClassName("chardivsBB")
+      for(var chardiv of chardivs){
+        var charvalue = chardiv.getElementsByClassName("unitnameB")[0].innerText
+
+        var unitmembertext = chardiv.getElementsByClassName("unitmembertext")[0].innerText
+
+        var unitmemberarray = unitmembertext.split(',')
+        if(unitmemberarray.length>1){
+          var charvalueBB = []
+          for(var member of unitmemberarray){
+            if(document.getElementById("colorvalbox"+member)==null){alert('캐릭터:캐릭터 인 조합이 필요해요!');return 1}
+            charvalueBB.push(document.getElementById("colorvalbox"+member).value)
+          }
+        }
+        else{
+          var charvalueBB = chardiv.getElementsByClassName("charBBI")[0].value
+        }
+
+        chardict[charvalue]= charvalueBB
+      }
+      }
+
+      xmlcharC(chardict,bstate,boardvalueid)
+    }
+
+
+    function xmlcharC(chardict,bstate,boardvalueid){
+      if(bstate=="B"){
+      if(document.getElementsByClassName("chardivs").length ==0){alert('로드하기하세요!');return 1}
+      let msg = "캐릭터버튼색을 다 적용합니다?"
+      if(confirm(msg)==false){return false}
+    }
+    else if(bstate=="BB"){
+      if(document.getElementsByClassName("chardivsBB").length ==0){alert('로드하기하세요!');return 1}
+      let msg = "캐릭터배경색을 다 적용합니다?"
+      if(confirm(msg)==false){return false}
+    }
+
+
+
+    var url = '/xmlcharC'
+    var xhr = new XMLHttpRequest()
+    var formData = new FormData()
+    xhr.open('POST', url )// true means async.
+    xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest')
+
+    xhr.addEventListener("load", function(event){
+      let response = event.srcElement.responseText
+      if( response == "noname"){alert("안된다")}
+      if( response == "done" ){alert("되었다")}
+    } )
+
+    formData.append("bstate", bstate)
+    let token = getCookie("token")
+    formData.append("token", token)
+    chardict = JSON.stringify(chardict)
+    formData.append("charC", chardict)
+    let boardname = document.getElementById(boardvalueid).value
+    formData.append("boardname", boardname)
+    xhr.send(formData)
+    }
+
+  </script>
+
+  <script type="text/javascript">
+      function changeRed(value) {
+      document.getElementById('valRed').innerHTML = value;
+      changeAll();
+    }
+    function changeGreen(value) {
+      document.getElementById('valGreen').innerHTML = value;
+      changeAll();
+    }
+    function changeBlue(value) {
+      document.getElementById('valBlue').innerHTML = value;
+      changeAll();
+    }
+
+    function changeAll() {
+    var r = document.getElementById('valRed').innerHTML;
+    var g = document.getElementById('valGreen').innerHTML;
+    var b = document.getElementById('valBlue').innerHTML;
+    document.getElementById('changeB').style = "border-color:rgb(" + r + "," + g + "," + b + ")";
+    document.getElementById('changeB2').style = "border-color:rgb(" + r + "," + g + "," + b + ")";
+    document.getElementById('valhex').innerHTML ="rgb(" + r + "," + g + "," + b + ")";
+    }
+
+    /*************************************/
+    function changeRedBB(value) {
+    document.getElementById('valRedBB').innerHTML = value;
+    changeAllBB();
+  }
+  function changeGreenBB(value) {
+    document.getElementById('valGreenBB').innerHTML = value;
+    changeAllBB();
+  }
+  function changeBlueBB(value) {
+    document.getElementById('valBlueBB').innerHTML = value;
+    changeAllBB();
+  }
+
+  function changeAllBB() {
+  var r = document.getElementById('valRedBB').innerHTML;
+  var g = document.getElementById('valGreenBB').innerHTML;
+  var b = document.getElementById('valBlueBB').innerHTML;
+  document.getElementById('changeBB').style.backgroundColor = "rgb(" + r + "," + g + "," + b + ")";
+  document.getElementById('valhexBB').innerHTML ="rgb(" + r + "," + g + "," + b + ")";
+  }
+
+
+    function decimalToHexString(number)
+    {
+      if (number < 0)
+      {
+        number = 0xFFFFFFFF + number + 1;
+      }
+
+      return number.toString(16).toUpperCase();
+    }
+
+  </script>
 
   <script type="text/javascript">
 
   document.getElementById("boardinfoB").addEventListener( "click", function(){xmltaginfos()} )
 
   function xmltaginfos(){
+    //location.reload() it resets button, so tag override gose too bad.
+
   var url = '/xmltaginfos'
   var xhr = new XMLHttpRequest()
   var formData = new FormData()
@@ -65,6 +398,9 @@
 
   xhr.addEventListener("load",  function(e){
     dict = JSON.parse( e.srcElement.responseText )
+    //try{ dict = JSON.parse( e.srcElement.responseText ) }
+    //catch{alert('빈 게시판 정보!') return 1}
+
     let artBarea = document.getElementById("artBarea")
     let charBarea = document.getElementById("charBarea")
     let unitBarea = document.getElementById("unitBarea")
@@ -76,11 +412,22 @@
     let characterList = dict["characterList"]
     let unitDict = dict["unitDict"]
 
+    let charC = dict["charC"]
+    let unitC = dict["unitC"]
+    //console.log(charC)
+
+
+    let options = document.getElementById("colorsetval")
+    options.innerHTML = ""
+    options = document.getElementById("colorsetvalBB")
+    options.innerHTML = ""
 
     artistList.forEach(i=> fillbutton(i,artBarea,"artistList"))
-    characterList.forEach(i=> fillbutton(i,charBarea,"characterList"))
+    characterList.forEach(i=> optionfillchar(i))
+    characterList.forEach(i=> fillbuttonchar(i,charBarea,"characterList",charC))
 
-    Object.keys(unitDict).forEach(i=> fillbuttondict(i,unitDict[i],unitBarea,"unitDict"))
+    Object.keys(unitDict).forEach(i=> optionfillcharBB(i,unitDict[i]))
+    Object.keys(unitDict).forEach(i=> fillbuttondict(i,unitDict[i],unitBarea,"unitDict" ,unitC))
 
    })
   //xhr.addEventListener("load", function(e){  (e.srcElement.status==200 ? alert(e.srcElement.responseText) : alert("다시 시도하세요!") )  } )
@@ -88,29 +435,204 @@
   let boardname = document.getElementById("board").value
   formData.append("boardname", boardname)
   xhr.send(formData)
+
+
+  boardbannerset(boardname)
+
+  }
+
+  function boardbannerset(boardname){
+    var boardloadarea = document.getElementsByClassName('boardloadarea')[0]
+    boardloadarea.innerHTML=""
+
+    var udiv = boardloadarea
+    //----------file upload and see
+    let finput=document.createElement("input")
+    finput.id = "file"+"default"
+    finput.type = "file"
+    finput.accept = "image/*"
+    udiv.appendChild(finput)
+
+    let fsub=document.createElement("button")
+    fsub.innerText = "업로드"
+    fsub.addEventListener("click", function(){xmlbannerup('default')} )
+    udiv.appendChild(fsub)
+
+    let fsee=document.createElement("a")
+    fsee.innerText = '배너 보기'
+    fsee.href = "/static/banner/board/default.png".replace('board',boardname)
+    fsee.target = "_blank"
+    udiv.appendChild(fsee)
+
+    let hr=document.createElement("hr")
+    udiv.appendChild(hr)
   }
 
   function fillbutton(n,targetarea,listname) {
     let b=document.createElement("button")
     b.innerText = n
     b.listname = listname
+    b.className = "artistB"
     b.addEventListener("click",function(){xmldeltaginfo(b)})
     targetarea.appendChild(b)
   }
 
-  function fillbuttondict(n,intext,targetarea,listname) {
-    let boardname = document.getElementById("board").value
+  function optionfillchar(n) {
+    let options = document.getElementById("colorsetval")
+    options.innerHTML += "<option value= val> nam </option>".replace('val',n).replace('nam',n)
+  }
+  function optionfillcharBB(n,unitarray) {
+    if(unitarray.length>1){return 1}//only char background.
+    let options = document.getElementById("colorsetvalBB")
+    options.innerHTML += "<option value= val> nam </option>".replace('val',n).replace('nam',n)
+  }
+
+  function fillbuttonchar(n,targetarea,listname,charC) {
+    if(Object.keys(charC).length==0){charC={};charC[n]="rgb(137,137,137)";}
+    if(charC[n]==undefined){charC[n]="rgb(137,137,137)";}
+
     let udiv=document.createElement("div")
+    udiv.className = "chardivs"
 
     let b=document.createElement("button")
     b.innerText = n
+    b.className = "charB"
     b.listname = listname
     b.addEventListener("click",function(){xmldeltaginfo(b)})
     udiv.appendChild(b)
 
     let s=document.createElement("span")
-    s.innerText = intext+"--------"
+    s.innerText = "-----"
     udiv.appendChild(s)
+
+
+
+    let colorval=document.createElement("input")
+    colorval.type = "text"
+    colorval.size = "10"
+    colorval.id = "colorval"+n
+    colorval.className = "charBI"
+    colorval.value = charC[n]
+    //colorval.disabled=true
+    colorval.addEventListener("input", function(e){
+      document.getElementById("colorvalB"+n).style = "border-color:"+e.target.value
+    })
+    //colorval.placeholder = "댓글쓰기"
+    udiv.appendChild(colorval)
+
+    let bb=document.createElement("button")
+    bb.innerText = n
+    bb.id="colorvalB"+n
+    bb.className="tagB tagB_big tagB_inter tagB_character"
+    bb.style="border-color: "+charC[n]
+    udiv.appendChild(bb)
+
+    let hr=document.createElement("hr")
+    udiv.appendChild(hr)
+
+    targetarea.appendChild(udiv)
+
+  }
+
+  function fillbuttoncharBB(n,targetarea,listname,charC) {
+    if(Object.keys(charC).length==0){charC={};charC[n]="rgb(212,216,218)";}
+
+    let udiv=document.createElement("div")
+    udiv.className = "chardivsBB"
+
+    let b=document.createElement("button")
+    b.innerText = n
+    b.className = "unitnameB"//nothere!
+    b.listname = listname
+    b.addEventListener("click",function(){xmldeltaginfo(b)})
+    udiv.appendChild(b)
+
+    let s=document.createElement("span")
+    s.innerText = "-----"
+    udiv.appendChild(s)
+
+
+    let colorvalbox=document.createElement("input")
+    colorvalbox.type = "text"
+    colorvalbox.size = "10"
+    colorvalbox.id = "colorvalbox"+n
+    colorvalbox.className = "charBBI"
+    colorvalbox.value = charC[n]
+    //colorvalbox.disabled=true
+    colorvalbox.addEventListener("input", function(e){
+      document.getElementById('colorvalboxB'+n).style.backgroundColor = e.target.value
+    })
+
+
+    //colorvalbox.placeholder = "댓글쓰기"
+    udiv.appendChild(colorvalbox)
+
+    let bbbox=document.createElement("button")
+    bbbox.innerText = "배경"
+    bbbox.id='colorvalboxB'+n
+    bbbox.className = "colorbox"
+    bbbox.style="background-color: "+charC[n]
+    udiv.appendChild(bbbox)
+
+
+
+    let hr=document.createElement("hr")
+    udiv.appendChild(hr)
+
+    targetarea.appendChild(udiv)
+
+  }
+
+
+
+
+  function fillbuttondict(n,intext,targetarea,listname,unitC) {
+    if(Object.keys(unitC).length==0){unitC={};unitC[n]="rgb(200,200,200)";}
+    if(unitC[n]==undefined){unitC[n]="rgb(200,200,200)";}
+
+    let boardname = document.getElementById("board").value
+    let udiv=document.createElement("div")
+    udiv.className = "chardivsBB"
+
+    let b=document.createElement("button")
+    b.innerText = n
+    b.listname = listname
+    b.className = "unitnameB"
+    b.addEventListener("click",function(){xmldeltaginfo(b)})
+    udiv.appendChild(b)
+
+    let cs=document.createElement("span")
+    cs.className = "unitmembertext"
+    cs.innerText = intext
+    udiv.appendChild(cs)
+    let s=document.createElement("span")
+    s.innerText = "--------"
+    udiv.appendChild(s)
+
+
+
+    //-------------------------------------------
+    let colorvalbox=document.createElement("input")
+    colorvalbox.type = "text"
+    colorvalbox.size = "10"
+    colorvalbox.id = "colorvalbox"+n
+    colorvalbox.className = "charBBI"
+    colorvalbox.value = unitC[n]
+    if(intext.length>1){colorvalbox.value="mixed color";colorvalbox.disabled=true;}
+    //colorvalbox.disabled=true
+    colorvalbox.addEventListener("input", function(e){
+      document.getElementById('colorvalboxB'+n).style.backgroundColor = e.target.value
+    })
+    udiv.appendChild(colorvalbox)
+
+    let bbbox=document.createElement("button")
+    bbbox.innerText = "배경색"
+    bbbox.id='colorvalboxB'+n
+    bbbox.className = "colorbox"
+    bbbox.style="background-color: "+unitC[n]
+    udiv.appendChild(bbbox)
+    //-------------------------------------------
+
 
     //----------file upload and see
     let finput=document.createElement("input")
@@ -125,7 +647,7 @@
     udiv.appendChild(fsub)
 
     let fsee=document.createElement("a")
-    fsee.innerText = '간판보기'
+    fsee.innerText = '배너 보기'
     fsee.href = "/static/banner/board/xxx.png".replace('xxx',n).replace('board',boardname)
     fsee.target = "_blank"
     udiv.appendChild(fsee)
@@ -135,6 +657,7 @@
 
     targetarea.appendChild(udiv)
   }
+
   function xmlbannerup(unitname){
     let inputs = document.getElementById("file"+unitname)
     if(inputs.files.length==0){
@@ -169,6 +692,42 @@
     //unitname
     formData.append("img", img)
     formData.append("unitname", unitname)
+    formData.append("board", board)
+    formData.append("token", token)
+    xhr.send(formData)
+  }
+  function xmlcssup(){
+    let inputs = document.getElementById("cssinput")
+    if(inputs.files.length==0){
+      return 1//show nothing. easy to see.
+    }
+    //20mb over.
+    if(inputs.files[0].size>20000000){
+      alert('over 20mb!')
+      return 1
+    }
+
+
+    let img = inputs.files[0]
+
+    let msg = "업로드? "
+    if(confirm(msg)==false){return false}
+
+    var url = '/xmlcssup'
+    var xhr = new XMLHttpRequest()
+    var formData = new FormData()
+    xhr.open('POST', url, true)
+    xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest')
+
+    xhr.addEventListener("load", function(event){
+      let response = event.srcElement.responseText
+      if( response == "noname"){alert("안된다")}
+      if( response == "done" ){alert("되었다")}
+    } )
+
+    let board = document.getElementById("board").value
+    let token = getCookie("token")
+    formData.append("img", img)
     formData.append("board", board)
     formData.append("token", token)
     xhr.send(formData)
@@ -226,7 +785,12 @@
       xhr.addEventListener("load",  function(e){
         alert(e.srcElement.responseText);
         //resetinput();
-        location.reload()
+        //location.reload()
+
+        document.getElementById("artists").value = ""
+        document.getElementById("characters").value = ""
+        document.getElementById("units").value = ""
+
         document.getElementById("boardinfoB").click();
       } )
       //xhr.addEventListener("load", function(e){  (e.srcElement.status==200 ? alert(e.srcElement.responseText) : alert("다시 시도하세요!") )  } )

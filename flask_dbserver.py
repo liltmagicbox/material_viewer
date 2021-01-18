@@ -1,8 +1,8 @@
 "prevent #-*- coding:utf-8 -*-"
 
-from os import listdir, mkdir, rename, remove, makedirs
+from os import listdir, mkdir, rename, remove, makedirs, walk
 from os.path import isfile, join, splitext, isdir, getsize
-from shutil import rmtree#remove not work if filled.rmtree(tempdir)
+from shutil import rmtree,copy#remove not work if filled.rmtree(tempdir)
 
 from jar import getJar, imgtower_dir, jar_dir
 import newdb
@@ -15,7 +15,7 @@ from flask import Flask, render_template, request, jsonify, abort, redirect
 from resizer import justresize
 app = Flask(__name__)
 
-
+from tidyname import tidyName
 
 
 
@@ -29,10 +29,14 @@ def hello():
 
 @app.route('/view')
 def viewmain():
+    backupcheck()
     if request.method == "GET":
         board = request.args.get('board')
         #print(board)works great!!!
         boardList = list(newdb.db.keys())
+
+        if len(boardList)==0:
+            return redirect( "/newboard" )
 
         allwriter = "none"
         hiddenboardList = []
@@ -103,7 +107,7 @@ def staticFile(filenameinput):
     # 디렉터리에선 폴더명이다. upload 로 s안붙이니 안나왔음;
     #파일네임을 입력을 받은걸, 어떻게든 넘기는구조같다.
     #디렉터리에서 파일을 보내는 함수라는것은 알겠어..
-    print('filenameinput',filenameinput)
+    #print('filenameinput',filenameinput)
     #return send_file( filename=filenameinput )
     return send_file( filename_or_fp = filenameinput )
     #http://localhost:12800/static/mah.txt로 접속시,staic폴더안에연결됨.ㅇㅋ
@@ -316,7 +320,7 @@ def getuploadkey(username):
 #         jarinfo[0] == ""
 #     jarinfo[1] = datestr()
 
-from tidyname import tidyName
+
 
 @app.route('/uploadkey', methods = [ 'POST'])
 def uploadkey():
@@ -439,7 +443,8 @@ def zipfileup():
                 newdb.addtag(board,id, uploadtime,uploader,tagtext )
 
         #get headdict, backup.
-        newdb.after_newarticle(board)
+        newdb.after_newarticle(board)#backupinside
+        newdb.lastbackuptime = intsec()
 
         unlockjar()
         zipdonetext = "success:{}, err:{}, errmsg:{}".format( len(newdict), len(jarerrlist), errstr )
@@ -580,18 +585,19 @@ def createboard():
         if userdb.ismanager(username) or userdb.ismaster(username):
             pass
         else:
-            return "you can not make it!"
+            return "noauth"
 
         name = request.form['name']
         #----------json save * error. why??
         #if name.find('*') != -1:
         #    name = 'x'.join( name.split('*') )
         #for dir headjson, banner error.
-        name = tidyname(name)
+        name = tidyName(name)
 
         #boardtype = request.form['boardtype']
         #heros = request.form['heros']2020.12.07.
-        if newdb.newboard(name) == True:
+        if newdb.newboard(name) == True:#backup inside.
+            newdb.lastbackuptime = intsec()
             return "new board created : {}".format(name)
         else:
             return " board already! "
@@ -632,7 +638,72 @@ def xmltaginfos():
         d["artistList"]=newdb.artistList[boardname]
         d["characterList"]=newdb.characterList[boardname]
         d["unitDict"]=newdb.unitDict[boardname]
+
+        d["charC"]=newdb.charC[boardname]
+        d["unitC"]=newdb.unitC[boardname]
         return jsonify(d)
+
+@app.route('/xmlcharC', methods=[ 'POST'])
+def xmlcharC():
+    if request.method == 'POST':
+        bstate = request.form['bstate']
+        boardname = request.form['boardname']
+        charC = request.form['charC']
+        charC = json.loads(charC)
+
+        token = request.form['token']
+        username = userdb.getname(token)
+        if username == "noname":
+            return "you can not make it!"
+        if userdb.ismanager(username) or userdb.ismaster(username):
+            pass
+        else:
+            return "you can not make it!"
+
+        if bstate == "B":#for button color.
+            bodytext = ""
+            for key,val in charC.items():
+                bodytext+=".tagB_character[name ="+key+"]{border-color: "+val+"}"
+                bodytext+="\n"
+            dirpath = join('static','css')
+            makedirs(dirpath, exist_ok=True)
+            unitname= 'charcolor_{}.css'.format(boardname)
+            txtname = join(dirpath,unitname)
+
+            with open ( txtname, 'w', encoding = "utf-8") as f:
+                f.write(bodytext)
+            newdb.charC[boardname] = charC
+
+        if bstate == "BB":#for unit board color.
+            bodytext = ""
+            for key,val in charC.items():
+                if type(val)==str:
+                    bodytext+=".imgFrame .imgBox[color ="+key+"]{background-color: "+val+"}"
+                    bodytext+="\n"
+                elif type(val)==list:
+                    if len(val)==2:
+                        val,val2 = val
+                        bodytext+=".imgFrame .imgBox[color ="+key+"]{background: linear-gradient(112deg, "+val+" 23%, "+val2+" 77%);}"
+                    elif len(val)==3:
+                        val,val2,val3=val
+                        bodytext+=".imgFrame .imgBox[color ="+key+"]{background: linear-gradient(112deg, "+val+" 15%, "+val2+" 50%,"+val3+" 80%);}"
+                    elif len(val)==4:
+                        val,val2,val3,val4=val
+                        bodytext+=".imgFrame .imgBox[color ="+key+"]{background: linear-gradient(112deg, "+val+" 10%, "+val2+" 30%,"+val3+" 70%,"+val4+" 90%);}"
+                    else:
+                        bodytext+=".imgFrame .imgBox[color ="+key+"]{background-color: "+val[0]+"}"
+                    bodytext+="\n"
+            dirpath = join('static','css')
+            makedirs(dirpath, exist_ok=True)
+            unitname= 'unitcolor_{}.css'.format(boardname)
+            txtname = join(dirpath,unitname)
+
+            with open ( txtname, 'w', encoding = "utf-8") as f:
+                f.write(bodytext)
+            newdb.unitC[boardname] = charC
+
+        #xmlbackup
+        return "done"
 
 @app.route('/xmladdtaginfo', methods=[ 'POST'])
 def xmladdtaginfo():
@@ -663,7 +734,7 @@ def xmladdtaginfo():
         newdb.characterList[board] = list(set( newdb.characterList[board] ))
 
         newdb.unitDict[board].update(unitdict)
-        newdb.backup()
+        #xmlbackup
         return "ok"
 
 @app.route('/xmldeltaginfo' , methods = ['POST'] )
@@ -693,9 +764,48 @@ def xmldeltaginfo():
 
     if listname == "unitDict":
         del newdb.unitDict[board][tagname]
-    newdb.backup()
+    #xmlbackup
     return "done"
 
+
+@app.route('/xmltagcopy' , methods = ['POST'] )
+def xmltagcopy():
+    board = request.form['board']
+    newboard = request.form['newboard']
+
+    token = request.form['token']
+    username = userdb.getname(token)
+    if username == "noname":
+        return "noname"
+
+    if userdb.ismanager(username) or userdb.ismaster(username):
+        pass
+    else:
+        return "noname"
+
+    newdb.unitC[newboard] = newdb.unitC[board]
+    newdb.charC[newboard] = newdb.charC[board]
+    newdb.artistList[newboard] = newdb.artistList[board]
+    newdb.characterList[newboard] = newdb.characterList[board]
+    newdb.unitDict[newboard] = newdb.unitDict[board]
+    #xmlbackup
+    #--------------------------------
+    board = tidyName(board)
+    newboard = tidyName(newboard)
+    newboardpath = join('static','banner',newboard)
+    try:
+        rmtree(newboardpath)
+    except:
+        pass
+    makedirs(newboardpath, exist_ok=True)
+
+    boardpath = join('static','banner',board)
+    for f in listdir(boardpath):
+        boardpathf = join(boardpath,f)
+        newpathf = join(newboardpath,f)
+        copy(boardpathf,newpathf)
+
+    return "done"
 
 @app.route('/xmlbannerup' , methods = ['POST'] )
 def xmlbannerup():
@@ -722,15 +832,48 @@ def xmlbannerup():
     unitname= unitname+'.png'
     filepath = join(dirpath,unitname)
     f.save( filepath )
-    w,h = (640,360)
+    w,h = (500,281)
     if justresize(filepath,w,h):
         return "done"
+@app.route('/xmlcssup' , methods = ['POST'] )
+def xmlcssup():
+    f = request.files['img']
+    board = request.form['board']
+
+    token = request.form['token']
+    username = userdb.getname(token)
+    if username == "noname":
+        return "noname"
+
+    if userdb.ismanager(username) or userdb.ismaster(username):
+        pass
+    else:
+        return "noname"
+
+    board = tidyName(board)
+
+    dirpath = join('static','css')
+    makedirs(dirpath, exist_ok=True)
+
+    unitname= 'unitcolor.css'
+    filepath = join(dirpath,unitname)
+    f.save( filepath )
+    return "done"
 
 @app.route('/articleboard' )
 def articleboard():
     boardList = list(newdb.db.keys())
     userList = list(userdb.user.keys())
     return render_template('articleboard.html', boardList = boardList, userList = userList)
+
+@app.route('/articleboarduser' ,methods=['GET', 'POST'] )
+def articleboarduser():
+    boardList = []
+    for board in list(newdb.db.keys()):
+        if board.find('@')==0:
+            boardList.append(board)
+    return render_template('articleboarduser.html', boardList = boardList)
+
 
 @app.route('/articleview' , methods=['GET'])
 def articleview():
@@ -855,7 +998,8 @@ def xmldelarticle():
 
     username = userdb.getname(token)
 
-    writer = newdb.db[board][id][newdb.writer_key]
+    #writer = newdb.db[board][id][newdb.writer_key] #this, original writer,,toobad!
+    writer =newdb.db[board][id][newdb.uploader_key]
     if username != writer:
         if userdb.ismanager(username) or userdb.ismaster(username):
             pass
@@ -864,7 +1008,8 @@ def xmldelarticle():
 
     if subarticle(board,id) == True:
         text = "del success!"
-        newdb.backup()
+        xmlbackup()
+        #xmlbackup
     else:
         text = "del fail.."
     return text
@@ -897,7 +1042,8 @@ def xmlmodtitle():
 
     newdb.db[board][id][newdb.title_key] = newtitle
     text = "mod success!"
-    newdb.backup()
+    xmlbackup()
+    #xmlbackup
     return text
 
 #x버튼에연계, post로 들어오면,제거하기.?
@@ -934,20 +1080,26 @@ def delboardname():
     if userdb.ismaster(username):
         pass
     else:
-        return "you can not make it!"
+        return "noauth"
 
     if delboard(board) == True:
-        newdb.backup()
+        xmlbackup()
+        #xmlbackup
         return "del board done : {}".format(board)
     else:
         return " error.. anyway."
 
-def delboard(board):
+def delboard(board):#sincefile..not int newdb.
     if newdb.db.get(board) != None:
         for id in newdb.db[board]:
-            rmtree(join(imgtower_dir, id))
+            try:rmtree(join(imgtower_dir, id))
+            except:pass
+        try:rmtree(join('static','banner',board))
+        except:pass
         del newdb.db[board]
         newdb.deltaginfo(board)
+        del newdb.charC[board]
+        del newdb.unitC[board]
         return True
     return False
 
@@ -1244,6 +1396,65 @@ def likeview():
                     idList.append( id )
         return jsonify(idList)
 
+@app.route('/backupdown', methods=['POST',"GET"])
+def backupdown():
+    zipfiledir = join('static',"backupzip")
+    makedirs(zipfiledir, exist_ok=True)
+    for pastz in listdir(zipfiledir):
+        pasttime = int(millisec())-int( splitext(pastz)[0] )
+        #if pasttime > 3600000:#1hrs.
+        #print(pasttime)
+        if pasttime > 3600000:#1hrs.
+            remove(join(zipfiledir,pastz))
+    zipname = '{}.zip'.format(millisec())
+    zipdir = join(zipfiledir,zipname)
+
+    with zipfileuni.ZipFile(zipdir, 'w') as zip:
+        fname = "data.json"
+        zip.write( fname,fname )
+        fname = "userdb.json"
+        zip.write( fname,fname )
+
+        targetdir1 = join('static','css')
+        targetdir2 = join('static','banner')
+        targetdir3 = join('static','imgtower')
+        targetdirs = [targetdir1,targetdir2,targetdir3]
+        for targetdir in targetdirs:
+            for folder, subfolders, files in walk(targetdir):
+                for file in files:
+                    #if file.endswith('.pdf'):
+                    zip.write(join(folder, file), join(folder,file) )
+
+    #return zipfiledir
+    return send_file( filename_or_fp = zipdir ,as_attachment = True, attachment_filename=datestr()+'.zip')
+
+#-------------------downalod origin dir. img+txt
+@app.route('/xmldownzip', methods=['POST'])
+def xmldownzip():
+    board = request.form['board']
+    id = request.form['id']
+    imgkey = newdb.originkey
+    files = newdb.db[board][id][imgkey]
+
+    zipfiledir = join('static',"tempzip")
+    makedirs(zipfiledir, exist_ok=True)
+
+    for pastz in listdir(zipfiledir):
+        pasttime = int(millisec())-int( splitext(pastz)[0] )
+        if pasttime > 60000:#1min
+            remove(join(zipfiledir,pastz))
+    zipname = '{}.zip'.format(millisec())
+    zipdir = join(zipfiledir,zipname)
+
+    with zipfileuni.ZipFile(zipdir, 'w') as zip:
+        for txtfinder in listdir( join('static','imgtower',id) ):
+            if splitext(txtfinder)[1]=='.txt':
+                zip.write( join('static','imgtower',id,txtfinder),join(id,txtfinder) )
+        targetdir = join('static','imgtower',id,'origin')
+        for folder, subfolders, files in walk(targetdir):
+            for file in files:
+                zip.write(join(folder, file), join(id,file) )
+    return zipdir
 #-------------------downalod origin imgs
 @app.route('/xmldownlist', methods=['POST'])
 def xmldownlist():
@@ -1296,6 +1507,16 @@ def getPlotCSV():
 def backup():
     newdb.backup()
     return "yeah"
+
+def backupcheck():
+    tnow = intsec()
+    if tnow - newdb.lastbackuptime>3600:
+        newdb.lastbackuptime = tnow
+        newdb.backup()
+
+def xmlbackup():
+    newdb.lastbackuptime = intsec()
+    newdb.backup()
 
 if __name__ == "__main__":
     app.run(debug = True, host='0.0.0.0' , port = '12800')

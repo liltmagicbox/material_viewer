@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="kr" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>모든글보기</title>
+  </head>
+  <body>
+
+    <div id="loginbox">
+
+    </div>
+
+    <input type="text" id = "targetuser" name="targetuser" value="" placeholder="닉네임을입력하셈">
+
+    <select id = "board" name="board" required>
+      {% for board in boardList %}
+      <option value= {{board}}> {{board}} </option>
+      {% endfor %}
+    </select>
+
+
+
+    <select id = "type" name="type" required>
+      <option value= "글">글</option>
+      <option value= "좋아">좋아</option>
+      <option value= "추천">추천</option>
+      <option value= "태그">태그</option>
+      <option value= "댓글">댓글</option>
+    </select>
+
+    <button id="viewarticleB" onclick="Fshowarticles(event)">열람</button>
+    <hr>
+
+    <div id="articlearea">
+
+    </div>
+  </body>
+
+
+  <script type="text/javascript" src="/static/js/shasha.js"> </script>
+  <script type="text/javascript" src="/static/js/userfunc.js"> </script>
+
+    <script type="text/javascript">
+      frame = document.getElementById("loginbox")
+      makeloginbox(frame)
+    </script>
+
+
+  <script type="text/javascript">
+
+
+  function Fshowarticles(){
+    let boardname = document.getElementById("board").value
+    let type = document.getElementById("type").value
+    let targetuser = document.getElementById("targetuser").value
+
+    let articlearea = document.getElementById('articlearea')
+    articlearea.innerHTML = ""
+    let frame = '<iframe src="/articleview?board=boardname&key=type&user=targetuser" width="800" height="600"></iframe>'
+    frame = frame.replace("boardname",boardname)
+    frame = frame.replace("type",type)
+    frame = frame.replace("targetuser",targetuser)
+    articlearea.innerHTML = frame
+
+  }
+
+  </script>
+</html>

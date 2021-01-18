@@ -13,8 +13,9 @@
     <meta name="description" content="러브라이브 번역 만화 및 기타 열람.">
     <meta name="keywords" content="러브라이브,식질,만화,2차창작,번역">
 
-    <link rel="stylesheet" type="text/css" href="./static/css/flexcol.css">
-    <link rel="stylesheet" type="text/css" href="./static/css/unitcolor.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/flexcol.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/charcolor_{{board}}.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/unitcolor_{{board}}.css">
 
     <script type="text/javascript" src="/static/head_{{board}}.json?{{headver}}"> </script>
     <!--script type="text/javascript" src="./static/fluiddict.json"> </script-->
@@ -31,67 +32,6 @@
     <script type="text/javascript" src="/static/js/shasha.js"> </script>
     <script type="text/javascript" src="/static/js/userfunc.js"> </script>
 
-    <style media="screen">
-
-    .tagB{
-      background-color: #ffffff;
-      border-style: outset;
-      border-width: thin;
-      border-color: azure;
-    }
-    .tagB.tagB_character{
-      border-radius: 50%;
-      padding: 0px;
-      margin: 2px 4px;
-      /*width: 50px;*/
-      min-width: 50px;
-      height: 50px;
-
-      border-style: dashed;
-      border-width: medium;
-      margin: 4px;
-    }
-    .tagB_character.tagB_inter{
-      border-width: thick;
-      border-style: outset;
-    }
-
-    .tagB_unit{
-      border-radius: 5px;
-      margin: 2px 4px;
-      /*background-color: lightcyan;*/
-    }
-    .tagB_artist{
-      border-radius: 5px;
-      margin: 2px 4px;
-      /*background-color: lavender;*/
-    }
-
-    .tagB_big {
-      border-width: thick;
-      border-radius: 5px;
-      margin: 2px 4px;
-    }
-
-    .tagB_inter{
-      border-color: royalblue;
-      border-width: thick;
-    }
-    .tagB_union{
-      border-color: lightblue;
-      /*border-width: thick;*/
-      background-color: lightblue;
-    }
-    .tagB_exclude{
-      border-style: none;
-      background-color: #ff5555;
-    }
-
-
-
-
-
-    </style>
 
   </head>
 
@@ -102,7 +42,7 @@
       <button type="button" id = "menuOpenB" name="button"><img src="./static/resource/menuicon.png" alt="메뉴열기"></button>
 
       <div class="headerTitle" >
-        <a href="/view"> <img src="./static/resource/headlogo.jpg" alt="타이틀로고"> </a>
+        <a href="/view?board={{board}}"> <img src="./static/resource/headlogo.jpg" alt="타이틀로고"> </a>
 
       </div>
 
@@ -127,13 +67,15 @@
         <hr>
         <!--a href="#">내 업로드 보기</a-->
         <!--a href="/upload">업로드 하기</a-->
-        <a href="/taginput">고속태그입력</a>
+        <a href="/taginput">고속태그</a>
+        <a href="/articleboarduser">@에쓴글</a>
 
-        <a href="/manageboard" class="managermenu" style="display : none">게시판 태그 관리</a>
-        <a href="/articleboard" class="managermenu" style="display : none">게시판 내부 관리</a>
+        <a href="/manageboard" class="managermenu" style="display : none">게시판 태그</a>
+        <a href="/articleboard" class="managermenu" style="display : none">게시판 열람</a>
         <a href="/newboard" class="managermenu" style="display : none">새 게시판</a>
-        <a href="/delboard" class="managermenu" style="display : none">게시판 삭제</a>
-        <a href="/assignuser" class="managermenu" style="display : none">계정 권한 부여</a>
+        <a href="/delboard" class="managermenu" style="display : none">삭제 게시판 </a>
+        <a href="/assignuser" class="managermenu" style="display : none">계정 권한</a>
+        <a class="managermenu" >x</a>
 
 
       </div>
@@ -161,7 +103,7 @@
         </div>
 
         <div class="bannerFrame" id="bannerFrame">
-          <img class = "bannerImg" src="/static/resource/defaultbanner.png" alt="배너이미지"  >
+          <img class = "bannerImg" src="/static/banner/{{board}}/default.png" alt="배너이미지"  >
         </div>
         <!--div class="tagBox" id="moodTagbox">
           <span>태그 목록 : </span>
@@ -312,7 +254,7 @@
 
 
     function searchPop() {
-      let sign = window.prompt("검색어를 입력해?").toUpperCase() /*, "생일" 냅두면초기화용.*/
+      let sign = window.prompt("검색할 제목?").toUpperCase() /*, "생일" 냅두면초기화용.*/
       if(sign == null ){sign = ""}
 
       let keyList = Object.keys(datas)
